@@ -2,9 +2,9 @@ JudgeSuccess()
 {
 
     if [ $? -ne 0 ];then
-        echo '              \033[1;31m失败\033[0m'
+        echo '              \033[1;31m此步骤失败\033[0m'
     else
-        echo "              \033[1;32m成功\033[0m"
+        echo "              \033[1;32m此步骤成功\033[0m"
 
     fi
 }
