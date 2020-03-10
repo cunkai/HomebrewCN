@@ -33,13 +33,17 @@ sudo mkdir -p /usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask
 sudo git clone https://mirrors.ustc.edu.cn/homebrew-cask.git /usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask
 JudgeSuccess
 echo '---第五步：删除之前brew环境，重新创建---'
-sudo rm -rf /usr/local/var/homebrew/ 
-sudo mkdir -p /usr/local/var/homebrew
-JudgeSuccess
-sudo chown -R $(whoami) /usr/local/var/homebrew
 sudo rm -rf /Users/$(whoami)/Library/Caches/Homebrew/
 sudo rm -rf /Users/$(whoami)/Library/Logs/Homebrew/
 sudo rm -rf /usr/local/etc/bash_completion.d/brew
+sudo rm -rf /usr/local/Cellar
+sudo mkdir -p /usr/local/Cellar
+JudgeSuccess
+sudo rm -rf /usr/local/var/homebrew
+sudo mkdir -p /usr/local/var/homebrew
+JudgeSuccess
+sudo chown -R $(whoami) /usr/local/var/homebrew
+sudo chown -R $(whoami) /usr/local/Cellar
 echo '---最后一步：获取权限---'
 sudo chown -R $(whoami) /usr/local/Homebrew
 JudgeSuccess
