@@ -130,10 +130,10 @@ directories=(bin etc include lib sbin share var opt
              var/homebrew var/homebrew/linked
              Cellar Caskroom Homebrew Frameworks)
 for dir in "${directories[@]}"; do
-  sudo chown -R $(whoami) ${HOMEBREW_PREFIX}/${dir}
   if ! [[ -d "${HOMEBREW_PREFIX}/${dir}" ]]; then
     CreateFolder "${HOMEBREW_PREFIX}/${dir}"
   fi
+  sudo chown -R $(whoami) ${HOMEBREW_PREFIX}/${dir}
 done
 echo '==> 配置国内下载地址'
 echo 'export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles' >> ~/.zshrc
