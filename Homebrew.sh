@@ -26,6 +26,8 @@ else
   GROUP="$(id -gn)"
 fi
 
+TIME=$(date "+%Y-%m-%d %H:%M:%S")
+
 JudgeSuccess()
 {
     if [ $? -ne 0 ];then
@@ -97,6 +99,7 @@ RmCreate()
 echo '
               \033[1;32m开始执行Brew自动安装程序\033[0m
              \033[1;36m[cunkai.wang@foxmail.com]\033[0m
+               ['$TIME']
        \033[1;36mhttps://zhuanlan.zhihu.com/p/111014448\033[0m
 '
 echo '==> 通过命令删除之前的brew、创建一个新的Homebrew文件夹
@@ -104,6 +107,12 @@ echo '==> 通过命令删除之前的brew、创建一个新的Homebrew文件夹
 RmCreate ${HOMEBREW_REPOSITORY}
 echo '==> 克隆Homebrew基本文件(32M+)
 如果你电脑没有Git，会弹窗提示需要安装开发者工具，点安装。'
+sudo git --version
+if [ $? -ne 0 ];then
+  sudo rm -rf "/Library/Developer/CommandLineTools/"
+  echo '安装Git后再运行此脚本，\033[1;31m在系统弹窗中点击“安装”按钮\033[0m'
+  xcode-select --install
+fi
 sudo git clone https://mirrors.ustc.edu.cn/brew.git ${HOMEBREW_REPOSITORY}
 JudgeSuccess
 echo '==> 创建brew的替身'
