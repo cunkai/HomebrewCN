@@ -102,7 +102,8 @@ echo '
 echo '==> 通过命令删除之前的brew、创建一个新的Homebrew文件夹
 \033[1;36m请输入开机密码，输入过程不显示，输入完后回车\033[0m'
 RmCreate ${HOMEBREW_REPOSITORY}
-echo '==> 克隆Homebrew基本文件(32M+)'
+echo '==> 克隆Homebrew基本文件(32M+)
+如果你电脑没有Git，会弹窗提示需要安装开发者工具，点安装。'
 sudo git clone https://mirrors.ustc.edu.cn/brew.git ${HOMEBREW_REPOSITORY}
 JudgeSuccess
 echo '==> 创建brew的替身'
