@@ -107,12 +107,12 @@ echo '==> 通过命令删除之前的brew、创建一个新的Homebrew文件夹
 # 让环境暂时纯粹，重启终端后恢复
 export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 RmCreate ${HOMEBREW_REPOSITORY}
-echo '==> 克隆Homebrew基本文件(32M+)
-如果你电脑没有Git，会弹窗提示需要安装开发者工具，点安装。'
+echo '==> 克隆Homebrew基本文件(32M+)'
 sudo git --version
 if [ $? -ne 0 ];then
   sudo rm -rf "/Library/Developer/CommandLineTools/"
-  echo '安装Git后再运行此脚本，\033[1;31m在系统弹窗中点击“安装”按钮\033[0m'
+  echo '安装Git后再运行此脚本，\033[1;31m在系统弹窗中点击“安装”按钮\033[0m
+  如果没有弹窗的老系统，需要自己下载安装：https://git-scm.com/downloads '
   xcode-select --install
 fi
 sudo git clone https://mirrors.ustc.edu.cn/brew.git ${HOMEBREW_REPOSITORY}
@@ -164,7 +164,8 @@ brew update
 if [ $? -ne 0 ];then
     echo '
     \033[1;31m失败 留言我看到会回复(附带前面提示“此步骤失败”以及它的前6句)
-    https://zhuanlan.zhihu.com/p/111014448  \033[0m
+    https://zhuanlan.zhihu.com/p/111014448
+    或者所有命令截图发到 cunkai.wang@foxmail.com  \033[0m
     '
 else
     echo "
