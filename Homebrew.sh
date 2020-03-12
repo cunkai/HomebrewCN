@@ -104,6 +104,8 @@ echo '
 '
 echo '==> 通过命令删除之前的brew、创建一个新的Homebrew文件夹
 \033[1;36m请输入开机密码，输入过程不显示，输入完后回车\033[0m'
+# 让环境暂时纯粹，重启终端后恢复
+export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 RmCreate ${HOMEBREW_REPOSITORY}
 echo '==> 克隆Homebrew基本文件(32M+)
 如果你电脑没有Git，会弹窗提示需要安装开发者工具，点安装。'
