@@ -103,6 +103,8 @@ echo '
        \033[1;36mhttps://zhuanlan.zhihu.com/p/111014448\033[0m
 '
 echo '==> 通过命令删除之前的brew、创建一个新的Homebrew文件夹
+(设置开机密码：在左上角苹果图标->系统偏好设置->用户与群组->更改密码)
+(如果就是不想设置密码，自行百度mac sudo免密码)
 \033[1;36m请输入开机密码，输入过程不显示，输入完后回车\033[0m'
 # 让环境暂时纯粹，重启终端后恢复
 export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
@@ -111,9 +113,10 @@ echo '==> 克隆Homebrew基本文件(32M+)'
 sudo git --version
 if [ $? -ne 0 ];then
   sudo rm -rf "/Library/Developer/CommandLineTools/"
-  echo '安装Git后再运行此脚本，\033[1;31m在系统弹窗中点击“安装”按钮\033[0m
-  如果没有弹窗的老系统，需要自己下载安装：https://git-scm.com/downloads '
+  echo '\033[1;36m安装Git\033[0m后再运行此脚本，\033[1;31m在系统弹窗中点击“安装”按钮
+如果没有弹窗的老系统，需要自己下载安装：https://git-scm.com/downloads \033[0m'
   xcode-select --install
+  exit 0
 fi
 sudo git clone https://mirrors.ustc.edu.cn/brew.git ${HOMEBREW_REPOSITORY}
 JudgeSuccess
