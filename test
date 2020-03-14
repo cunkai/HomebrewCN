@@ -1,0 +1,24 @@
+  Summary:
+    Install RubyGems
+
+  Description:
+    Installs RubyGems itself.
+    
+    RubyGems installs RDoc for itself in GEM_HOME.  By default this is:
+      /Library/Ruby/Gems/2.3.0
+    
+    If you prefer a different directory, set the GEM_HOME environment variable.
+    
+    RubyGems will install the gem command with a name matching ruby's
+    prefix and suffix.  If ruby was installed as `ruby18`, gem will be
+    installed as `gem18`.
+    
+    By default, this RubyGems will install gem as:
+      gem
+
+  Defaults:
+    --format-executable --document ri --regenerate-binstubs
+macos:rubygems cunkaiwang$ sudo ruby setup.rb
+Password:
+ERROR:  While executing gem ... (Errno::ENOENT)
+    No such file or directory @ dir_chdir - bundler/lib
