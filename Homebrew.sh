@@ -111,8 +111,7 @@ echo '==> 通过命令删除之前的brew、创建一个新的Homebrew文件夹
 # 让环境暂时纯粹，重启终端后恢复
 export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 RmCreate ${HOMEBREW_REPOSITORY}
-echo '==> 删除之前brew环境，重新创建
-\033[1;36m此处如果显示Password表示需要再次输入开机密码，输入完后回车\033[0m'
+echo '==> 删除之前brew环境，重新创建'
 sudo rm -rf /Users/$(whoami)/Library/Caches/Homebrew/
 sudo rm -rf /Users/$(whoami)/Library/Logs/Homebrew/
 RmCreate ${HOMEBREW_PREFIX}/Caskroom
