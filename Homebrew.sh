@@ -1,3 +1,5 @@
+#HomeBrew自动安装脚本
+#cunkai.wang@foxmail.com
 
 # 判断系统是否为Linux
 if [[ "$(uname)" = "Linux" ]]; then
@@ -120,19 +122,6 @@ if [ $? -ne 0 ];then
 fi
 sudo git clone https://mirrors.ustc.edu.cn/brew.git ${HOMEBREW_REPOSITORY}
 JudgeSuccess
-echo '==> 创建brew的替身'
-find ${HOMEBREW_PREFIX}/bin -name brew -exec sudo rm -f {} \;
-sudo ln -s ${HOMEBREW_PREFIX}/Homebrew/bin/brew ${HOMEBREW_PREFIX}/bin/brew
-JudgeSuccess
-echo '==> 克隆Homebrew Core(224M+) '
-sudo mkdir -p ${HOMEBREW_PREFIX}/Homebrew/Library/Taps/homebrew/homebrew-core
-sudo git clone https://mirrors.ustc.edu.cn/homebrew-core.git ${HOMEBREW_PREFIX}/Homebrew/Library/Taps/homebrew/homebrew-core/
-JudgeSuccess
-echo '==> 克隆Homebrew Cask(248M+) 类似AppStore 
-\033[1;36m此处如果显示Password表示需要再次输入开机密码，输入完后回车\033[0m'
-sudo mkdir -p ${HOMEBREW_PREFIX}/Homebrew/Library/Taps/homebrew/homebrew-cask
-sudo git clone https://mirrors.ustc.edu.cn/homebrew-cask.git ${HOMEBREW_PREFIX}/Homebrew/Library/Taps/homebrew/homebrew-cask/
-JudgeSuccess
 echo '==> 删除之前brew环境，重新创建
 \033[1;36m此处如果显示Password表示需要再次输入开机密码，输入完后回车\033[0m'
 sudo rm -rf /Users/$(whoami)/Library/Caches/Homebrew/
@@ -150,6 +139,20 @@ for dir in "${directories[@]}"; do
   fi
   sudo chown -R $(whoami) ${HOMEBREW_PREFIX}/${dir}
 done
+echo '==> 创建brew的替身'
+find ${HOMEBREW_PREFIX}/bin -name brew -exec sudo rm -f {} \;
+sudo ln -s ${HOMEBREW_PREFIX}/Homebrew/bin/brew ${HOMEBREW_PREFIX}/bin/brew
+JudgeSuccess
+echo '==> 克隆Homebrew Core(224M+) 
+\033[1;36m此处如果显示Password表示需要再次输入开机密码，输入完后回车\033[0m'
+sudo mkdir -p ${HOMEBREW_PREFIX}/Homebrew/Library/Taps/homebrew/homebrew-core
+sudo git clone https://mirrors.ustc.edu.cn/homebrew-core.git ${HOMEBREW_PREFIX}/Homebrew/Library/Taps/homebrew/homebrew-core/
+JudgeSuccess
+echo '==> 克隆Homebrew Cask(248M+) 类似AppStore 
+\033[1;36m此处如果显示Password表示需要再次输入开机密码，输入完后回车\033[0m'
+sudo mkdir -p ${HOMEBREW_PREFIX}/Homebrew/Library/Taps/homebrew/homebrew-cask
+sudo git clone https://mirrors.ustc.edu.cn/homebrew-cask.git ${HOMEBREW_PREFIX}/Homebrew/Library/Taps/homebrew/homebrew-cask/
+JudgeSuccess
 echo '==> 配置国内下载地址'
 echo 'export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles' >> ~/.zshrc
 echo 'export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles' >> ~/.bash_profile
