@@ -192,6 +192,6 @@ else
 
         查找命令安装的位置：which brew（brew可以换成任何命令，包括brew安装的）
 
-    \033[1;32m  https://zhuanlan.zhihu.com/p/111014448  欢迎来给点个赞，哈哈哈\033[0m
+    \033[1;32m  https://zhuanlan.zhihu.com/p/111014448  欢迎来给点个赞\033[0m
     "
 fi
