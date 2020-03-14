@@ -7,7 +7,12 @@ JudgeSuccess()
 
     fi
 }
-
+echo '
+              \033[1;32m开始执行Ruby自动升级程序\033[0m
+             \033[1;36m[cunkai.wang@foxmail.com]\033[0m
+               ['$TIME']
+       \033[1;36mhttps://zhuanlan.zhihu.com/p/113176932\033[0m
+'
 brew install ruby
 JudgeSuccess
 export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"
