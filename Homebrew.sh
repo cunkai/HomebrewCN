@@ -111,17 +111,6 @@ echo '==> 通过命令删除之前的brew、创建一个新的Homebrew文件夹
 # 让环境暂时纯粹，重启终端后恢复
 export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 RmCreate ${HOMEBREW_REPOSITORY}
-echo '==> 克隆Homebrew基本文件(32M+)'
-sudo git --version
-if [ $? -ne 0 ];then
-  sudo rm -rf "/Library/Developer/CommandLineTools/"
-  echo '\033[1;36m安装Git\033[0m后再运行此脚本，\033[1;31m在系统弹窗中点击“安装”按钮
-如果没有弹窗的老系统，需要自己下载安装：https://git-scm.com/downloads \033[0m'
-  xcode-select --install
-  exit 0
-fi
-sudo git clone https://mirrors.ustc.edu.cn/brew.git ${HOMEBREW_REPOSITORY}
-JudgeSuccess
 echo '==> 删除之前brew环境，重新创建
 \033[1;36m此处如果显示Password表示需要再次输入开机密码，输入完后回车\033[0m'
 sudo rm -rf /Users/$(whoami)/Library/Caches/Homebrew/
@@ -139,6 +128,17 @@ for dir in "${directories[@]}"; do
   fi
   sudo chown -R $(whoami) ${HOMEBREW_PREFIX}/${dir}
 done
+echo '==> 克隆Homebrew基本文件(32M+)'
+sudo git --version
+if [ $? -ne 0 ];then
+  sudo rm -rf "/Library/Developer/CommandLineTools/"
+  echo '\033[1;36m安装Git\033[0m后再运行此脚本，\033[1;31m在系统弹窗中点击“安装”按钮
+如果没有弹窗的老系统，需要自己下载安装：https://git-scm.com/downloads \033[0m'
+  xcode-select --install
+  exit 0
+fi
+sudo git clone https://mirrors.ustc.edu.cn/brew.git ${HOMEBREW_REPOSITORY}
+JudgeSuccess
 echo '==> 创建brew的替身'
 find ${HOMEBREW_PREFIX}/bin -name brew -exec sudo rm -f {} \;
 sudo ln -s ${HOMEBREW_PREFIX}/Homebrew/bin/brew ${HOMEBREW_PREFIX}/bin/brew
