@@ -161,6 +161,7 @@ source ~/.bash_profile
 echo '
 ==> 安装完成，brew版本
 '
+sudo chown -R $(whoami) ${HOMEBREW_REPOSITORY}
 brew -v
 echo '
 ==> brew update
