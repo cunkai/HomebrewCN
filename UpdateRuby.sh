@@ -6,6 +6,30 @@ if [[ "$(uname)" = "Linux" ]]; then
   HOMEBREW_ON_LINUX=1
 fi
 
+# 如果Mac os系统 路径： /usr/local .
+# 如果Linux /home/linuxbrew/.linuxbrew
+if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
+  HOMEBREW_PREFIX="/usr/local"
+  HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
+  HOMEBREW_CACHE="${HOME}/Library/Caches/Homebrew"
+
+  STAT="stat -f"
+  CHOWN="/usr/sbin/chown"
+  CHGRP="/usr/bin/chgrp"
+  GROUP="admin"
+else
+  HOMEBREW_PREFIX="/home/linuxbrew/.linuxbrew"
+  HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
+  HOMEBREW_CACHE="${HOME}/.cache/Homebrew"
+
+  STAT="stat --printf"
+  CHOWN="/bin/chown"
+  CHGRP="/bin/chgrp"
+  GROUP="$(id -gn)"
+fi
+
+HOMEBREW_CELLAR="${HOMEBREW_PREFIX}/Cellar/ruby"
+
 TIME=$(date "+%Y-%m-%d %H:%M:%S")
 
 HOMEBREW_CACHES='/Users/a2007/Library/Caches/Homebrew'
@@ -118,20 +142,23 @@ echo '==> 通过命令删除之前的缓存
 (如果就是不想设置密码，自行百度mac sudo免密码)
 \033[1;36m请输入开机密码，输入过程不显示，输入完后回车\033[0m'
 RmCreate ${HOMEBREW_CACHES}
-
+sudo chown -R $(whoami) ${HOMEBREW_REPOSITORY}
 #如果系统版本太低，切换brew版本。
 if version_gt "$macos_version" "10.13"; then
-    echo "你的系统比较新，不用切换brew版本，将直接开始安装Ruby"
+    echo "$macos_version"
 else
     cd $(brew —repo)
     git_commit
     sudo git checkou master
     sudo git branch -D cunkai
+    echo '==> 切换brew版本到2.1.9'
     sudo git checkout -b cunkai 2.1.9
+    JudgeSuccess
     sudo git branch
     echo '\033[1;36m开始下载ruby，老系统报gem错不用管
     等ruby下载完成更新后，gem也会一起更新版本\033[0m'
 fi
+RmCreate $HOMEBREW_CELLAR
 brew install ruby
 JudgeSuccess
 export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"
@@ -157,7 +184,9 @@ else
     cd $(brew —repo)
     sudo git branch
     git_commit
+    echo '==> 切换brew到最新版本'
     sudo git checkout master
+    JudgeSuccess
     sudo git branch -D cunkai
     sudo git branch
     brew -v
