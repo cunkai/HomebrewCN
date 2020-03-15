@@ -150,13 +150,15 @@ else
     cd $(brew --repo)
     git_commit
     sudo git checkout master
+    sudo chown -R $(whoami) ${HOMEBREW_REPOSITORY}
     sudo git branch -D cunkai
     echo '==> 切换brew版本到2.1.9'
     sudo git checkout -b cunkai 2.1.9
     JudgeSuccess
+    sudo chown -R $(whoami) ${HOMEBREW_REPOSITORY}
     sudo git branch
     echo '\033[1;36m开始下载ruby，老系统报gem错不用管
-    等ruby下载完成更新后，gem也会一起更新版本\033[0m'
+等ruby下载完成更新后，gem也会一起更新版本\033[0m'
 fi
 RmCreate $HOMEBREW_CELLAR
 brew install ruby
@@ -187,6 +189,7 @@ else
     echo '==> 切换brew到最新版本'
     sudo git checkout master
     JudgeSuccess
+    sudo chown -R $(whoami) ${HOMEBREW_REPOSITORY}
     sudo git branch -D cunkai
     sudo git branch
     brew -v
