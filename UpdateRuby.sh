@@ -141,7 +141,8 @@ echo '==> 通过命令删除之前的缓存
 (设置开机密码：在左上角苹果图标->系统偏好设置->用户与群组->更改密码)
 (如果就是不想设置密码，自行百度mac sudo免密码)
 \033[1;36m请输入开机密码，输入过程不显示，输入完后回车\033[0m'
-RmCreate ${HOMEBREW_CACHES}
+RmCreate $HOMEBREW_CACHES
+RmCreate $HOMEBREW_CELLAR
 sudo chown -R $(whoami) ${HOMEBREW_REPOSITORY}
 #如果系统版本太低，切换brew版本。
 if version_gt "$macos_version" "10.13"; then
@@ -157,11 +158,10 @@ else
     JudgeSuccess
     sudo chown -R $(whoami) ${HOMEBREW_REPOSITORY}
     sudo git branch
-    echo '\033[1;36m开始下载ruby，老系统报gem错不用管
-等ruby下载完成更新后，gem也会一起更新版本\033[0m'
+    echo '\033[1;36m检测到你的系统比较老，这里报Gem的错正常。
+等ruby下载完成更新后，Gem也会一起更新版本\033[0m'
 fi
-RmCreate $HOMEBREW_CELLAR
-brew install ruby
+brew install rubyr
 JudgeSuccess
 export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"
 export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include"
