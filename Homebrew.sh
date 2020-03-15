@@ -28,6 +28,14 @@ else
   GROUP="$(id -gn)"
 fi
 
+major_minor() {
+  echo "${1%%.*}.$(x="${1#*.}"; echo "${x%%.*}")"
+}
+#获取系统版本
+if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
+  macos_version="$(major_minor "$(/usr/bin/sw_vers -productVersion)")"
+fi
+
 TIME=$(date "+%Y-%m-%d %H:%M:%S")
 
 JudgeSuccess()
@@ -104,6 +112,7 @@ echo '
                ['$TIME']
        \033[1;36mhttps://zhuanlan.zhihu.com/p/111014448\033[0m
 '
+sw_vers
 echo '==> 通过命令删除之前的brew、创建一个新的Homebrew文件夹
 (设置开机密码：在左上角苹果图标->系统偏好设置->用户与群组->更改密码)
 (如果就是不想设置密码，自行百度mac sudo免密码)
