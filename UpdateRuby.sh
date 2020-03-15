@@ -32,7 +32,7 @@ HOMEBREW_CELLAR="${HOMEBREW_PREFIX}/Cellar/ruby"
 
 TIME=$(date "+%Y-%m-%d %H:%M:%S")
 
-HOMEBREW_CACHES='/Users/a2007/Library/Caches/Homebrew'
+HOMEBREW_CACHES="/Users/$(whoami)/Library/Caches/Homebrew"
 
 JudgeSuccess()
 {
