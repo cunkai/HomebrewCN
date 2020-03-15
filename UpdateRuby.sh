@@ -147,7 +147,7 @@ sudo chown -R $(whoami) ${HOMEBREW_REPOSITORY}
 if version_gt "$macos_version" "10.13"; then
     echo "$macos_version"
 else
-    cd $(brew —repo)
+    cd $(brew —-repo)
     git_commit
     sudo git checkou master
     sudo git branch -D cunkai
