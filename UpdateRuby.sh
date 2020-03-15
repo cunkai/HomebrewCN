@@ -120,7 +120,7 @@ echo '==> 通过命令删除之前的缓存
 RmCreate ${HOMEBREW_CACHES}
 
 #如果系统版本太低，切换brew版本。
-if version_lt "$version_gt" "10.13"; then
+if version_gt "$macos_version" "10.13"; then
     echo "你的系统比较新，不用切换brew版本，将直接开始安装Ruby"
 else
     cd $(brew —repo)
