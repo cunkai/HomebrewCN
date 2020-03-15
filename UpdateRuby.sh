@@ -149,7 +149,7 @@ if version_gt "$macos_version" "10.13"; then
 else
     cd $(brew --repo)
     git_commit
-    sudo git checkou master
+    sudo git checkout master
     sudo git branch -D cunkai
     echo '==> 切换brew版本到2.1.9'
     sudo git checkout -b cunkai 2.1.9
