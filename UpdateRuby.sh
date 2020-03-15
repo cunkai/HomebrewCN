@@ -161,8 +161,14 @@ else
     echo '\033[1;36m检测到你的系统比较老，这里报Gem的错正常。
 等ruby下载完成更新后，Gem也会一起更新版本\033[0m'
 fi
-brew install rubyr
-JudgeSuccess
+brew install ruby
+if [ $? -ne 0 ];then
+    echo '\033[1;31m此步骤失败，检查网络\033[0m'
+    exit 0
+else
+    echo "\033[1;32m此步骤成功\033[0m"
+
+fi
 export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"
 export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include"
 export LDFLAGS="-L/usr/local/opt/readline/lib"
