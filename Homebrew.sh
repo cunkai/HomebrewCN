@@ -106,6 +106,34 @@ RmCreate()
     CreateFolder $1
 }
 
+#获取前面两个.的数据
+major_minor() {
+  echo "${1%%.*}.$(x="${1#*.}"; echo "${x%%.*}")"
+}
+#获取系统版本
+if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
+  macos_version="$(major_minor "$(/usr/bin/sw_vers -productVersion)")"
+fi
+
+#git提交
+git_commit(){
+    git add .
+    git commit -m "your del"
+}
+
+#version_gt 判断$1是否大于$2
+version_gt() {
+  [[ "${1%.*}" -gt "${2%.*}" ]] || [[ "${1%.*}" -eq "${2%.*}" && "${1#*.}" -gt "${2#*.}" ]]
+}
+#version_ge 判断$1是否大于等于$2
+version_ge() {
+  [[ "${1%.*}" -gt "${2%.*}" ]] || [[ "${1%.*}" -eq "${2%.*}" && "${1#*.}" -ge "${2#*.}" ]]
+}
+#version_lt 判断$1是否小于$2
+version_lt() {
+  [[ "${1%.*}" -lt "${2%.*}" ]] || [[ "${1%.*}" -eq "${2%.*}" && "${1#*.}" -lt "${2#*.}" ]]
+}
+
 echo '
               \033[1;32m开始执行Brew自动安装程序\033[0m
              \033[1;36m[cunkai.wang@foxmail.com]\033[0m
@@ -197,6 +225,14 @@ source ~/.bash_profile
 echo '
 ==> 安装完成，brew版本
 '
+#判断系统版本
+if version_gt "$macos_version" "10.13"; then
+    echo "$macos_version"
+else
+    echo '\033[1;31m检测到你的系统比较老，这里报Gem的错
+需要运行这个文章进行Ruby和Gem的升级 https://zhuanlan.zhihu.com/p/113176932 \033[0m'
+fi
+
 sudo chown -R $(whoami) ${HOMEBREW_REPOSITORY}
 brew -v
 echo '
