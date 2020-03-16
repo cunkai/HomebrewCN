@@ -1,41 +1,23 @@
 #HomeBrew自动安装脚本
 #cunkai.wang@foxmail.com
+#路径表.
+HOMEBREW_PREFIX="/usr/local"
+HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
+HOMEBREW_CACHE="${HOME}/Library/Caches/Homebrew"
 
-# 判断系统是否为Linux
-if [[ "$(uname)" = "Linux" ]]; then
-  HOMEBREW_ON_LINUX=1
-fi
+STAT="stat -f"
+CHOWN="/usr/sbin/chown"
+CHGRP="/usr/bin/chgrp"
+GROUP="admin"
 
-# 如果Mac os系统 路径： /usr/local .
-# 如果Linux /home/linuxbrew/.linuxbrew
-if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-  HOMEBREW_PREFIX="/usr/local"
-  HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
-  HOMEBREW_CACHE="${HOME}/Library/Caches/Homebrew"
-
-  STAT="stat -f"
-  CHOWN="/usr/sbin/chown"
-  CHGRP="/usr/bin/chgrp"
-  GROUP="admin"
-else
-  HOMEBREW_PREFIX="/home/linuxbrew/.linuxbrew"
-  HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
-  HOMEBREW_CACHE="${HOME}/.cache/Homebrew"
-
-  STAT="stat --printf"
-  CHOWN="/bin/chown"
-  CHGRP="/bin/chgrp"
-  GROUP="$(id -gn)"
-fi
-
+#获取前面两个.的数据
 major_minor() {
   echo "${1%%.*}.$(x="${1#*.}"; echo "${x%%.*}")"
 }
-#获取系统版本
-if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-  macos_version="$(major_minor "$(/usr/bin/sw_vers -productVersion)")"
-fi
 
+#获取系统版本
+macos_version="$(major_minor "$(/usr/bin/sw_vers -productVersion)")"
+#获取系统时间
 TIME=$(date "+%Y-%m-%d %H:%M:%S")
 
 JudgeSuccess()
@@ -54,8 +36,8 @@ have_sudo_access() {
     HAVE_SUDO_ACCESS="$?"
   fi
 
-  if [[ -z "${HOMEBREW_ON_LINUX-}" ]] && [[ "$HAVE_SUDO_ACCESS" -ne 0 ]]; then
-    echo "Need sudo access on macOS!"
+  if [[ "$HAVE_SUDO_ACCESS" -ne 0 ]]; then
+    echo "获取权限失败!"
   fi
 
   return "$HAVE_SUDO_ACCESS"
@@ -105,15 +87,6 @@ RmCreate()
     sudo rm -rf $1
     CreateFolder $1
 }
-
-#获取前面两个.的数据
-major_minor() {
-  echo "${1%%.*}.$(x="${1#*.}"; echo "${x%%.*}")"
-}
-#获取系统版本
-if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-  macos_version="$(major_minor "$(/usr/bin/sw_vers -productVersion)")"
-fi
 
 #git提交
 git_commit(){

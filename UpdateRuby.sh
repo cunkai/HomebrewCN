@@ -1,32 +1,14 @@
 #UpdateRuby自动升级脚本
 #cunkai.wang@foxmail.com
+# 路径表.
+HOMEBREW_PREFIX="/usr/local"
+HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
+HOMEBREW_CACHE="${HOME}/Library/Caches/Homebrew"
 
-# 判断系统是否为Linux
-if [[ "$(uname)" = "Linux" ]]; then
-  HOMEBREW_ON_LINUX=1
-fi
-
-# 如果Mac os系统 路径： /usr/local .
-# 如果Linux /home/linuxbrew/.linuxbrew
-if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-  HOMEBREW_PREFIX="/usr/local"
-  HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
-  HOMEBREW_CACHE="${HOME}/Library/Caches/Homebrew"
-
-  STAT="stat -f"
-  CHOWN="/usr/sbin/chown"
-  CHGRP="/usr/bin/chgrp"
-  GROUP="admin"
-else
-  HOMEBREW_PREFIX="/home/linuxbrew/.linuxbrew"
-  HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
-  HOMEBREW_CACHE="${HOME}/.cache/Homebrew"
-
-  STAT="stat --printf"
-  CHOWN="/bin/chown"
-  CHGRP="/bin/chgrp"
-  GROUP="$(id -gn)"
-fi
+STAT="stat -f"
+CHOWN="/usr/sbin/chown"
+CHGRP="/usr/bin/chgrp"
+GROUP="admin"
 
 HOMEBREW_CELLAR="${HOMEBREW_PREFIX}/Cellar/ruby"
 
@@ -50,8 +32,8 @@ have_sudo_access() {
     HAVE_SUDO_ACCESS="$?"
   fi
 
-  if [[ -z "${HOMEBREW_ON_LINUX-}" ]] && [[ "$HAVE_SUDO_ACCESS" -ne 0 ]]; then
-    echo "Need sudo access on macOS!"
+  if [[ "$HAVE_SUDO_ACCESS" -ne 0 ]]; then
+    echo "权限获取失败!！！"
   fi
 
   return "$HAVE_SUDO_ACCESS"
@@ -107,9 +89,7 @@ major_minor() {
   echo "${1%%.*}.$(x="${1#*.}"; echo "${x%%.*}")"
 }
 #获取系统版本
-if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-  macos_version="$(major_minor "$(/usr/bin/sw_vers -productVersion)")"
-fi
+macos_version="$(major_minor "$(/usr/bin/sw_vers -productVersion)")"
 
 #git提交
 git_commit(){
@@ -180,7 +160,6 @@ if [ $? -ne 0 ];then
     exit 0
 else
     echo "\033[1;32m此步骤成功\033[0m"
-
 fi
 export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"
 export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include"
