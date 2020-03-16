@@ -203,8 +203,8 @@ echo '
 if version_gt "$macos_version" "10.13"; then
     echo "$macos_version"
 else
-    echo '\033[1;31m检测到你的系统比较老，这里报Gem的错
-需要运行这个文章进行Ruby和Gem的升级 https://zhuanlan.zhihu.com/p/113176932 \033[0m'
+    echo '\033[1;31m检测到你的系统比较老，这里如果报Gem的错
+需要 ctrl+c 后运行这个文章里面的升级脚本 https://zhuanlan.zhihu.com/p/113176932 \033[0m'
 fi
 
 sudo chown -R $(whoami) ${HOMEBREW_REPOSITORY}

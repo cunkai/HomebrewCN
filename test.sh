@@ -1,4 +1,7 @@
-echo "test"
+echo "test" 
+echo $0 
+echo $1 
+echo $2
 read TheSomething
 
 echo $TheSomething
