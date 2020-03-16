@@ -41,7 +41,7 @@ TIME=$(date "+%Y-%m-%d %H:%M:%S")
 JudgeSuccess()
 {
     if [ $? -ne 0 ];then
-        echo '\033[1;31m此步骤失败\033[0m'
+        echo '\033[1;31m此步骤失败 '$1'\033[0m'
     else
         echo "\033[1;32m此步骤成功\033[0m"
 
@@ -202,7 +202,7 @@ if [ $? -ne 0 ];then
   exit 0
 fi
 sudo git clone $USER_BREW_GIT ${HOMEBREW_REPOSITORY}
-JudgeSuccess
+JudgeSuccess 尝试切换下载源或者网络
 echo '==> 创建brew的替身'
 find ${HOMEBREW_PREFIX}/bin -name brew -exec sudo rm -f {} \;
 sudo ln -s ${HOMEBREW_PREFIX}/Homebrew/bin/brew ${HOMEBREW_PREFIX}/bin/brew
@@ -211,12 +211,12 @@ echo '==> 克隆Homebrew Core(224M+)
 \033[1;36m此处如果显示Password表示需要再次输入开机密码，输入完后回车\033[0m'
 sudo mkdir -p ${HOMEBREW_PREFIX}/Homebrew/Library/Taps/homebrew/homebrew-core
 sudo git clone $USER_CORE_GIT ${HOMEBREW_PREFIX}/Homebrew/Library/Taps/homebrew/homebrew-core/
-JudgeSuccess
+JudgeSuccess 尝试切换下载源或者网络
 echo '==> 克隆Homebrew Cask(248M+) 类似AppStore 
 \033[1;36m此处如果显示Password表示需要再次输入开机密码，输入完后回车\033[0m'
 sudo mkdir -p ${HOMEBREW_PREFIX}/Homebrew/Library/Taps/homebrew/homebrew-cask
 sudo git clone $USER_CASK_GIT ${HOMEBREW_PREFIX}/Homebrew/Library/Taps/homebrew/homebrew-cask/
-JudgeSuccess
+JudgeSuccess 尝试切换下载源或者网络
 echo '==> 配置国内下载地址'
 echo 'export HOMEBREW_BOTTLE_DOMAIN='${USER_HOMEBREW_BOTTLE_DOMAIN} >> ~/.zshrc
 echo 'export HOMEBREW_BOTTLE_DOMAIN='${USER_HOMEBREW_BOTTLE_DOMAIN} >> ~/.bash_profile

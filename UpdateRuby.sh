@@ -37,7 +37,7 @@ HOMEBREW_CACHES="/Users/$(whoami)/Library/Caches/Homebrew"
 JudgeSuccess()
 {
     if [ $? -ne 0 ];then
-        echo '\033[1;31m此步骤失败\033[0m'
+        echo '\033[1;31m此步骤失败 '$1'\033[0m'
     else
         echo "\033[1;32m此步骤成功\033[0m"
 
@@ -176,7 +176,7 @@ else
 fi
 brew install ruby
 if [ $? -ne 0 ];then
-    echo '\033[1;31m此步骤失败，检查网络\033[0m'
+    echo '\033[1;31m此步骤失败，尝试切换下载源或者网络\033[0m'
     exit 0
 else
     echo "\033[1;32m此步骤成功\033[0m"
