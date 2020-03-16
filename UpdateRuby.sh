@@ -136,7 +136,19 @@ echo '
                ['$TIME']
        \033[1;36mhttps://zhuanlan.zhihu.com/p/113176932\033[0m
 '
-sw_vers
+#选择一个下载源
+echo '\033[1;32m
+请选择一个下载镜像，例如清华大学，输入1回车。
+(选择后，下载速度觉得慢可以ctrl+c重新运行脚本选择)
+1、清华大学下载源 2、中科大下载源\033[0m'
+read -p '输入序号回车 :' MY_DOWN_NUM
+if [[ "$MY_DOWN_NUM" -eq "2" ]];then
+echo "你选择了中国科学技术大学下载源"
+export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles
+else
+echo "你选择了清华大学下载源"
+export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
+fi
 echo '==> 通过命令删除之前的缓存
 (设置开机密码：在左上角苹果图标->系统偏好设置->用户与群组->更改密码)
 (如果就是不想设置密码，自行百度mac sudo免密码)

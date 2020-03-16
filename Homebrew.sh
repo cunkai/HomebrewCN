@@ -112,7 +112,34 @@ echo '
                ['$TIME']
        \033[1;36mhttps://zhuanlan.zhihu.com/p/111014448\033[0m
 '
-sw_vers
+#选择一个下载源
+echo '\033[1;32m
+请选择一个下载镜像，例如清华大学，输入1回车。
+(选择后，下载速度觉得慢可以ctrl+c重新运行脚本选择)
+1、清华大学下载源 2、中科大下载源\033[0m'
+read -p '输入序号回车 :' MY_DOWN_NUM
+if [[ "$MY_DOWN_NUM" -eq "2" ]];then
+echo "你选择了中国科学技术大学下载源"
+#HomeBrew 下载源 install
+USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles
+#HomeBrew基础框架
+USER_BREW_GIT=https://mirrors.ustc.edu.cn/brew.git
+#HomeBrew Core
+USER_CORE_GIT=https://mirrors.ustc.edu.cn/homebrew-core.git
+#HomeBrew Cask
+USER_CASK_GIT=https://mirrors.ustc.edu.cn/homebrew-cask.git
+else
+echo "你选择了清华大学下载源"
+USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
+#HomeBrew基础框架
+USER_BREW_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git
+#HomeBrew Core
+USER_CORE_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git
+#HomeBrew Cask
+USER_CASK_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask.git
+USER_CASK_FONTS_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask-fonts.git
+USER_CASK_DRIVERS_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask-drivers.git
+fi
 echo '==> 通过命令删除之前的brew、创建一个新的Homebrew文件夹
 (设置开机密码：在左上角苹果图标->系统偏好设置->用户与群组->更改密码)
 (如果就是不想设置密码，自行百度mac sudo免密码)
@@ -145,7 +172,7 @@ if [ $? -ne 0 ];then
   xcode-select --install
   exit 0
 fi
-sudo git clone https://mirrors.ustc.edu.cn/brew.git ${HOMEBREW_REPOSITORY}
+sudo git clone $USER_BREW_GIT ${HOMEBREW_REPOSITORY}
 JudgeSuccess
 echo '==> 创建brew的替身'
 find ${HOMEBREW_PREFIX}/bin -name brew -exec sudo rm -f {} \;
@@ -154,16 +181,16 @@ JudgeSuccess
 echo '==> 克隆Homebrew Core(224M+) 
 \033[1;36m此处如果显示Password表示需要再次输入开机密码，输入完后回车\033[0m'
 sudo mkdir -p ${HOMEBREW_PREFIX}/Homebrew/Library/Taps/homebrew/homebrew-core
-sudo git clone https://mirrors.ustc.edu.cn/homebrew-core.git ${HOMEBREW_PREFIX}/Homebrew/Library/Taps/homebrew/homebrew-core/
+sudo git clone $USER_CORE_GIT ${HOMEBREW_PREFIX}/Homebrew/Library/Taps/homebrew/homebrew-core/
 JudgeSuccess
 echo '==> 克隆Homebrew Cask(248M+) 类似AppStore 
 \033[1;36m此处如果显示Password表示需要再次输入开机密码，输入完后回车\033[0m'
 sudo mkdir -p ${HOMEBREW_PREFIX}/Homebrew/Library/Taps/homebrew/homebrew-cask
-sudo git clone https://mirrors.ustc.edu.cn/homebrew-cask.git ${HOMEBREW_PREFIX}/Homebrew/Library/Taps/homebrew/homebrew-cask/
+sudo git clone $USER_CASK_GIT ${HOMEBREW_PREFIX}/Homebrew/Library/Taps/homebrew/homebrew-cask/
 JudgeSuccess
 echo '==> 配置国内下载地址'
-echo 'export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles' >> ~/.zshrc
-echo 'export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles' >> ~/.bash_profile
+echo 'export HOMEBREW_BOTTLE_DOMAIN='${USER_HOMEBREW_BOTTLE_DOMAIN} >> ~/.zshrc
+echo 'export HOMEBREW_BOTTLE_DOMAIN='${USER_HOMEBREW_BOTTLE_DOMAIN} >> ~/.bash_profile
 JudgeSuccess
 source ~/.zshrc
 source ~/.bash_profile
@@ -203,7 +230,9 @@ else
         卸载软件：brew cask uninstall visual-studio-code（其中visual-studio-code替换为要卸载的软件名字，例如google-chrome）
 
         查找命令安装的位置：which brew（brew可以换成任何命令，包括brew安装的）
+\033[1;32m
+现在可以输入命令open ~/.zshrc 或者 open ~/.bash_profile 整理一下重复的语句(运行 echo \$SHELL 可以查看应该打开那一个文件修改)
 
-    \033[1;32m  https://zhuanlan.zhihu.com/p/111014448  欢迎来给点个赞\033[0m
+        https://zhuanlan.zhihu.com/p/111014448  欢迎来给点个赞\033[0m
     "
 fi
