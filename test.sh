@@ -1,3 +1,8 @@
-read -p 'dfdfd: ' dddd
+echo "test"
+read TheSomething
 
-echo $dddd
+echo $TheSomething
+
+read "brave?Here be dragons. Continue?"
+
+echo $brave
