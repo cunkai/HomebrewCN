@@ -144,29 +144,30 @@ echo '
 echo '\033[1;32m
 请选择一个下载镜像，例如清华大学，输入1回车。
 (选择后，下载速度觉得慢可以ctrl+c重新运行脚本选择)
-1、清华大学下载源 2、中科大下载源\033[0m'
+
+1、中科大下载源 2、清华大学下载源\033[0m'
 read "MY_DOWN_NUM?请输入序号: "
 if [[ "$MY_DOWN_NUM" -eq "2" ]];then
-echo "你选择了中国科学技术大学下载源"
-#HomeBrew 下载源 install
-USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles
-#HomeBrew基础框架
-USER_BREW_GIT=https://mirrors.ustc.edu.cn/brew.git
-#HomeBrew Core
-USER_CORE_GIT=https://mirrors.ustc.edu.cn/homebrew-core.git
-#HomeBrew Cask
-USER_CASK_GIT=https://mirrors.ustc.edu.cn/homebrew-cask.git
+  echo "你选择了清华大学下载源"
+  USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
+  #HomeBrew基础框架
+  USER_BREW_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git
+  #HomeBrew Core
+  USER_CORE_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git
+  #HomeBrew Cask
+  USER_CASK_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask.git
+  USER_CASK_FONTS_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask-fonts.git
+  USER_CASK_DRIVERS_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask-drivers.git
 else
-echo "你选择了清华大学下载源"
-USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
-#HomeBrew基础框架
-USER_BREW_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git
-#HomeBrew Core
-USER_CORE_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git
-#HomeBrew Cask
-USER_CASK_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask.git
-USER_CASK_FONTS_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask-fonts.git
-USER_CASK_DRIVERS_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask-drivers.git
+  echo "你选择了中国科学技术大学下载源"
+  #HomeBrew 下载源 install
+  USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles
+  #HomeBrew基础框架
+  USER_BREW_GIT=https://mirrors.ustc.edu.cn/brew.git
+  #HomeBrew Core
+  USER_CORE_GIT=https://mirrors.ustc.edu.cn/homebrew-core.git
+  #HomeBrew Cask
+  USER_CASK_GIT=https://mirrors.ustc.edu.cn/homebrew-cask.git
 fi
 echo '==> 通过命令删除之前的brew、创建一个新的Homebrew文件夹
 (设置开机密码：在左上角苹果图标->系统偏好设置->用户与群组->更改密码)
