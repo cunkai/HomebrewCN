@@ -3,7 +3,6 @@
 # 路径表.
 HOMEBREW_PREFIX="/usr/local"
 HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
-HOMEBREW_CACHE="${HOME}/Library/Caches/Homebrew"
 
 STAT="stat -f"
 CHOWN="/usr/sbin/chown"
@@ -17,6 +16,9 @@ TIME=$(date "+%Y-%m-%d %H:%M:%S")
 HOMEBREW_CACHES="/Users/$(whoami)/Library/Caches/Homebrew"
 #用户输入的brew版本号
 USER_BREW_VERSION=$0
+echo $0
+echo $1
+echo $2
 
 JudgeSuccess()
 {
@@ -101,6 +103,7 @@ git_commit(){
 
 #回退brew到git某个版本
 git_back(){
+  cd $HOMEBREW_PREFIX
   cd $(brew --repo)
   git_commit
   sudo git checkout master
@@ -222,6 +225,7 @@ JudgeSuccess
 if version_lt "$version_gt" "10.3"; then
     echo ""
 else
+    cd $HOMEBREW_PREFIX
     cd $(brew --repo)
     sudo git branch
     git_commit
