@@ -107,6 +107,19 @@ version_lt() {
   [[ "${1%.*}" -lt "${2%.*}" ]] || [[ "${1%.*}" -eq "${2%.*}" && "${1#*.}" -lt "${2#*.}" ]]
 }
 
+#一些警告判断
+warning_if(){
+  git_proxy=$(git config --global https.proxy)
+  if [[ -z "$git_proxy" ]]; then
+  echo "未发现Git代理（属于正常状态）"
+  else
+  echo "\033[1;33m
+      提示：发现你电脑设置了Git代理，如果后面Git报错，请运行下面这句话：
+              git config --global --unset https.proxy
+  "
+  fi
+}
+
 echo '
               \033[1;32m开始执行Brew自动安装程序\033[0m
              \033[1;36m[cunkai.wang@foxmail.com]\033[0m
@@ -165,6 +178,7 @@ for dir in "${directories[@]}"; do
   fi
   sudo chown -R $(whoami) ${HOMEBREW_PREFIX}/${dir}
 done
+warning_if
 echo '==> 克隆Homebrew基本文件(32M+)'
 sudo git --version
 if [ $? -ne 0 ];then

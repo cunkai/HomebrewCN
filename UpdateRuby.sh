@@ -15,6 +15,8 @@ HOMEBREW_CELLAR="${HOMEBREW_PREFIX}/Cellar/ruby"
 TIME=$(date "+%Y-%m-%d %H:%M:%S")
 
 HOMEBREW_CACHES="/Users/$(whoami)/Library/Caches/Homebrew"
+#用户输入的brew版本号
+USER_BREW_VERSION=$1
 
 JudgeSuccess()
 {
@@ -94,7 +96,21 @@ macos_version="$(major_minor "$(/usr/bin/sw_vers -productVersion)")"
 #git提交
 git_commit(){
     git add .
-    git commit -m "your del"
+    git commit -m "提交"
+}
+
+#回退brew到git某个版本
+git_back(){
+  cd $(brew --repo)
+  git_commit
+  sudo git checkout master
+  sudo chown -R $(whoami) ${HOMEBREW_REPOSITORY}
+  sudo git branch -D cunkai
+  echo "==> 切换brew版本到$1"
+  sudo git checkout -b cunkai $1
+  JudgeSuccess
+  sudo chown -R $(whoami) ${HOMEBREW_REPOSITORY}
+  sudo git branch
 }
 
 #version_gt 判断$1是否大于$2
@@ -116,6 +132,36 @@ echo '
                ['$TIME']
        \033[1;36mhttps://zhuanlan.zhihu.com/p/113176932\033[0m
 '
+#提示用法
+if [ -z "$USER_BREW_VERSION" ];then
+    echo '
+-> 随着时间，每个系统版本都可能变成老系统；
+所以本脚本可以后置参数，假设回退Brew到2.1.9版本来更新Ruby，如下写法:(当然Brew一定有Git信息才行)
+/bin/zsh -c "$(curl -fsSL https://gitee.com/cunkai/HomebrewCN/raw/master/UpdateRuby.sh)" 2.1.9
+    '
+else
+    echo "你选择回退到brew("$USER_BREW_VERSION") 来更新Ruby和Gem"
+    cd $(brew --repo)
+    #循环tag判断是否输入正确
+    tags='';
+    ifTagInGit=0;
+    for tag in $(git tag);
+    do
+      tags=$tags$tag"  "
+      if [[ $tag == $USER_BREW_VERSION ]]; then
+        ifTagInGit=1
+      fi
+    done
+
+    if [ $ifTagInGit -eq 0 ]; then
+        echo '\033[1;31m
+版本号不正确,下面是正确的版本号：\033[0m'
+        echo $tags
+        echo ''
+    else
+        echo '版本号已匹配'
+    fi
+fi
 #选择一个下载源
 echo '\033[1;32m
 请选择一个下载镜像，例如中科大，输入1回车。
@@ -137,26 +183,21 @@ echo '==> 通过命令删除之前的缓存
 RmCreate $HOMEBREW_CACHES
 RmCreate $HOMEBREW_CELLAR
 sudo chown -R $(whoami) ${HOMEBREW_REPOSITORY}
-#如果系统版本太低，切换brew版本。
-if version_gt "$macos_version" "10.13"; then
-    echo "$macos_version"
+#判断用户是否输入版本号
+if [ -z "$USER_BREW_VERSION" ];then
+  #如果系统版本太低，切换brew版本。
+  if version_gt "$macos_version" "10.13"; then
+      echo "$macos_version"
+  else
+      git_back '2.1.9'
+  fi
 else
-    cd $(brew --repo)
-    git_commit
-    sudo git checkout master
-    sudo chown -R $(whoami) ${HOMEBREW_REPOSITORY}
-    sudo git branch -D cunkai
-    echo '==> 切换brew版本到2.1.9'
-    sudo git checkout -b cunkai 2.1.9
-    JudgeSuccess
-    sudo chown -R $(whoami) ${HOMEBREW_REPOSITORY}
-    sudo git branch
-    echo '\033[1;36m检测到你的系统比较老，这里报Gem的错正常。
-等ruby下载完成更新后，Gem也会一起更新版本\033[0m'
+  #用户输入版本号
+  git_back $USER_BREW_VERSION
 fi
 brew install ruby
 if [ $? -ne 0 ];then
-    echo '\033[1;31m此步骤失败，尝试切换下载源或者网络\033[0m'
+    echo '\033[1;31m此步骤失败，尝试切换下载源 或者 网络 或者 brew版本号\033[0m'
     exit 0
 else
     echo "\033[1;32m此步骤成功\033[0m"
