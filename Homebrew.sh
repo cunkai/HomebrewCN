@@ -217,17 +217,20 @@ echo '
 if version_gt "$macos_version" "10.13"; then
     echo "$macos_version"
 else
-    echo '\033[1;31m检测到你的系统比较老，brew现在正在自动修复中(下载Ruby);
-如果无效，运行这个文章里面的升级脚本 https://zhuanlan.zhihu.com/p/113176932 \033[0m'
+    echo '\033[1;31m检测到你的系统比较老，brew现在正在自动修复中(下载Ruby);'
 fi
 
 sudo chown -R $(whoami) ${HOMEBREW_REPOSITORY}
 brew -v
 if [ $? -ne 0 ];then
     echo '
-    \033[1;31m失败 留言我看到会回复(附带前面提示“此步骤失败”以及它的前6句)
-    https://zhuanlan.zhihu.com/p/111014448
-    或者所有命令截图发到 cunkai.wang@foxmail.com  \033[0m
+    \033[1;31m失败 运行下面两句话重新下载Ruby试试（原因：中科大没有Ruby镜像，下面更换为清华大学下载Ruby）(2020.03.17)：
+
+    export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
+
+    brew -v
+
+    如果显示了brew的版本号，表示安装成功，还不行所有命令截图发到 cunkai.wang@foxmail.com  \033[0m
     '
     exit 0
 fi
