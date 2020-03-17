@@ -231,6 +231,8 @@ if [ $? -ne 0 ];then
     或者所有命令截图发到 cunkai.wang@foxmail.com  \033[0m
     '
     exit 0
+else
+    echo "\033[1;32mBrew前期配置成功\033[0m"
 fi
 echo '
 ==> brew update
