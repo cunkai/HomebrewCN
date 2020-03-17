@@ -16,7 +16,7 @@ TIME=$(date "+%Y-%m-%d %H:%M:%S")
 
 HOMEBREW_CACHES="/Users/$(whoami)/Library/Caches/Homebrew"
 #用户输入的brew版本号
-USER_BREW_VERSION=$1
+USER_BREW_VERSION=$0
 
 JudgeSuccess()
 {
