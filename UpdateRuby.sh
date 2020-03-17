@@ -15,10 +15,13 @@ TIME=$(date "+%Y-%m-%d %H:%M:%S")
 
 HOMEBREW_CACHES="/Users/$(whoami)/Library/Caches/Homebrew"
 #用户输入的brew版本号
-USER_BREW_VERSION=$0
-echo $0
-echo $1
-echo $2
+if [[ $0 == ${0%%.*} ]]
+then
+    echo ""
+else
+    USER_BREW_VERSION=$0
+fi
+
 
 JudgeSuccess()
 {
