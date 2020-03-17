@@ -131,7 +131,7 @@ echo '\033[1;32m
 请选择一个下载镜像，例如中科大，输入1回车。
 (选择后，下载速度觉得慢可以ctrl+c重新运行脚本选择)
 
-1、中科大下载源(建议) 2、清华大学下载源\033[0m'
+1、中科大下载源 2、清华大学下载源\033[0m'
 read "MY_DOWN_NUM?请输入序号: "
 if [[ "$MY_DOWN_NUM" -eq "2" ]];then
   echo "你选择了清华大学下载源"
@@ -221,22 +221,21 @@ else
 fi
 
 sudo chown -R $(whoami) ${HOMEBREW_REPOSITORY}
+#先暂时设置到清华大学源，中科大没有Ruby下载镜像
+HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
 brew -v
 if [ $? -ne 0 ];then
     echo '
-    \033[1;31m失败 运行下面两句话重新下载Ruby试试（原因：中科大没有Ruby镜像，下面更换为清华大学下载Ruby）(2020.03.17)：
-
-    export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
-
-    brew -v
-
-    如果显示了brew的版本号，表示安装成功，还不行所有命令截图发到 cunkai.wang@foxmail.com  \033[0m
+    \033[1;31m失败 留言我看到会回复(附带前面提示“此步骤失败”以及它的前6句)
+    https://zhuanlan.zhihu.com/p/111014448
+    或者所有命令截图发到 cunkai.wang@foxmail.com  \033[0m
     '
     exit 0
 fi
 echo '
 ==> brew update
 '
+HOMEBREW_BOTTLE_DOMAIN=${USER_HOMEBREW_BOTTLE_DOMAIN}
 brew update
 if [ $? -ne 0 ];then
     echo '

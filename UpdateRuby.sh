@@ -14,6 +14,7 @@ HOMEBREW_CELLAR="${HOMEBREW_PREFIX}/Cellar/ruby"
 TIME=$(date "+%Y-%m-%d %H:%M:%S")
 
 HOMEBREW_CACHES="/Users/$(whoami)/Library/Caches/Homebrew"
+
 #用户输入的brew版本号
 if [[ $0 == ${0%%.*} ]]
 then
@@ -21,7 +22,6 @@ then
 else
     USER_BREW_VERSION=$0
 fi
-
 
 JudgeSuccess()
 {
@@ -141,7 +141,7 @@ echo '
 #提示用法
 if [ -z "$USER_BREW_VERSION" ];then
     echo '
--> 随着时间，每个系统版本都可能变成老系统；
+-> 为了防止系统版本和Brew版本不兼容问题；
 所以本\033[1;32m脚本可以后置参数\033[0m，假设回退Brew到2.1.9版本来更新Ruby，如下写法:(当然Brew一定有Git信息才行)
 /bin/zsh -c "$(curl -fsSL https://gitee.com/cunkai/HomebrewCN/raw/master/UpdateRuby.sh)" 2.1.9
     '
@@ -164,6 +164,7 @@ else
 版本号不正确,下面是正确的版本号：\033[0m'
         echo $tags
         echo ''
+        exit 0
     else
         echo '版本号已匹配'
     fi
@@ -191,12 +192,7 @@ RmCreate $HOMEBREW_CELLAR
 sudo chown -R $(whoami) ${HOMEBREW_REPOSITORY}
 #判断用户是否输入版本号
 if [ -z "$USER_BREW_VERSION" ];then
-  #如果系统版本太低，切换brew版本。
-  if version_gt "$macos_version" "10.13"; then
-      echo "$macos_version"
-  else
-      git_back '2.1.9'
-  fi
+  echo "$macos_version"
 else
   #用户输入版本号
   git_back $USER_BREW_VERSION
@@ -225,7 +221,7 @@ JudgeSuccess
 source ~/.bash_profile
 JudgeSuccess
 #系统版本低，切换回去brew版本。
-if version_lt "$version_gt" "10.3"; then
+if [ -z "$USER_BREW_VERSION" ];then
     echo ""
 else
     cd $HOMEBREW_PREFIX
