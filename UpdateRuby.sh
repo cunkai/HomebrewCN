@@ -136,7 +136,7 @@ echo '
 if [ -z "$USER_BREW_VERSION" ];then
     echo '
 -> 随着时间，每个系统版本都可能变成老系统；
-所以本脚本可以后置参数，假设回退Brew到2.1.9版本来更新Ruby，如下写法:(当然Brew一定有Git信息才行)
+所以本\033[1;32m脚本可以后置参数\033[0m，假设回退Brew到2.1.9版本来更新Ruby，如下写法:(当然Brew一定有Git信息才行)
 /bin/zsh -c "$(curl -fsSL https://gitee.com/cunkai/HomebrewCN/raw/master/UpdateRuby.sh)" 2.1.9
     '
 else
@@ -167,7 +167,7 @@ echo '\033[1;32m
 请选择一个下载镜像，例如中科大，输入1回车。
 (选择后，下载速度觉得慢可以ctrl+c重新运行脚本选择)
 
-1、中科大下载源 2、清华大学下载源\033[0m'
+1、中科大下载源 2、清华大学下载源(建议)\033[0m'
 read "MY_DOWN_NUM?请输入序号: "
 if [[ "$MY_DOWN_NUM" -eq "2" ]];then
 echo "你选择了清华大学下载源"
