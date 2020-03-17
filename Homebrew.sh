@@ -217,7 +217,8 @@ echo '
 if version_gt "$macos_version" "10.13"; then
     echo "$macos_version"
 else
-    echo '\033[1;31m检测到你的系统比较老，会有一些报错，请稍等Ruby下载安装;'
+    echo '\033[1;31m检测到你的系统比较老，会有一些报错，请稍等Ruby下载安装;
+    '
 fi
 
 sudo chown -R $(whoami) ${HOMEBREW_REPOSITORY}
