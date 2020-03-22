@@ -178,7 +178,6 @@ for dir in "${directories[@]}"; do
   fi
   sudo chown -R $(whoami) ${HOMEBREW_PREFIX}/${dir}
 done
-warning_if
 echo '==> 克隆Homebrew基本文件(32M+)'
 sudo git --version
 if [ $? -ne 0 ];then
@@ -194,6 +193,7 @@ echo '==> 创建brew的替身'
 find ${HOMEBREW_PREFIX}/bin -name brew -exec sudo rm -f {} \;
 sudo ln -s ${HOMEBREW_PREFIX}/Homebrew/bin/brew ${HOMEBREW_PREFIX}/bin/brew
 JudgeSuccess
+warning_if
 echo '==> 克隆Homebrew Core(224M+) 
 \033[1;36m此处如果显示Password表示需要再次输入开机密码，输入完后回车\033[0m'
 sudo mkdir -p ${HOMEBREW_PREFIX}/Homebrew/Library/Taps/homebrew/homebrew-core
