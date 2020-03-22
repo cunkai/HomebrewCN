@@ -109,13 +109,17 @@ version_lt() {
 
 #一些警告判断
 warning_if(){
-  git_proxy=$(git config --global https.proxy)
-  if [[ -z "$git_proxy" ]]; then
+  git_https_proxy=$(git config --global https.proxy)
+  git_http_proxy=$(git config --global http.proxy)
+  if [[ -z "$git_https_proxy"  &&  -z "$git_http_proxy" ]]; then
   echo "未发现Git代理（属于正常状态）"
   else
   echo "\033[1;33m
-      提示：发现你电脑设置了Git代理，如果后面Git报错，请运行下面这句话：
+      提示：发现你电脑设置了Git代理，如果Git报错，请运行下面两句话：
+
               git config --global --unset https.proxy
+
+              git config --global --unset http.proxy
   "
   fi
 }
