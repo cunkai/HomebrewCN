@@ -127,6 +127,6 @@ warning_if(){
 echo '
               \033[1;32m开始执行Brew自动安装程序\033[0m
              \033[1;36m[cunkai.wang@foxmail.com]\033[0m
-              ['$TIME']['$macos_version']
+        ['$TIME']['$macos_version']
        \033[1;36mhttps://zhuanlan.zhihu.com/p/111014448\033[0m
 '
