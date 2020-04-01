@@ -228,6 +228,8 @@ fi
 sudo chown -R $(whoami) ${HOMEBREW_REPOSITORY}
 #先暂时设置到清华大学源，中科大没有Ruby下载镜像
 HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
+echo 'brew -v
+'
 brew -v
 if [ $? -ne 0 ];then
     echo '
