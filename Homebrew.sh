@@ -127,7 +127,7 @@ warning_if(){
 echo '
               \033[1;32m开始执行Brew自动安装程序\033[0m
              \033[1;36m[cunkai.wang@foxmail.com]\033[0m
-               ['$TIME']
+           ['$TIME']['$macos_version']
        \033[1;36mhttps://zhuanlan.zhihu.com/p/111014448\033[0m
 '
 #选择一个下载源
@@ -235,8 +235,11 @@ if [ $? -ne 0 ];then
     echo '
     \033[1;31m失败 留言我看到会回复(附带前面提示“此步骤失败”以及它的前6句)
     https://zhuanlan.zhihu.com/p/111014448
-    或者所有命令截图发到 cunkai.wang@foxmail.com  \033[0m
+    或者运行全部过程的截图发到 cunkai.wang@foxmail.com （推荐，更好判断） 
     '
+    ls -al /usr/local 
+    echo '--end
+    \033[0m'
     exit 0
 else
     echo "\033[1;32mBrew前期配置成功\033[0m"
