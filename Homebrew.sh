@@ -37,10 +37,16 @@ have_sudo_access() {
   fi
 
   if [[ "$HAVE_SUDO_ACCESS" -ne 0 ]]; then
-    echo "获取权限失败!"
+    echo "\033[1;31m开机密码输入错误，获取权限失败!\033[0m"
   fi
 
   return "$HAVE_SUDO_ACCESS"
+}
+
+
+abort() {
+  printf "%s\n" "$1"
+  exit 1
 }
 
 shell_join() {
@@ -55,7 +61,7 @@ shell_join() {
 
 execute() {
   if ! "$@"; then
-    abort "$(printf "Failed during: %s" "$(shell_join "$@")")"
+    abort "$(printf "\033[1;31m此命令运行失败（再次运行脚本或者手动运行此命令）:sudo %s\033[0m" "$(shell_join "$@")")"
   fi
 }
 
