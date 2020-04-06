@@ -74,7 +74,7 @@ execute_sudo() {
   if have_sudo_access; then
     execute "/usr/bin/sudo" "${args[@]}"
   else
-    execute "${args[@]}"
+    execute "sudo" "${args[@]}"
   fi
 }
 
