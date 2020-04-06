@@ -61,7 +61,7 @@ shell_join() {
 
 execute() {
   if ! "$@"; then
-    abort "$(printf "\033[1;31m此命令运行失败（再次运行脚本或者手动运行此命令）:sudo %s\033[0m" "$(shell_join "$@")")"
+    abort "$(printf "\033[1;31m此命令运行失败（再次运行脚本或者手动运行此命令测试权限）:sudo %s\033[0m" "$(shell_join "$@")")"
   fi
 }
 
