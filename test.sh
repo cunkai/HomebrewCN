@@ -152,7 +152,7 @@ if [[ "$MY_DOWN_NUM" -eq "3" ]];then
   USER_CORE_GIT=https://mirrors.aliyun.com/homebrew/homebrew-core.git
   #HomeBrew Cask
   USER_CASK_GIT=https://mirrors.aliyun.com/homebrew/homebrew-cask.git
-else if [[ "$MY_DOWN_NUM" -eq "2" ]];then
+elif [[ "$MY_DOWN_NUM" -eq "2" ]];then
   echo "你选择了清华大学下载源"
   USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
   #HomeBrew基础框架
