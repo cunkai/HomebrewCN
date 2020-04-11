@@ -84,7 +84,6 @@ execute_sudo()
 #添加文件夹权限
 AddPermission()
 {
-  execute_sudo "/bin/chmod" "-R" "u+rwx" "$1"
   execute_sudo "/bin/chmod" "-R" "a+rwx" "$1"
   execute_sudo "$CHOWN" "$USER" "$1"
   execute_sudo "$CHGRP" "$GROUP" "$1"
@@ -185,8 +184,8 @@ else
   USER_CASK_GIT=https://mirrors.ustc.edu.cn/homebrew-cask.git
 fi
 echo '==> 通过命令删除之前的brew、创建一个新的Homebrew文件夹
-(设置开机密码：在左上角苹果图标->系统偏好设置->用户与群组->更改密码)
-(如果就是不想设置密码，自行百度mac sudo免密码)
+(设置开机密码：在左上角苹果图标->系统偏好设置->"用户与群组"->更改密码)
+(如果提示This incident will be reported. 在"用户与群组"中查看是否管理员)
 \033[1;36m请输入开机密码，输入过程不显示，输入完后回车\033[0m'
 # 让环境暂时纯粹，重启终端后恢复
 export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
