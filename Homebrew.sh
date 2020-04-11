@@ -69,7 +69,8 @@ execute() {
 }
 
 # 管理员运行
-execute_sudo() {
+execute_sudo() 
+{
   local -a args=("$@")
   if [[ -n "${SUDO_ASKPASS-}" ]]; then
     args=("-A" "${args[@]}")
@@ -80,15 +81,20 @@ execute_sudo() {
     execute "sudo" "${args[@]}"
   fi
 }
-
+#添加文件夹权限
+AddPermission()
+{
+  execute_sudo "/bin/chmod" "-R" "a+rwx" "$1"
+  execute_sudo "$CHOWN" "$USER" "$1"
+  execute_sudo "$CHGRP" "$GROUP" "$1"
+}
+#创建文件夹
 CreateFolder()
 {
     echo '-> 创建文件夹' $1
     execute_sudo "/bin/mkdir" "-p" "$1"
     JudgeSuccess
-    execute_sudo "/bin/chmod" "g+rwx" "$1"
-    execute_sudo "$CHOWN" "$USER" "$1"
-    execute_sudo "$CHGRP" "$GROUP" "$1"
+    AddPermission $1
 }
 
 RmCreate()
@@ -142,12 +148,11 @@ echo '
 #选择一个下载源
 echo '\033[1;32m
 请选择一个下载镜像，例如中科大，输入1回车。
-(选择后，下载速度觉得慢可以ctrl+c重新运行脚本选择)
 源有时候不稳定，如果git克隆报错重新运行脚本选择源。cask非必须，有部分人需要。
 1、中科大下载源 2、清华大学下载源 3、阿里巴巴下载源(缺少cask源)\033[0m'
 read "MY_DOWN_NUM?请输入序号: "
 if [[ "$MY_DOWN_NUM" -eq "3" ]];then
-  echo "你选择了清华大学下载源"
+  echo "你选择了阿里巴巴下载源(阿里缺少cask源)"
   USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles
   #HomeBrew基础框架
   USER_BREW_GIT=https://mirrors.aliyun.com/homebrew/brew.git 
@@ -178,8 +183,8 @@ else
   USER_CASK_GIT=https://mirrors.ustc.edu.cn/homebrew-cask.git
 fi
 echo '==> 通过命令删除之前的brew、创建一个新的Homebrew文件夹
-(设置开机密码：在左上角苹果图标->系统偏好设置->用户与群组->更改密码)
-(如果就是不想设置密码，自行百度mac sudo免密码)
+(设置开机密码：在左上角苹果图标->系统偏好设置->"用户与群组"->更改密码)
+(如果提示This incident will be reported. 在"用户与群组"中查看是否管理员)
 \033[1;36m请输入开机密码，输入过程不显示，输入完后回车\033[0m'
 # 让环境暂时纯粹，重启终端后恢复
 export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
@@ -198,10 +203,10 @@ for dir in "${directories[@]}"; do
   if ! [[ -d "${HOMEBREW_PREFIX}/${dir}" ]]; then
     CreateFolder "${HOMEBREW_PREFIX}/${dir}"
   fi
-  sudo chown -R $(whoami) ${HOMEBREW_PREFIX}/${dir}
+  AddPermission ${HOMEBREW_PREFIX}/${dir}
 done
-echo '==> 克隆Homebrew基本文件(32M+)'
-sudo git --version
+
+git --version
 if [ $? -ne 0 ];then
   sudo rm -rf "/Library/Developer/CommandLineTools/"
   echo '\033[1;36m安装Git\033[0m后再运行此脚本，\033[1;31m在系统弹窗中点击“安装”按钮
@@ -209,6 +214,11 @@ if [ $? -ne 0 ];then
   xcode-select --install
   exit 0
 fi
+
+echo '
+\033[1;36m下载速度觉得慢可以ctrl+c重新运行脚本选择下载源\033[0m
+==> 克隆Homebrew基本文件(32M+)
+'
 sudo git clone $USER_BREW_GIT ${HOMEBREW_REPOSITORY}
 JudgeSuccess 尝试再次运行自动脚本选择其他下载源或者切换网络 out
 echo '==> 创建brew的替身'
@@ -237,7 +247,13 @@ else
   fi
 fi
 echo '==> 配置国内下载地址'
+if [[ -f ~/.zshrc ]]; then
+  AddPermission ~/.zshrc
+fi
 echo 'export HOMEBREW_BOTTLE_DOMAIN='${USER_HOMEBREW_BOTTLE_DOMAIN} >> ~/.zshrc
+if [[ -f ~/.bash_profile ]]; then
+  AddPermission ~/.bash_profile
+fi
 echo 'export HOMEBREW_BOTTLE_DOMAIN='${USER_HOMEBREW_BOTTLE_DOMAIN} >> ~/.bash_profile
 JudgeSuccess
 source ~/.zshrc
@@ -253,7 +269,7 @@ else
     '
 fi
 
-sudo chown -R $(whoami) ${HOMEBREW_REPOSITORY}
+AddPermission ${HOMEBREW_REPOSITORY}
 #先暂时设置到清华大学源，中科大没有Ruby下载镜像
 HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
 echo 'brew -v
