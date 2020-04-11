@@ -148,7 +148,6 @@ echo '
 #选择一个下载源
 echo '\033[1;32m
 请选择一个下载镜像，例如中科大，输入1回车。
-(选择后，下载速度觉得慢可以ctrl+c重新运行脚本选择)
 源有时候不稳定，如果git克隆报错重新运行脚本选择源。cask非必须，有部分人需要。
 1、中科大下载源 2、清华大学下载源 3、阿里巴巴下载源(缺少cask源)\033[0m'
 read "MY_DOWN_NUM?请输入序号: "
@@ -206,8 +205,8 @@ for dir in "${directories[@]}"; do
   fi
   AddPermission ${HOMEBREW_PREFIX}/${dir}
 done
-echo '==> 克隆Homebrew基本文件(32M+)'
-sudo git --version
+
+git --version
 if [ $? -ne 0 ];then
   sudo rm -rf "/Library/Developer/CommandLineTools/"
   echo '\033[1;36m安装Git\033[0m后再运行此脚本，\033[1;31m在系统弹窗中点击“安装”按钮
@@ -215,6 +214,11 @@ if [ $? -ne 0 ];then
   xcode-select --install
   exit 0
 fi
+
+echo '
+\033[1;36m下载速度觉得慢可以ctrl+c重新运行脚本选择下载源\033[0m
+==> 克隆Homebrew基本文件(32M+)
+'
 sudo git clone $USER_BREW_GIT ${HOMEBREW_REPOSITORY}
 JudgeSuccess 尝试再次运行自动脚本选择其他下载源或者切换网络 out
 echo '==> 创建brew的替身'
