@@ -24,7 +24,7 @@ JudgeSuccess()
 {
     if [ $? -ne 0 ];then
         echo '\033[1;31m此步骤失败 '$1'\033[0m'
-        if [[ "$2" -ne out ]]; then
+        if [[ "$2" -eq out ]]; then
           exit 0
         fi
     else
@@ -220,7 +220,7 @@ echo '==> 克隆Homebrew Core(224M+)
 \033[1;36m此处如果显示Password表示需要再次输入开机密码，输入完后回车\033[0m'
 sudo mkdir -p ${HOMEBREW_PREFIX}/Homebrew/Library/Taps/homebrew/homebrew-core
 sudo git clone $USER_CORE_GIT ${HOMEBREW_PREFIX}/Homebrew/Library/Taps/homebrew/homebrew-core/
-JudgeSuccess 尝试切换下载源或者网络
+JudgeSuccess 尝试切换下载源或者网络 out
 echo '==> 克隆Homebrew Cask(248M+) 类似AppStore 
 \033[1;36m此处如果显示Password表示需要再次输入开机密码，输入完后回车\033[0m'
 if [[ "$MY_DOWN_NUM" -eq "3" ]];then
