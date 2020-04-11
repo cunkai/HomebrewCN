@@ -140,10 +140,19 @@ echo '
 echo '\033[1;32m
 请选择一个下载镜像，例如中科大，输入1回车。
 (选择后，下载速度觉得慢可以ctrl+c重新运行脚本选择)
-
-1、中科大下载源(推荐) 2、清华大学下载源\033[0m'
+源有时候不稳定，如果git克隆报错重新运行脚本选择源。cask非必须，有部分人需要。
+1、中科大下载源 2、清华大学下载源 3、阿里巴巴下载源(缺少cask源)\033[0m'
 read "MY_DOWN_NUM?请输入序号: "
-if [[ "$MY_DOWN_NUM" -eq "2" ]];then
+if [[ "$MY_DOWN_NUM" -eq "3" ]];then
+  echo "你选择了清华大学下载源"
+  USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles
+  #HomeBrew基础框架
+  USER_BREW_GIT=https://mirrors.aliyun.com/homebrew/brew.git 
+  #HomeBrew Core
+  USER_CORE_GIT=https://mirrors.aliyun.com/homebrew/homebrew-core.git
+  #HomeBrew Cask
+  USER_CASK_GIT=https://mirrors.aliyun.com/homebrew/homebrew-cask.git
+elif [[ "$MY_DOWN_NUM" -eq "2" ]];then
   echo "你选择了清华大学下载源"
   USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
   #HomeBrew基础框架
@@ -211,9 +220,19 @@ sudo git clone $USER_CORE_GIT ${HOMEBREW_PREFIX}/Homebrew/Library/Taps/homebrew/
 JudgeSuccess 尝试切换下载源或者网络
 echo '==> 克隆Homebrew Cask(248M+) 类似AppStore 
 \033[1;36m此处如果显示Password表示需要再次输入开机密码，输入完后回车\033[0m'
-sudo mkdir -p ${HOMEBREW_PREFIX}/Homebrew/Library/Taps/homebrew/homebrew-cask
-sudo git clone $USER_CASK_GIT ${HOMEBREW_PREFIX}/Homebrew/Library/Taps/homebrew/homebrew-cask/
-JudgeSuccess 尝试切换下载源或者网络
+if [[ "$MY_DOWN_NUM" -eq "3" ]];then
+  echo '\033[1;33m阿里源没有Cask 跳过\033[0m'
+else
+  sudo mkdir -p ${HOMEBREW_PREFIX}/Homebrew/Library/Taps/homebrew/homebrew-cask
+  sudo git clone $USER_CASK_GIT ${HOMEBREW_PREFIX}/Homebrew/Library/Taps/homebrew/homebrew-cask/
+  if [ $? -ne 0 ];then
+      sudo rm -rf ${HOMEBREW_PREFIX}/Homebrew/Library/Taps/homebrew/homebrew-cask
+      echo '\033[1;31m尝试切换下载源或者网络,不过Cask组件非必须模块。可以忽略\033[0m'
+  else
+      echo "\033[1;32m此步骤成功\033[0m"
+
+  fi
+fi
 echo '==> 配置国内下载地址'
 echo 'export HOMEBREW_BOTTLE_DOMAIN='${USER_HOMEBREW_BOTTLE_DOMAIN} >> ~/.zshrc
 echo 'export HOMEBREW_BOTTLE_DOMAIN='${USER_HOMEBREW_BOTTLE_DOMAIN} >> ~/.bash_profile
