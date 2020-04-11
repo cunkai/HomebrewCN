@@ -152,7 +152,7 @@ echo '\033[1;32m
 1、中科大下载源 2、清华大学下载源 3、阿里巴巴下载源(缺少cask源)\033[0m'
 read "MY_DOWN_NUM?请输入序号: "
 if [[ "$MY_DOWN_NUM" -eq "3" ]];then
-  echo "你选择了清华大学下载源"
+  echo "你选择了阿里巴巴下载源(阿里缺少cask源)"
   USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles
   #HomeBrew基础框架
   USER_BREW_GIT=https://mirrors.aliyun.com/homebrew/brew.git 
