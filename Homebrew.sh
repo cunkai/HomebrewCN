@@ -219,13 +219,13 @@ echo '
 \033[1;36m下载速度觉得慢可以ctrl+c重新运行脚本选择下载源\033[0m
 ==> 克隆Homebrew基本文件(32M+)
 '
+warning_if
 sudo git clone $USER_BREW_GIT ${HOMEBREW_REPOSITORY}
 JudgeSuccess 尝试再次运行自动脚本选择其他下载源或者切换网络 out
 echo '==> 创建brew的替身'
 find ${HOMEBREW_PREFIX}/bin -name brew -exec sudo rm -f {} \;
 sudo ln -s ${HOMEBREW_PREFIX}/Homebrew/bin/brew ${HOMEBREW_PREFIX}/bin/brew
 JudgeSuccess
-warning_if
 echo '==> 克隆Homebrew Core(224M+) 
 \033[1;36m此处如果显示Password表示需要再次输入开机密码，输入完后回车\033[0m'
 sudo mkdir -p ${HOMEBREW_PREFIX}/Homebrew/Library/Taps/homebrew/homebrew-core
