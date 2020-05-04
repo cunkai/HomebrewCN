@@ -71,13 +71,13 @@ execute() {
 # 管理员运行
 execute_sudo() 
 {
-#   echo $@
-#   local -a args=("$@")
-#   echo "execute_sudo 2"
-#   if [[ -n "${SUDO_ASKPASS-}" ]]; then
-#     args=("-A" "${args[@]}")
-#   fi
-#   echo $args
+  echo $@
+  local args=("$@")
+  echo "execute_sudo 2"
+  if [[ -n "${SUDO_ASKPASS-}" ]]; then
+    args=("-A" "${args[@]}")
+  fi
+  echo $args
   if have_sudo_access; then
     execute "/usr/bin/sudo" "${args[@]}"
   else
