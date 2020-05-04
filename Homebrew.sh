@@ -71,14 +71,14 @@ execute() {
 # 管理员运行
 execute_sudo() 
 {
-  local -a args=("$@")
-  if [[ -n "${SUDO_ASKPASS-}" ]]; then
-    args=("-A" "${args[@]}")
-  fi
+  # local -a args=("$@")
+  # if [[ -n "${SUDO_ASKPASS-}" ]]; then
+  #   args=("-A" "${args[@]}")
+  # fi
   if have_sudo_access; then
-    execute "/usr/bin/sudo" "${args[@]}"
+    execute "/usr/bin/sudo" "$@"
   else
-    execute "sudo" "${args[@]}"
+    execute "sudo" "$@"
   fi
 }
 #添加文件夹权限
@@ -134,7 +134,7 @@ warning_if(){
 
               git config --global --unset https.proxy
 
-              git config --global --unset http.proxy
+              git config --global --unset http.proxy\033[0m
   "
   fi
 }
@@ -151,28 +151,34 @@ echo '\033[1;32m
 源有时候不稳定，如果git克隆报错重新运行脚本选择源。cask非必须，有部分人需要。
 1、中科大下载源 2、清华大学下载源 3、阿里巴巴下载源(缺少cask源)\033[0m'
 read "MY_DOWN_NUM?请输入序号: "
-if [[ "$MY_DOWN_NUM" -eq "3" ]];then
-  echo "你选择了阿里巴巴下载源(阿里缺少cask源)"
-  USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles
-  #HomeBrew基础框架
-  USER_BREW_GIT=https://mirrors.aliyun.com/homebrew/brew.git 
-  #HomeBrew Core
-  USER_CORE_GIT=https://mirrors.aliyun.com/homebrew/homebrew-core.git
-  #HomeBrew Cask
-  USER_CASK_GIT=https://mirrors.aliyun.com/homebrew/homebrew-cask.git
-elif [[ "$MY_DOWN_NUM" -eq "2" ]];then
-  echo "你选择了清华大学下载源"
-  USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
-  #HomeBrew基础框架
-  USER_BREW_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git
-  #HomeBrew Core
-  USER_CORE_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git
-  #HomeBrew Cask
-  USER_CASK_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask.git
-  USER_CASK_FONTS_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask-fonts.git
-  USER_CASK_DRIVERS_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask-drivers.git
-else
-  echo "你选择了中国科学技术大学下载源"
+case $MY_DOWN_NUM in
+"2")
+    echo "你选择了清华大学下载源
+    "
+    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
+    #HomeBrew基础框架
+    USER_BREW_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git
+    #HomeBrew Core
+    USER_CORE_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git
+    #HomeBrew Cask
+    USER_CASK_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask.git
+    USER_CASK_FONTS_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask-fonts.git
+    USER_CASK_DRIVERS_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask-drivers.git
+;;
+"3")
+    echo "你选择了阿里巴巴下载源(阿里缺少cask源)
+    "
+    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles
+    #HomeBrew基础框架
+    USER_BREW_GIT=https://mirrors.aliyun.com/homebrew/brew.git 
+    #HomeBrew Core
+    USER_CORE_GIT=https://mirrors.aliyun.com/homebrew/homebrew-core.git
+    #HomeBrew Cask
+    USER_CASK_GIT=https://mirrors.aliyun.com/homebrew/homebrew-cask.git
+;;
+*)
+  echo "你选择了中国科学技术大学下载源
+  "
   #HomeBrew 下载源 install
   USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles
   #HomeBrew基础框架
@@ -181,7 +187,21 @@ else
   USER_CORE_GIT=https://mirrors.ustc.edu.cn/homebrew-core.git
   #HomeBrew Cask
   USER_CASK_GIT=https://mirrors.ustc.edu.cn/homebrew-cask.git
-fi
+;;
+esac
+echo '\033[1;32m'
+read "MY_Del_Old?此脚本将要删除之前的brew(包括它下载的软件)，请自行备份。
+->是否现在开始执行脚本（N/Y）"
+echo '\033[0m'
+case $MY_Del_Old in
+"y" || "Y")
+echo "--> 脚本开始执行"
+;;
+*)
+echo "你输入了 $MY_Del_Old ，备份好以后再次运行吧,如果继续运行应该输入Y或者y"
+exit 0
+;;
+esac
 echo '==> 通过命令删除之前的brew、创建一个新的Homebrew文件夹
 (设置开机密码：在左上角苹果图标->系统偏好设置->"用户与群组"->更改密码)
 (如果提示This incident will be reported. 在"用户与群组"中查看是否管理员)
@@ -189,7 +209,6 @@ echo '==> 通过命令删除之前的brew、创建一个新的Homebrew文件夹
 # 让环境暂时纯粹，重启终端后恢复
 export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 RmCreate ${HOMEBREW_REPOSITORY}
-echo '==> 删除之前brew环境，重新创建'
 sudo rm -rf /Users/$(whoami)/Library/Caches/Homebrew/
 sudo rm -rf /Users/$(whoami)/Library/Logs/Homebrew/
 RmCreate ${HOMEBREW_PREFIX}/Caskroom
