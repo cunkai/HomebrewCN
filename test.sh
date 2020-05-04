@@ -71,17 +71,17 @@ execute() {
 # 管理员运行
 execute_sudo() 
 {
-  echo $@
-  local args=("$@")
-  echo "execute_sudo 2"
-  if [[ -n "${SUDO_ASKPASS-}" ]]; then
-    args=("-A" "${args[@]}")
-  fi
+#   echo $@
+#   local -a args=("$@")
+#   echo "execute_sudo 2"
+#   if [[ -n "${SUDO_ASKPASS-}" ]]; then
+#     args=("-A" "${args[@]}")
+#   fi
   echo $args
   if have_sudo_access; then
-    execute "/usr/bin/sudo" "${args[@]}"
+    execute "/usr/bin/sudo" "$@"
   else
-    execute "sudo" "${args[@]}"
+    execute "sudo" "$@"
   fi
 }
 #添加文件夹权限
