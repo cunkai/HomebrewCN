@@ -149,12 +149,12 @@ echo '
 echo '\033[1;32m
 请选择一个下载镜像，例如中科大，输入1回车。
 源有时候不稳定，如果git克隆报错重新运行脚本选择源。cask非必须，有部分人需要。
-1、中科大下载源 2、清华大学下载源 3、阿里巴巴下载源(缺少cask源)\033[0m'
+1、中科大下载源 2、清华大学下载源 3、腾讯下载源(暂时不可用) 4、阿里巴巴下载源(缺少cask源)\033[0m'
 read "MY_DOWN_NUM?请输入序号: "
 case $MY_DOWN_NUM in
 "2")
-    echo "你选择了清华大学下载源
-    "
+    echo "
+    你选择了清华大学下载源"
     USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
     #HomeBrew基础框架
     USER_BREW_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git
@@ -166,8 +166,19 @@ case $MY_DOWN_NUM in
     USER_CASK_DRIVERS_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask-drivers.git
 ;;
 "3")
-    echo "你选择了阿里巴巴下载源(阿里缺少cask源)
-    "
+    echo "
+    你选择了腾讯下载源"
+    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.cloud.tencent.com/homebrew-bottles/
+    #HomeBrew基础框架
+    USER_BREW_GIT=https://mirrors.cloud.tencent.com/homebrew/brew.git 
+    #HomeBrew Core
+    USER_CORE_GIT=https://mirrors.cloud.tencent.com/homebrew/homebrew-core.git
+    #HomeBrew Cask
+    USER_CASK_GIT=https://mirrors.cloud.tencent.com/homebrew/homebrew-cask.git
+;;
+"4")
+    echo "
+    你选择了阿里巴巴下载源(阿里缺少cask源)"
     USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles
     #HomeBrew基础框架
     USER_BREW_GIT=https://mirrors.aliyun.com/homebrew/brew.git 
@@ -177,8 +188,8 @@ case $MY_DOWN_NUM in
     USER_CASK_GIT=https://mirrors.aliyun.com/homebrew/homebrew-cask.git
 ;;
 *)
-  echo "你选择了中国科学技术大学下载源
-  "
+  echo "
+  你选择了中国科学技术大学下载源"
   #HomeBrew 下载源 install
   USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles
   #HomeBrew基础框架
@@ -201,7 +212,9 @@ echo "--> 脚本开始执行"
 echo "--> 脚本开始执行"
 ;;
 *)
-echo "你输入了 $MY_Del_Old ，备份好以后再次运行吧,如果继续运行应该输入Y或者y"
+echo "你输入了 $MY_Del_Old ，自行备份老版brew和它下载的软件, 如果继续运行脚本应该输入Y或者y
+"
+open /usr/local/
 exit 0
 ;;
 esac
@@ -238,7 +251,7 @@ if [ $? -ne 0 ];then
 fi
 
 echo '
-\033[1;36m下载速度觉得慢可以ctrl+c重新运行脚本选择下载源\033[0m
+\033[1;36m下载速度觉得慢可以ctrl+c或control+c重新运行脚本选择下载源\033[0m
 ==> 克隆Homebrew基本文件(32M+)
 '
 warning_if
@@ -332,16 +345,6 @@ else
         本地软件库列表：brew ls
         查找软件：brew search google（其中google替换为要查找的软件关键字）
         查看brew版本：brew -v  更新brew版本：brew update
-
-        Formulae（方案库 例如python）
-        安装方案库：brew install curl（其中curl替换为要安装的软件库名称）
-        卸载方案库：brew uninstall curl（其中curl替换为要卸载的软件库名称）
-
-        Casks   （界面软件 例如谷歌浏览器）
-        安装软件：brew cask install visual-studio-code（其中visual-studio-code替换为安装的软件名字，例如google-chrome）
-        卸载软件：brew cask uninstall visual-studio-code（其中visual-studio-code替换为要卸载的软件名字，例如google-chrome）
-
-        查找命令安装的位置：which brew（brew可以换成任何命令，包括brew安装的）
 \033[1;32m
 现在可以输入命令open ~/.zshrc 或者 open ~/.bash_profile 整理一下重复的语句(运行 echo \$SHELL 可以查看应该打开那一个文件修改)
 
