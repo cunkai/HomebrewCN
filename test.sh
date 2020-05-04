@@ -71,7 +71,7 @@ execute() {
 # 管理员运行
 execute_sudo() 
 {
-  echo "execute_sudo"
+  echo $@
   local -a args=("$@")
   echo "execute_sudo 2"
   if [[ -n "${SUDO_ASKPASS-}" ]]; then
