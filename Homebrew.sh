@@ -287,7 +287,7 @@ echo '
 if version_gt "$macos_version" "10.14"; then
     echo "$macos_version"
 else
-    echo '\033[1;31m检测到你的系统比较老，会有一些报错，请稍等Ruby下载安装;\033[0m
+    echo '\033[1;31m检测到你不是最新系统，会有一些报错，请稍等Ruby下载安装;\033[0m
     '
 fi
 
