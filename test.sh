@@ -153,8 +153,8 @@ echo '\033[1;32m
 read "MY_DOWN_NUM?请输入序号: "
 case $MY_DOWN_NUM in
 "2")
-    echo "你选择了清华大学下载源
-    "
+    echo "
+    你选择了清华大学下载源"
     USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
     #HomeBrew基础框架
     USER_BREW_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git
@@ -166,8 +166,8 @@ case $MY_DOWN_NUM in
     USER_CASK_DRIVERS_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask-drivers.git
 ;;
 "3")
-    echo "你选择了腾讯下载源
-    "
+    echo "
+    你选择了腾讯下载源"
     USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.cloud.tencent.com/homebrew-bottles/
     #HomeBrew基础框架
     USER_BREW_GIT=https://mirrors.cloud.tencent.com/homebrew/brew.git 
@@ -177,8 +177,8 @@ case $MY_DOWN_NUM in
     USER_CASK_GIT=https://mirrors.cloud.tencent.com/homebrew/homebrew-cask.git
 ;;
 "4")
-    echo "你选择了阿里巴巴下载源(阿里缺少cask源)
-    "
+    echo "
+    你选择了阿里巴巴下载源(阿里缺少cask源)"
     USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles
     #HomeBrew基础框架
     USER_BREW_GIT=https://mirrors.aliyun.com/homebrew/brew.git 
@@ -188,8 +188,8 @@ case $MY_DOWN_NUM in
     USER_CASK_GIT=https://mirrors.aliyun.com/homebrew/homebrew-cask.git
 ;;
 *)
-  echo "你选择了中国科学技术大学下载源
-  "
+  echo "
+  你选择了中国科学技术大学下载源"
   #HomeBrew 下载源 install
   USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles
   #HomeBrew基础框架
