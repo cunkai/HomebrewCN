@@ -149,7 +149,7 @@ echo '
 echo '\033[1;32m
 请选择一个下载镜像，例如中科大，输入1回车。
 源有时候不稳定，如果git克隆报错重新运行脚本选择源。cask非必须，有部分人需要。
-1、中科大下载源 2、清华大学下载源 3、腾讯下载源 4、阿里巴巴下载源(缺少cask源)\033[0m'
+1、中科大下载源 2、清华大学下载源 3、腾讯下载源(暂时不可用) 4、阿里巴巴下载源(缺少cask源)\033[0m'
 read "MY_DOWN_NUM?请输入序号: "
 case $MY_DOWN_NUM in
 "2")
@@ -168,7 +168,7 @@ case $MY_DOWN_NUM in
 "3")
     echo "
     你选择了腾讯下载源"
-    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.cloud.tencent.com/homebrew-bottles/
+    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.cloud.tencent.com/homebrew-bottles
     #HomeBrew基础框架
     USER_BREW_GIT=https://mirrors.cloud.tencent.com/homebrew/brew.git 
     #HomeBrew Core
@@ -212,7 +212,8 @@ echo "--> 脚本开始执行"
 echo "--> 脚本开始执行"
 ;;
 *)
-echo "你输入了 $MY_Del_Old ，备份好以后再次运行吧,如果继续运行应该输入Y或者y"
+echo "你输入了 $MY_Del_Old ，自行备份老版brew和它下载的软件, 如果继续运行脚本应该输入Y或者y
+"
 open /usr/local/
 exit 0
 ;;
@@ -250,7 +251,7 @@ if [ $? -ne 0 ];then
 fi
 
 echo '
-\033[1;36m下载速度觉得慢可以ctrl+c重新运行脚本选择下载源\033[0m
+\033[1;36m下载速度觉得慢可以ctrl+c或control+c重新运行脚本选择下载源\033[0m
 ==> 克隆Homebrew基本文件(32M+)
 '
 warning_if
@@ -280,15 +281,27 @@ else
 
   fi
 fi
-echo '==> 配置国内下载地址'
+echo '==> 配置国内镜像源HOMEBREW BOTTLE'
 if [[ -f ~/.zshrc ]]; then
   AddPermission ~/.zshrc
 fi
-echo 'export HOMEBREW_BOTTLE_DOMAIN='${USER_HOMEBREW_BOTTLE_DOMAIN} >> ~/.zshrc
+echo "
+# HomeBrew
+export HOMEBREW_BOTTLE_DOMAIN=${USER_HOMEBREW_BOTTLE_DOMAIN}
+export PATH=\"/usr/local/bin:\$PATH\"
+export PATH=\"/usr/local/sbin:\$PATH\"
+# HomeBrew END
+" >> ~/.zshrc
 if [[ -f ~/.bash_profile ]]; then
   AddPermission ~/.bash_profile
 fi
-echo 'export HOMEBREW_BOTTLE_DOMAIN='${USER_HOMEBREW_BOTTLE_DOMAIN} >> ~/.bash_profile
+echo "
+# HomeBrew
+export HOMEBREW_BOTTLE_DOMAIN=${USER_HOMEBREW_BOTTLE_DOMAIN}
+export PATH=\"/usr/local/bin:\$PATH\"
+export PATH=\"/usr/local/sbin:\$PATH\"
+# HomeBrew END
+" >> ~/.bash_profile
 JudgeSuccess
 source ~/.zshrc
 source ~/.bash_profile
@@ -311,12 +324,9 @@ echo 'brew -v
 brew -v
 if [ $? -ne 0 ];then
     echo '
-    \033[1;31m失败 留言我看到会回复(附带前面提示“此步骤失败”以及它的前6句)
+    \033[1;31m失败 查看下面文章第二部分的常见错误
     https://zhuanlan.zhihu.com/p/111014448
-    或者运行全部过程的截图发到 cunkai.wang@foxmail.com （推荐，更好判断） 
-    '
-    ls -al /usr/local 
-    echo '--end
+    如果没有解决，把运行脚本过程截图发到 cunkai.wang@foxmail.com --end
     \033[0m'
     exit 0
 else
@@ -329,9 +339,9 @@ HOMEBREW_BOTTLE_DOMAIN=${USER_HOMEBREW_BOTTLE_DOMAIN}
 brew update
 if [ $? -ne 0 ];then
     echo '
-    \033[1;31m失败 留言我看到会回复(附带前面提示“此步骤失败”以及它的前6句)
+    \033[1;31m失败 去下面文章看一下第二部分的常见错误解决办法
     https://zhuanlan.zhihu.com/p/111014448
-    或者所有命令截图发到 cunkai.wang@foxmail.com  \033[0m
+    如果没有解决，把运行脚本过程截图发到 cunkai.wang@foxmail.com \033[0m
     '
 else
     echo "
@@ -345,7 +355,7 @@ else
         查找软件：brew search google（其中google替换为要查找的软件关键字）
         查看brew版本：brew -v  更新brew版本：brew update
 \033[1;32m
-现在可以输入命令open ~/.zshrc 或者 open ~/.bash_profile 整理一下重复的语句(运行 echo \$SHELL 可以查看应该打开那一个文件修改)
+现在可以输入命令open ~/.zshrc -e 或者 open ~/.bash_profile -e 整理一下重复的语句(运行 echo \$SHELL 可以查看应该打开那一个文件修改)
 
         https://zhuanlan.zhihu.com/p/111014448  欢迎来给点个赞\033[0m
     "
