@@ -281,7 +281,7 @@ sudo git clone $USER_CORE_GIT ${HOMEBREW_PREFIX}/Homebrew/Library/Taps/homebrew/
 JudgeSuccess 尝试再次运行自动脚本选择其他下载源或者切换网络 out
 echo '==> 克隆Homebrew Cask(248M+) 类似AppStore 
 \033[1;36m此处如果显示Password表示需要再次输入开机密码，输入完后回车\033[0m'
-if [[ "$MY_DOWN_NUM" -eq "3" ]];then
+if [[ "$MY_DOWN_NUM" -eq "5" ]];then
   echo '\033[1;33m阿里源没有Cask 跳过\033[0m'
 else
   sudo mkdir -p ${HOMEBREW_PREFIX}/Homebrew/Library/Taps/homebrew/homebrew-cask
