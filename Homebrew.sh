@@ -97,9 +97,21 @@ CreateFolder()
     AddPermission $1
 }
 
+RmAndCopy()
+{
+  if [[ -d $1 ]]; then
+    echo '------备份原本brew到桌面中（耽误点时间，防止有人评论骂我）....'
+    if ! [[ -d /Users/$(whoami)/Desktop/Old_Homebrew/$TIME/$1 ]]; then
+      mkdir -p /Users/$(whoami)/Desktop/Old_Homebrew/$TIME/$1
+    fi
+    cp -rf $1 /Users/$(whoami)/Desktop/Old_Homebrew/$TIME/$1
+  fi
+  sudo rm -rf $1
+}
+
 RmCreate()
 {
-    sudo rm -rf $1
+    RmAndCopy $1
     CreateFolder $1
 }
 
@@ -238,8 +250,8 @@ echo '==> 通过命令删除之前的brew、创建一个新的Homebrew文件夹
 # 让环境暂时纯粹，重启终端后恢复
 export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 RmCreate ${HOMEBREW_REPOSITORY}
-sudo rm -rf /Users/$(whoami)/Library/Caches/Homebrew/
-sudo rm -rf /Users/$(whoami)/Library/Logs/Homebrew/
+RmAndCopy /Users/$(whoami)/Library/Caches/Homebrew/
+RmAndCopy /Users/$(whoami)/Library/Logs/Homebrew/
 RmCreate ${HOMEBREW_PREFIX}/Caskroom
 RmCreate ${HOMEBREW_PREFIX}/Cellar
 RmCreate ${HOMEBREW_PREFIX}/var/homebrew
