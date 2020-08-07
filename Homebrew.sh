@@ -226,7 +226,7 @@ case $MY_DOWN_NUM in
 ;;
 esac
 echo '\033[1;32m'
-read "MY_Del_Old?此脚本将要删除之前的brew(包括它下载的软件)，请自行备份。
+read "MY_Del_Old?！！！此脚本将要删除之前的brew(包括它下载的软件)，请自行备份。
 ->是否现在开始执行脚本（N/Y）"
 echo '\033[0m'
 case $MY_Del_Old in
