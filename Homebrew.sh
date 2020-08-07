@@ -100,11 +100,12 @@ CreateFolder()
 RmAndCopy()
 {
   if [[ -d $1 ]]; then
-    echo '------备份原本brew到桌面中（耽误点时间，防止有人评论骂我）....'
+    echo '------备份要删除的文件夹到系统桌面....'
     if ! [[ -d /Users/$(whoami)/Desktop/Old_Homebrew/$TIME/$1 ]]; then
       mkdir -p /Users/$(whoami)/Desktop/Old_Homebrew/$TIME/$1
     fi
     cp -rf $1 /Users/$(whoami)/Desktop/Old_Homebrew/$TIME/$1
+    echo "$1 备份完成"
   fi
   sudo rm -rf $1
 }
