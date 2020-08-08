@@ -54,10 +54,11 @@ echo "你输入了 $MY_Del_Old ，自行备份老版brew和它下载的软件, �
 "
 ;;
 esac
-echo '==> 开始执行
+echo '==> 
 (设置开机密码：在左上角苹果图标->系统偏好设置->"用户与群组"->更改密码)
 (如果提示This incident will be reported. 在"用户与群组"中查看是否管理员)
 \033[1;36m请输入开机密码，输入过程不显示，输入完后回车\033[0m'
+sudo echo '开始执行'
 # 让环境暂时纯粹，重启终端后恢复
 export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 RmAndCopy ${HOMEBREW_REPOSITORY}
