@@ -272,7 +272,7 @@ git --version
 if [ $? -ne 0 ];then
   sudo rm -rf "/Library/Developer/CommandLineTools/"
   echo '\033[1;36m安装Git\033[0m后再运行此脚本，\033[1;31m在系统弹窗中点击“安装”按钮
-如果没有弹窗的老系统，需要自己下载安装：https://git-scm.com/downloads \033[0m'
+如果没有弹窗的老系统，需要自己下载安装：https://sourceforge.net/projects/git-osx-installer/ \033[0m'
   xcode-select --install
   exit 0
 fi
