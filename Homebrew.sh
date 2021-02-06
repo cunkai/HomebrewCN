@@ -1,8 +1,17 @@
 #HomeBrew自动安装脚本
 #cunkai.wang@foxmail.com
 #路径表.
-HOMEBREW_PREFIX="/usr/local"
-HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
+UNAME_MACHINE="$(uname -m)"
+
+if [[ "$UNAME_MACHINE" == "arm64" ]]; then
+    #M1
+    HOMEBREW_PREFIX="/opt/homebrew"
+    HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}"
+  else
+    #Inter
+    HOMEBREW_PREFIX="/usr/local"
+    HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
+  fi
 HOMEBREW_CACHE="${HOME}/Library/Caches/Homebrew"
 
 STAT="stat -f"
@@ -309,6 +318,7 @@ else
   fi
 fi
 echo '==> 配置国内镜像源HOMEBREW BOTTLE'
+# 下面其实可以用"$SHELL"判断写入zshrc还是bash_profile为了防止小白来回切换模式，全写。
 if [[ -f ~/.zshrc ]]; then
   AddPermission ~/.zshrc
 fi
@@ -375,7 +385,7 @@ else
         \033[1;32m上一句如果提示Already up-to-date表示成功\033[0m
             \033[1;32mBrew自动安装程序运行完成\033[0m
               \033[1;32m国内地址已经配置完成\033[0m
-
+桌面的Old_Homebrew文件夹，只是为了备份，不需要删除即可。
                 初步介绍几个brew命令
 
         本地软件库列表：brew ls
