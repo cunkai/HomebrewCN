@@ -1,8 +1,19 @@
 #HomeBrew自动安装脚本
 #cunkai.wang@foxmail.com
-#路径表.
-HOMEBREW_PREFIX="/usr/local"
-HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
+
+#获取硬件信息
+UNAME_MACHINE="$(uname -m)"
+
+#Mac
+if [[ "$UNAME_MACHINE" == "arm64" ]]; then
+  #M1
+  HOMEBREW_PREFIX="/opt/homebrew"
+  HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}"
+else
+  #Inter
+  HOMEBREW_PREFIX="/usr/local"
+  HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
+fi
 HOMEBREW_CACHE="${HOME}/Library/Caches/Homebrew"
 
 #获取前面两个.的数据
