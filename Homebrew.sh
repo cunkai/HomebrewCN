@@ -327,8 +327,7 @@ fi
 echo "
 # HomeBrew
 export HOMEBREW_BOTTLE_DOMAIN=${USER_HOMEBREW_BOTTLE_DOMAIN}
-export PATH=\"/usr/local/bin:\$PATH\"
-export PATH=\"/usr/local/sbin:\$PATH\"
+export PATH=\"${HOMEBREW_PREFIX}/bin/brew:\$PATH\"
 # HomeBrew END
 " >> ~/.zshrc
 if [[ -f ~/.bash_profile ]]; then
@@ -337,8 +336,7 @@ fi
 echo "
 # HomeBrew
 export HOMEBREW_BOTTLE_DOMAIN=${USER_HOMEBREW_BOTTLE_DOMAIN}
-export PATH=\"/usr/local/bin:\$PATH\"
-export PATH=\"/usr/local/sbin:\$PATH\"
+export PATH=\"${HOMEBREW_PREFIX}/bin/brew:\$PATH\"
 # HomeBrew END
 " >> ~/.bash_profile
 JudgeSuccess
