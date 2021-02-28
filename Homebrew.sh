@@ -320,28 +320,50 @@ else
   fi
 fi
 echo '==> 配置国内镜像源HOMEBREW BOTTLE'
-# 下面其实可以用"$SHELL"判断写入zshrc还是bash_profile为了防止小白来回切换模式，全写。
-if [[ -f ~/.zshrc ]]; then
-  AddPermission ~/.zshrc
+#先判断一下芯片，位置不同
+#Mac
+if [[ "$UNAME_MACHINE" == "arm64" ]]; then
+  #M1
+  HOMEBREW_PREFIX="/opt/homebrew"
+  HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}"
+else
+  #Inter
+  HOMEBREW_PREFIX="/usr/local"
+  HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
 fi
+
+#判断下终端是Bash还是zsh
+case "$SHELL" in
+  */bash*)
+    if [[ -r "$HOME/.bash_profile" ]]; then
+      shell_profile="${HOME}/.bash_profile"
+    else
+      shell_profile="${HOME}/.profile"
+    fi
+    ;;
+  */zsh*)
+    shell_profile="${HOME}/.zprofile"
+    ;;
+  *)
+    shell_profile="${HOME}/.profile"
+    ;;
+esac
+
+if [[ -f ${shell_profile} ]]; then
+  AddPermission ${shell_profile}
+fi
+#写入文件
 echo "
 # HomeBrew
-export HOMEBREW_BOTTLE_DOMAIN=${USER_HOMEBREW_BOTTLE_DOMAIN}
-export PATH=\"${HOMEBREW_PREFIX}/bin/brew:\$PATH\"
+  export HOMEBREW_BOTTLE_DOMAIN=${USER_HOMEBREW_BOTTLE_DOMAIN}
+  export PATH=\"${HOMEBREW_PREFIX}/bin:\$PATH\"
+  export PATH=\"${HOMEBREW_PREFIX}/sbin:\$PATH\"
+  export PATH=\"${HOMEBREW_REPOSITORY}/bin:\$PATH\"
 # HomeBrew END
-" >> ~/.zshrc
-if [[ -f ~/.bash_profile ]]; then
-  AddPermission ~/.bash_profile
-fi
-echo "
-# HomeBrew
-export HOMEBREW_BOTTLE_DOMAIN=${USER_HOMEBREW_BOTTLE_DOMAIN}
-export PATH=\"${HOMEBREW_PREFIX}/bin/brew:\$PATH\"
-# HomeBrew END
-" >> ~/.bash_profile
+" >> ${shell_profile} 
 JudgeSuccess
-source ~/.zshrc
-source ~/.bash_profile
+source ${shell_profile}
+
 echo '
 ==> 安装完成，brew版本
 '
