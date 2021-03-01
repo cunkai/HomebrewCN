@@ -592,5 +592,5 @@ else
     "
 fi
 if [[ "$UNAME_MACHINE" == "arm64" ]]; then
-  echo "\033[1;31m  建议M1芯片重启终端，否则可能无法使用  \033[0m"
+  echo "\033[1;31m  M1芯片重启终端或者运行\033[1;32m source ${shell_profile}\033[1;31m  ，否则可能无法使用  \033[0m"
 fi
