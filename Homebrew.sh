@@ -4,6 +4,10 @@
 #获取硬件信息
 UNAME_MACHINE="$(uname -m)"
 
+#在X86电脑上测试arm电脑
+# UNAME_MACHINE="arm64"
+
+
 #Mac
 if [[ "$UNAME_MACHINE" == "arm64" ]]; then
   #M1
@@ -20,6 +24,7 @@ STAT="stat -f"
 CHOWN="/usr/sbin/chown"
 CHGRP="/usr/bin/chgrp"
 GROUP="admin"
+TOUCH="/usr/bin/touch"
 
 #获取前面两个.的数据
 major_minor() {
@@ -60,7 +65,7 @@ have_sudo_access() {
 
 abort() {
   printf "%s\n" "$1"
-  exit 1
+  # exit 1
 }
 
 shell_join() {
@@ -75,21 +80,41 @@ shell_join() {
 
 execute() {
   if ! "$@"; then
-    abort "$(printf "\033[1;31m此命令运行失败（再次运行脚本或者手动运行此命令测试权限）:sudo %s\033[0m" "$(shell_join "$@")")"
+    abort "$(printf "\033[1;31m此命令运行失败:sudo %s\033[0m" "$(shell_join "$@")")"
   fi
+}
+
+# 字符串格式化程序
+if [[ -t 1 ]]; then
+  tty_escape() { printf "\033[%sm" "$1"; }
+else
+  tty_escape() { :; }
+fi
+tty_mkbold() { tty_escape "1;$1"; }
+tty_underline="$(tty_escape "4;39")"
+tty_blue="$(tty_mkbold 34)"
+tty_red="$(tty_mkbold 31)"
+tty_bold="$(tty_mkbold 39)"
+tty_reset="$(tty_escape 0)"
+
+ohai() {
+  printf "${tty_blue}运行代码 ==>${tty_bold} %s${tty_reset}\n" "$(shell_join "$@")"
 }
 
 # 管理员运行
 execute_sudo() 
 {
-  # local -a args=("$@")
-  # if [[ -n "${SUDO_ASKPASS-}" ]]; then
-  #   args=("-A" "${args[@]}")
-  # fi
+
+  local -a args=("$@")
   if have_sudo_access; then
-    execute "/usr/bin/sudo" "$@"
+    if [[ -n "${SUDO_ASKPASS-}" ]]; then
+      args=("-A" "${args[@]}")
+    fi
+    ohai "/usr/bin/sudo" "${args[@]}"
+    execute "/usr/bin/sudo" "${args[@]}"
   else
-    execute "sudo" "$@"
+    ohai "${args[@]}"
+    execute "${args[@]}"
   fi
 }
 #添加文件夹权限
@@ -125,6 +150,162 @@ RmCreate()
 {
     RmAndCopy $1
     CreateFolder $1
+}
+
+#判断文件夹存在但不可写
+exists_but_not_writable() {
+  [[ -e "$1" ]] && ! [[ -r "$1" && -w "$1" && -x "$1" ]]
+}
+#文件所有者
+get_owner() {
+  stat -f "%u" "$1"
+}
+#文件本人无权限
+file_not_owned() {
+  [[ "$(get_owner "$1")" != "$(id -u)" ]]
+}
+#获取所属的组
+get_group() {
+  stat -f "%g" "$1"
+}
+#不在所属组
+file_not_grpowned() {
+  [[ " $(id -G "$USER") " != *" $(get_group "$1") "*  ]]
+}
+#获得当前文件夹权限 例如777
+get_permission() {
+  stat -f "%A" "$1"
+}
+#授权当前用户权限
+user_only_chmod() {
+  [[ -d "$1" ]] && [[ "$(get_permission "$1")" != "755" ]]
+}
+
+
+#创建brew需要的目录 直接复制于国外版本，同步
+CreateBrewLinkFolder()
+{
+  echo "--创建Brew所需要的目录"
+  directories=(bin etc include lib sbin share opt var
+             Frameworks
+             etc/bash_completion.d lib/pkgconfig
+             share/aclocal share/doc share/info share/locale share/man
+             share/man/man1 share/man/man2 share/man/man3 share/man/man4
+             share/man/man5 share/man/man6 share/man/man7 share/man/man8
+             var/log var/homebrew var/homebrew/linked
+             bin/brew)
+  group_chmods=()
+  for dir in "${directories[@]}"; do
+    if exists_but_not_writable "${HOMEBREW_PREFIX}/${dir}"; then
+      group_chmods+=("${HOMEBREW_PREFIX}/${dir}")
+    fi
+  done
+
+  # zsh refuses to read from these directories if group writable
+  directories=(share/zsh share/zsh/site-functions)
+  zsh_dirs=()
+  for dir in "${directories[@]}"; do
+    zsh_dirs+=("${HOMEBREW_PREFIX}/${dir}")
+  done
+
+  directories=(bin etc include lib sbin share var opt
+              share/zsh share/zsh/site-functions
+              var/homebrew var/homebrew/linked
+              Cellar Caskroom Frameworks)
+  mkdirs=()
+  for dir in "${directories[@]}"; do
+    if ! [[ -d "${HOMEBREW_PREFIX}/${dir}" ]]; then
+      mkdirs+=("${HOMEBREW_PREFIX}/${dir}")
+    fi
+  done
+
+  user_chmods=()
+  if [[ "${#zsh_dirs[@]}" -gt 0 ]]; then
+    for dir in "${zsh_dirs[@]}"; do
+      if user_only_chmod "${dir}"; then
+        user_chmods+=("${dir}")
+      fi
+    done
+  fi
+
+  chmods=()
+  if [[ "${#group_chmods[@]}" -gt 0 ]]; then
+    chmods+=("${group_chmods[@]}")
+  fi
+  if [[ "${#user_chmods[@]}" -gt 0 ]]; then
+    chmods+=("${user_chmods[@]}")
+  fi
+
+  chowns=()
+  chgrps=()
+  if [[ "${#chmods[@]}" -gt 0 ]]; then
+    for dir in "${chmods[@]}"; do
+      if file_not_owned "${dir}"; then
+        chowns+=("${dir}")
+      fi
+      if file_not_grpowned "${dir}"; then
+        chgrps+=("${dir}")
+      fi
+    done
+  fi
+
+  if [[ -d "${HOMEBREW_PREFIX}" ]]; then
+    if [[ "${#chmods[@]}" -gt 0 ]]; then
+      execute_sudo "/bin/chmod" "u+rwx" "${chmods[@]}"
+    fi
+    if [[ "${#group_chmods[@]}" -gt 0 ]]; then
+      execute_sudo "/bin/chmod" "g+rwx" "${group_chmods[@]}"
+    fi
+    if [[ "${#user_chmods[@]}" -gt 0 ]]; then
+      execute_sudo "/bin/chmod" "755" "${user_chmods[@]}"
+    fi
+    if [[ "${#chowns[@]}" -gt 0 ]]; then
+      execute_sudo "$CHOWN" "$USER" "${chowns[@]}"
+    fi
+    if [[ "${#chgrps[@]}" -gt 0 ]]; then
+      execute_sudo "$CHGRP" "$GROUP" "${chgrps[@]}"
+    fi
+  else
+    execute_sudo "/bin/mkdir" "-p" "${HOMEBREW_PREFIX}"
+    if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
+      execute_sudo "$CHOWN" "root:wheel" "${HOMEBREW_PREFIX}"
+    else
+      execute_sudo "$CHOWN" "$USER:$GROUP" "${HOMEBREW_PREFIX}"
+    fi
+  fi
+
+  if [[ "${#mkdirs[@]}" -gt 0 ]]; then
+    execute_sudo "/bin/mkdir" "-p" "${mkdirs[@]}"
+    execute_sudo "/bin/chmod" "g+rwx" "${mkdirs[@]}"
+    execute_sudo "$CHOWN" "$USER" "${mkdirs[@]}"
+    execute_sudo "$CHGRP" "$GROUP" "${mkdirs[@]}"
+  fi
+
+  if ! [[ -d "${HOMEBREW_REPOSITORY}" ]]; then
+    execute_sudo "/bin/mkdir" "-p" "${HOMEBREW_REPOSITORY}"
+  fi
+  execute_sudo "$CHOWN" "-R" "$USER:$GROUP" "${HOMEBREW_REPOSITORY}"
+
+  if ! [[ -d "${HOMEBREW_CACHE}" ]]; then
+    if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
+      execute_sudo "/bin/mkdir" "-p" "${HOMEBREW_CACHE}"
+    else
+      execute "/bin/mkdir" "-p" "${HOMEBREW_CACHE}"
+    fi
+  fi
+  if exists_but_not_writable "${HOMEBREW_CACHE}"; then
+    execute_sudo "/bin/chmod" "g+rwx" "${HOMEBREW_CACHE}"
+  fi
+  if file_not_owned "${HOMEBREW_CACHE}"; then
+    execute_sudo "$CHOWN" "-R" "$USER" "${HOMEBREW_CACHE}"
+  fi
+  if file_not_grpowned "${HOMEBREW_CACHE}"; then
+    execute_sudo "$CHGRP" "-R" "$GROUP" "${HOMEBREW_CACHE}"
+  fi
+  if [[ -d "${HOMEBREW_CACHE}" ]]; then
+    execute "$TOUCH" "${HOMEBREW_CACHE}/.cleaned"
+  fi
+  echo "--依赖目录脚本运行完成"
 }
 
 #git提交
@@ -266,22 +447,6 @@ RmCreate ${HOMEBREW_REPOSITORY}
 RmAndCopy /Users/$(whoami)/Library/Caches/Homebrew/
 RmAndCopy /Users/$(whoami)/Library/Logs/Homebrew/
 
-if [[ "${HOMEBREW_REPOSITORY}" != "${HOMEBREW_PREFIX}" ]]; then
-  RmCreate ${HOMEBREW_PREFIX}/Caskroom
-  RmCreate ${HOMEBREW_PREFIX}/Cellar
-  RmCreate ${HOMEBREW_PREFIX}/var/homebrew
-  directories=(bin etc include lib sbin share var opt
-             share/zsh share/zsh/site-functions
-             var/homebrew var/homebrew/linked
-             Cellar Caskroom Homebrew Frameworks)
-  for dir in "${directories[@]}"; do
-    if ! [[ -d "${HOMEBREW_PREFIX}/${dir}" ]]; then
-      CreateFolder "${HOMEBREW_PREFIX}/${dir}"
-    fi
-    AddPermission ${HOMEBREW_PREFIX}/${dir}
-  done
-fi
-
 git --version
 if [ $? -ne 0 ];then
   sudo rm -rf "/Library/Developer/CommandLineTools/"
@@ -303,6 +468,10 @@ if [[ "${HOMEBREW_REPOSITORY}" != "${HOMEBREW_PREFIX}" ]]; then
   find ${HOMEBREW_PREFIX}/bin -name brew -exec sudo rm -f {} \;
   execute "ln" "-sf" "${HOMEBREW_REPOSITORY}/bin/brew" "${HOMEBREW_PREFIX}/bin/brew"
 fi
+
+#依赖目录创建 授权等等
+CreateBrewLinkFolder
+
 echo '==> 克隆Homebrew Core(224M+) 
 \033[1;36m此处如果显示Password表示需要再次输入开机密码，输入完后回车\033[0m'
 sudo mkdir -p ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core
@@ -346,7 +515,7 @@ if [[ -f ${shell_profile} ]]; then
   AddPermission ${shell_profile}
 fi
 #删除之前的环境变量
-sed -i "" "s/export.*ckbrew//g" ${shell_profile}
+sed -i "" "/ckbrew/d" ${shell_profile}
 #写入环境变量到文件
 echo "环境变量写入->${shell_profile}"
 
