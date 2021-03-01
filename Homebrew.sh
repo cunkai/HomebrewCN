@@ -111,7 +111,7 @@ CreateFolder()
 RmAndCopy()
 {
   if [[ -d $1 ]]; then
-    echo '   ---备份要删除的文件夹到系统桌面....'
+    echo "  ---备份要删除的$1到系统桌面...."
     if ! [[ -d /Users/$(whoami)/Desktop/Old_Homebrew/$TIME/$1 ]]; then
       mkdir -p /Users/$(whoami)/Desktop/Old_Homebrew/$TIME/$1
     fi
@@ -265,19 +265,21 @@ export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:${HOMEBREW_REPOSITORY}/
 RmCreate ${HOMEBREW_REPOSITORY}
 RmAndCopy /Users/$(whoami)/Library/Caches/Homebrew/
 RmAndCopy /Users/$(whoami)/Library/Logs/Homebrew/
-RmCreate ${HOMEBREW_PREFIX}/Caskroom
-RmCreate ${HOMEBREW_PREFIX}/Cellar
-RmCreate ${HOMEBREW_PREFIX}/var/homebrew
-directories=(bin etc include lib sbin share var opt
+if [[ "$UNAME_MACHINE" != "arm64" ]]; then
+  RmCreate ${HOMEBREW_PREFIX}/Caskroom
+  RmCreate ${HOMEBREW_PREFIX}/Cellar
+  RmCreate ${HOMEBREW_PREFIX}/var/homebrew
+  directories=(bin etc include lib sbin share var opt
              share/zsh share/zsh/site-functions
              var/homebrew var/homebrew/linked
              Cellar Caskroom Homebrew Frameworks)
-for dir in "${directories[@]}"; do
-  if ! [[ -d "${HOMEBREW_PREFIX}/${dir}" ]]; then
-    CreateFolder "${HOMEBREW_PREFIX}/${dir}"
-  fi
-  AddPermission ${HOMEBREW_PREFIX}/${dir}
-done
+  for dir in "${directories[@]}"; do
+    if ! [[ -d "${HOMEBREW_PREFIX}/${dir}" ]]; then
+      CreateFolder "${HOMEBREW_PREFIX}/${dir}"
+    fi
+    AddPermission ${HOMEBREW_PREFIX}/${dir}
+  done
+fi
 
 git --version
 if [ $? -ne 0 ];then
