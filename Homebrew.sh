@@ -265,8 +265,9 @@ export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:${HOMEBREW_REPOSITORY}/
 RmCreate ${HOMEBREW_REPOSITORY}
 RmAndCopy /Users/$(whoami)/Library/Caches/Homebrew/
 RmAndCopy /Users/$(whoami)/Library/Logs/Homebrew/
-if [[ "$UNAME_MACHINE" != "arm64" ]]; then
+if [[ "$UNAME_MACHINE" == "arm64" ]]; then
   echo "arm架构平台 跳过创建文件夹"
+else
   RmCreate ${HOMEBREW_PREFIX}/Caskroom
   RmCreate ${HOMEBREW_PREFIX}/Cellar
   RmCreate ${HOMEBREW_PREFIX}/var/homebrew
