@@ -266,6 +266,7 @@ RmCreate ${HOMEBREW_REPOSITORY}
 RmAndCopy /Users/$(whoami)/Library/Caches/Homebrew/
 RmAndCopy /Users/$(whoami)/Library/Logs/Homebrew/
 if [[ "$UNAME_MACHINE" != "arm64" ]]; then
+  echo "arm架构平台 跳过创建文件夹"
   RmCreate ${HOMEBREW_PREFIX}/Caskroom
   RmCreate ${HOMEBREW_PREFIX}/Cellar
   RmCreate ${HOMEBREW_PREFIX}/var/homebrew
