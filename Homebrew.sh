@@ -357,22 +357,21 @@ echo "
 JudgeSuccess
 source "${shell_profile}"
 
-echo '
-==> 安装完成，brew版本
-'
 #判断系统版本
 if version_gt "$macos_version" "10.14"; then
-    echo "$macos_version"
+    echo "电脑系统版本：$macos_version"
 else
     echo '\033[1;31m检测到你不是最新系统，会有一些报错，请稍等Ruby下载安装;\033[0m
     '
 fi
 
+echo '
+==> 安装完成，brew版本
+'
 AddPermission ${HOMEBREW_REPOSITORY}
 #先暂时设置到清华大学源，中科大没有Ruby下载镜像
 HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
-echo 'brew -v
-'
+
 brew -v
 if [ $? -ne 0 ];then
     echo '发现错误，自动修复一次！'
