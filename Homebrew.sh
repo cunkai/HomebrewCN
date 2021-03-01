@@ -261,7 +261,7 @@ echo '==> 通过命令删除之前的brew、创建一个新的Homebrew文件夹
 \033[1;36m请输入开机密码，输入过程不显示，输入完后回车\033[0m'
 sudo echo '开始执行'
 # 让环境暂时纯粹，重启终端后恢复
-export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:${HOMEBREW_REPOSITORY}/bin
 RmCreate ${HOMEBREW_REPOSITORY}
 RmAndCopy /Users/$(whoami)/Library/Caches/Homebrew/
 RmAndCopy /Users/$(whoami)/Library/Logs/Homebrew/
@@ -410,6 +410,7 @@ else
         查找软件：brew search google（其中google替换为要查找的软件关键字）
         查看brew版本：brew -v  更新brew版本：brew update
 \033[1;32m
-        https://zhuanlan.zhihu.com/p/111014448  欢迎来给点个赞\033[0m
+        欢迎右键点击下方地址-打开URL 来给点个赞
+        https://zhuanlan.zhihu.com/p/111014448 \033[0m
     "
 fi
