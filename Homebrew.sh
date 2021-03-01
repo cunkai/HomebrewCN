@@ -265,9 +265,8 @@ export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:${HOMEBREW_REPOSITORY}/
 RmCreate ${HOMEBREW_REPOSITORY}
 RmAndCopy /Users/$(whoami)/Library/Caches/Homebrew/
 RmAndCopy /Users/$(whoami)/Library/Logs/Homebrew/
-if [[ "$UNAME_MACHINE" == "arm64" ]]; then
-  echo "arm架构平台 跳过创建文件夹"
-else
+
+if [[ "${HOMEBREW_REPOSITORY}" != "${HOMEBREW_PREFIX}" ]]; then
   RmCreate ${HOMEBREW_PREFIX}/Caskroom
   RmCreate ${HOMEBREW_PREFIX}/Cellar
   RmCreate ${HOMEBREW_PREFIX}/var/homebrew
@@ -303,7 +302,6 @@ echo '==> 创建brew的替身'
 find ${HOMEBREW_PREFIX}/bin -name brew -exec sudo rm -f {} \;
 if [[ "${HOMEBREW_REPOSITORY}" != "${HOMEBREW_PREFIX}" ]]; then
   execute "ln" "-sf" "${HOMEBREW_REPOSITORY}/bin/brew" "${HOMEBREW_PREFIX}/bin/brew"
-  JudgeSuccess
 fi
 echo '==> 克隆Homebrew Core(224M+) 
 \033[1;36m此处如果显示Password表示需要再次输入开机密码，输入完后回车\033[0m'
@@ -354,9 +352,7 @@ echo "环境变量写入->${shell_profile}"
 
 echo "
   export HOMEBREW_BOTTLE_DOMAIN=${USER_HOMEBREW_BOTTLE_DOMAIN} #ckbrew
-  export PATH=\"${HOMEBREW_PREFIX}/bin:\$PATH\" #ckbrew
-  export PATH=\"${HOMEBREW_PREFIX}/sbin:\$PATH\" #ckbrew
-  export PATH=\"${HOMEBREW_REPOSITORY}/bin:\$PATH\" #ckbrew
+  eval \$(${HOMEBREW_REPOSITORY}/bin/brew shellenv) #ckbrew
 " >> ${shell_profile} 
 JudgeSuccess
 source "${shell_profile}"
