@@ -104,8 +104,8 @@ case "$SHELL" in
     shell_profile="${HOME}/.profile"
     ;;
 esac
-#删除brew环境变量
-sed -i "" "s/export.*ckbrew//g" ${shell_profile}
+#删除之前的环境变量
+sed -i "" "/ckbrew/d" ${shell_profile}
 
 echo "
 

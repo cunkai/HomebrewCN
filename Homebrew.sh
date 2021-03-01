@@ -526,6 +526,10 @@ echo "
 " >> ${shell_profile} 
 JudgeSuccess
 source "${shell_profile}"
+if [ $? -ne 0 ];then
+    echo "\033[1;31m发现错误，${shell_profile} 文件中有错误，建议根据上一句提示修改；
+                否则会导致提示 permission denied: brew\033[0m"
+fi
 
 #判断系统版本
 if version_gt "$macos_version" "10.14"; then
