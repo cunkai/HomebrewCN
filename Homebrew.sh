@@ -351,6 +351,7 @@ echo "
   export PATH=\"${HOMEBREW_REPOSITORY}/bin:\$PATH\" #ckbrew
 " >> ${shell_profile} 
 JudgeSuccess
+echo "环境变量写入->${shell_profile}"
 source ${shell_profile}
 
 echo '
