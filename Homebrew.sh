@@ -266,19 +266,21 @@ RmCreate ${HOMEBREW_REPOSITORY}
 RmAndCopy /Users/$(whoami)/Library/Caches/Homebrew/
 RmAndCopy /Users/$(whoami)/Library/Logs/Homebrew/
 
-RmCreate ${HOMEBREW_PREFIX}/Caskroom
-RmCreate ${HOMEBREW_PREFIX}/Cellar
-RmCreate ${HOMEBREW_PREFIX}/var/homebrew
-directories=(bin etc include lib sbin share var opt
-            share/zsh share/zsh/site-functions
-            var/homebrew var/homebrew/linked
-            Cellar Caskroom Homebrew Frameworks)
-for dir in "${directories[@]}"; do
-  if ! [[ -d "${HOMEBREW_PREFIX}/${dir}" ]]; then
-    CreateFolder "${HOMEBREW_PREFIX}/${dir}"
-  fi
-  AddPermission ${HOMEBREW_PREFIX}/${dir}
-done
+if [[ "${HOMEBREW_REPOSITORY}" != "${HOMEBREW_PREFIX}" ]]; then
+  RmCreate ${HOMEBREW_PREFIX}/Caskroom
+  RmCreate ${HOMEBREW_PREFIX}/Cellar
+  RmCreate ${HOMEBREW_PREFIX}/var/homebrew
+  directories=(bin etc include lib sbin share var opt
+             share/zsh share/zsh/site-functions
+             var/homebrew var/homebrew/linked
+             Cellar Caskroom Homebrew Frameworks)
+  for dir in "${directories[@]}"; do
+    if ! [[ -d "${HOMEBREW_PREFIX}/${dir}" ]]; then
+      CreateFolder "${HOMEBREW_PREFIX}/${dir}"
+    fi
+    AddPermission ${HOMEBREW_PREFIX}/${dir}
+  done
+fi
 
 git --version
 if [ $? -ne 0 ];then
@@ -297,8 +299,8 @@ warning_if
 sudo git clone $USER_BREW_GIT ${HOMEBREW_REPOSITORY}
 JudgeSuccess 尝试再次运行自动脚本选择其他下载源或者切换网络 out
 echo '==> 创建brew的替身'
-find ${HOMEBREW_PREFIX}/bin -name brew -exec sudo rm -f {} \;
 if [[ "${HOMEBREW_REPOSITORY}" != "${HOMEBREW_PREFIX}" ]]; then
+  find ${HOMEBREW_PREFIX}/bin -name brew -exec sudo rm -f {} \;
   execute "ln" "-sf" "${HOMEBREW_REPOSITORY}/bin/brew" "${HOMEBREW_PREFIX}/bin/brew"
 fi
 echo '==> 克隆Homebrew Core(224M+) 
