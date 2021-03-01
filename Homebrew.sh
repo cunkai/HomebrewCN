@@ -266,21 +266,19 @@ RmCreate ${HOMEBREW_REPOSITORY}
 RmAndCopy /Users/$(whoami)/Library/Caches/Homebrew/
 RmAndCopy /Users/$(whoami)/Library/Logs/Homebrew/
 
-if [[ "${HOMEBREW_REPOSITORY}" != "${HOMEBREW_PREFIX}" ]]; then
-  RmCreate ${HOMEBREW_PREFIX}/Caskroom
-  RmCreate ${HOMEBREW_PREFIX}/Cellar
-  RmCreate ${HOMEBREW_PREFIX}/var/homebrew
-  directories=(bin etc include lib sbin share var opt
-             share/zsh share/zsh/site-functions
-             var/homebrew var/homebrew/linked
-             Cellar Caskroom Homebrew Frameworks)
-  for dir in "${directories[@]}"; do
-    if ! [[ -d "${HOMEBREW_PREFIX}/${dir}" ]]; then
-      CreateFolder "${HOMEBREW_PREFIX}/${dir}"
-    fi
-    AddPermission ${HOMEBREW_PREFIX}/${dir}
-  done
-fi
+RmCreate ${HOMEBREW_PREFIX}/Caskroom
+RmCreate ${HOMEBREW_PREFIX}/Cellar
+RmCreate ${HOMEBREW_PREFIX}/var/homebrew
+directories=(bin etc include lib sbin share var opt
+            share/zsh share/zsh/site-functions
+            var/homebrew var/homebrew/linked
+            Cellar Caskroom Homebrew Frameworks)
+for dir in "${directories[@]}"; do
+  if ! [[ -d "${HOMEBREW_PREFIX}/${dir}" ]]; then
+    CreateFolder "${HOMEBREW_PREFIX}/${dir}"
+  fi
+  AddPermission ${HOMEBREW_PREFIX}/${dir}
+done
 
 git --version
 if [ $? -ne 0 ];then
