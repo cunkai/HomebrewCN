@@ -350,6 +350,8 @@ fi
 #删除之前的环境变量
 sed -i "" "s/export.*ckbrew//g" ${shell_profile}
 #写入环境变量到文件
+echo "环境变量写入->${shell_profile}"
+
 echo "
   export HOMEBREW_BOTTLE_DOMAIN=${USER_HOMEBREW_BOTTLE_DOMAIN} #ckbrew
   export PATH=\"${HOMEBREW_PREFIX}/bin:\$PATH\" #ckbrew
@@ -357,8 +359,7 @@ echo "
   export PATH=\"${HOMEBREW_REPOSITORY}/bin:\$PATH\" #ckbrew
 " >> ${shell_profile} 
 JudgeSuccess
-echo "环境变量写入->${shell_profile}"
-source ${shell_profile}
+source "${shell_profile}"
 
 echo '
 ==> 安装完成，brew版本
@@ -380,6 +381,7 @@ brew -v
 if [ $? -ne 0 ];then
     echo '发现错误，自动修复一次！'
     rm -rf /Users/$(whoami)/Library/Caches/Homebrew/
+    export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:${HOMEBREW_REPOSITORY}/bin
     brew update-reset
     if [ $? -ne 0 ];then
       echo '
