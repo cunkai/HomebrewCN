@@ -382,12 +382,18 @@ echo 'brew -v
 '
 brew -v
 if [ $? -ne 0 ];then
-    echo '
-    \033[1;31m失败 查看下面文章第二部分的常见错误
-    https://zhuanlan.zhihu.com/p/111014448
-    如果没有解决，把运行脚本过程截图发到 cunkai.wang@foxmail.com --end
-    \033[0m'
-    exit 0
+    echo '发现错误，自动修复一次！'
+    rm -rf /Users/$(whoami)/Library/Caches/Homebrew/
+    brew update-reset
+    if [ $? -ne 0 ];then
+      echo '
+      \033[1;31m还是失败 查看下面文章第二部分的常见错误
+      https://zhuanlan.zhihu.com/p/111014448
+      如果没有解决，把运行脚本过程截图发到 cunkai.wang@foxmail.com --end
+      \033[0m'
+      brew -v
+      exit 0
+    fi
 else
     echo "\033[1;32mBrew前期配置成功\033[0m"
 fi
