@@ -320,17 +320,6 @@ else
   fi
 fi
 echo '==> 配置国内镜像源HOMEBREW BOTTLE'
-#先判断一下芯片，位置不同
-#Mac
-if [[ "$UNAME_MACHINE" == "arm64" ]]; then
-  #M1
-  HOMEBREW_PREFIX="/opt/homebrew"
-  HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}"
-else
-  #Inter
-  HOMEBREW_PREFIX="/usr/local"
-  HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
-fi
 
 #判断下终端是Bash还是zsh
 case "$SHELL" in
@@ -352,14 +341,14 @@ esac
 if [[ -f ${shell_profile} ]]; then
   AddPermission ${shell_profile}
 fi
-#写入文件
+#删除之前的环境变量
+sed -i "" "s/export.*ckbrew//g" ${shell_profile}
+#写入环境变量到文件
 echo "
-# HomeBrew
-  export HOMEBREW_BOTTLE_DOMAIN=${USER_HOMEBREW_BOTTLE_DOMAIN}
-  export PATH=\"${HOMEBREW_PREFIX}/bin:\$PATH\"
-  export PATH=\"${HOMEBREW_PREFIX}/sbin:\$PATH\"
-  export PATH=\"${HOMEBREW_REPOSITORY}/bin:\$PATH\"
-# HomeBrew END
+  export HOMEBREW_BOTTLE_DOMAIN=${USER_HOMEBREW_BOTTLE_DOMAIN} #ckbrew
+  export PATH=\"${HOMEBREW_PREFIX}/bin:\$PATH\" #ckbrew
+  export PATH=\"${HOMEBREW_PREFIX}/sbin:\$PATH\" #ckbrew
+  export PATH=\"${HOMEBREW_REPOSITORY}/bin:\$PATH\" #ckbrew
 " >> ${shell_profile} 
 JudgeSuccess
 source ${shell_profile}
@@ -420,8 +409,6 @@ else
         查找软件：brew search google（其中google替换为要查找的软件关键字）
         查看brew版本：brew -v  更新brew版本：brew update
 \033[1;32m
-现在可以输入命令open ~/.zshrc -e 或者 open ~/.bash_profile -e 整理一下重复的语句(运行 echo \$SHELL 可以查看应该打开那一个文件修改)
-
         https://zhuanlan.zhihu.com/p/111014448  欢迎来给点个赞\033[0m
     "
 fi

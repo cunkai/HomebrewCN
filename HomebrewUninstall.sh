@@ -88,6 +88,25 @@ for dir in "${directories[@]}"; do
   fi
 done
 
+#判断下终端是Bash还是zsh
+case "$SHELL" in
+  */bash*)
+    if [[ -r "$HOME/.bash_profile" ]]; then
+      shell_profile="${HOME}/.bash_profile"
+    else
+      shell_profile="${HOME}/.profile"
+    fi
+    ;;
+  */zsh*)
+    shell_profile="${HOME}/.zprofile"
+    ;;
+  *)
+    shell_profile="${HOME}/.profile"
+    ;;
+esac
+#删除brew环境变量
+sed -i "" "s/export.*ckbrew//g" ${shell_profile}
+
 echo "
 
 脚本运行结束，并且已经把删除过的文件夹备份到了桌面请自行删除。
