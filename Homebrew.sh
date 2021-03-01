@@ -463,14 +463,15 @@ echo '
 warning_if
 sudo git clone $USER_BREW_GIT ${HOMEBREW_REPOSITORY}
 JudgeSuccess 尝试再次运行自动脚本选择其他下载源或者切换网络 out
+
+#依赖目录创建 授权等等
+CreateBrewLinkFolder
+
 echo '==> 创建brew的替身'
 if [[ "${HOMEBREW_REPOSITORY}" != "${HOMEBREW_PREFIX}" ]]; then
   find ${HOMEBREW_PREFIX}/bin -name brew -exec sudo rm -f {} \;
   execute "ln" "-sf" "${HOMEBREW_REPOSITORY}/bin/brew" "${HOMEBREW_PREFIX}/bin/brew"
 fi
-
-#依赖目录创建 授权等等
-CreateBrewLinkFolder
 
 echo '==> 克隆Homebrew Core(224M+) 
 \033[1;36m此处如果显示Password表示需要再次输入开机密码，输入完后回车\033[0m'
