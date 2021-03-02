@@ -10,7 +10,7 @@ UNAME_MACHINE="$(uname -m)"
 #用户输入极速安装speed，git克隆只取最近新版本
 #但是update会出错，提示需要下载全部数据
 GIT_SPEED=""
-if [[ $0 == "speed" ]] then
+if [[ $0 == "speed" ]]; then
     echo "\033[1;31m
           检测到参数speed，只拉取最新数据，可以正常install使用！
     但是以后brew update的时候会报错，运行报错提示的两句命令即可修复\033[0m
