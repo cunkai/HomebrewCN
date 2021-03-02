@@ -3,9 +3,17 @@
 
 #获取硬件信息
 UNAME_MACHINE="$(uname -m)"
-
 #在X86电脑上测试arm电脑
 # UNAME_MACHINE="arm64"
+
+# 判断是Linux还是Mac os
+OS="$(uname)"
+if [[ "$OS" == "Linux" ]]; then
+  HOMEBREW_ON_LINUX=1
+elif [[ "$OS" != "Darwin" ]]; then
+  abort "Homebrew 只运行在 macOS 和 Linux."
+fi
+
 
 #用户输入极速安装speed，git克隆只取最近新版本
 #但是update会出错，提示需要下载全部数据
@@ -18,23 +26,37 @@ if [[ $0 == "speed" ]] then
     GIT_SPEED="--depth=1"
 fi
 
-#Mac
-if [[ "$UNAME_MACHINE" == "arm64" ]]; then
-  #M1
-  HOMEBREW_PREFIX="/opt/homebrew"
-  HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}"
-else
-  #Inter
-  HOMEBREW_PREFIX="/usr/local"
-  HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
-fi
-HOMEBREW_CACHE="${HOME}/Library/Caches/Homebrew"
+if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
+    #Mac
+    if [[ "$UNAME_MACHINE" == "arm64" ]]; then
+    #M1
+    HOMEBREW_PREFIX="/opt/homebrew"
+    HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}"
+    else
+    #Inter
+    HOMEBREW_PREFIX="/usr/local"
+    HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
+    fi
+    HOMEBREW_CACHE="${HOME}/Library/Caches/Homebrew"
 
-STAT="stat -f"
-CHOWN="/usr/sbin/chown"
-CHGRP="/usr/bin/chgrp"
-GROUP="admin"
-TOUCH="/usr/bin/touch"
+    STAT="stat -f"
+    CHOWN="/usr/sbin/chown"
+    CHGRP="/usr/bin/chgrp"
+    GROUP="admin"
+    TOUCH="/usr/bin/touch"
+else
+  #Linux
+  UNAME_MACHINE="$(uname -m)"
+
+  HOMEBREW_PREFIX_DEFAULT="/home/linuxbrew/.linuxbrew"
+  HOMEBREW_CACHE="${HOME}/.cache/Homebrew"
+
+  STAT="stat --printf"
+  CHOWN="/bin/chown"
+  CHGRP="/bin/chgrp"
+  GROUP="$(id -gn)"
+  TOUCH="/bin/touch"
+fi
 
 #获取前面两个.的数据
 major_minor() {
@@ -168,7 +190,7 @@ exists_but_not_writable() {
 }
 #文件所有者
 get_owner() {
-  stat -f "%u" "$1"
+  $(shell_join "$STAT %u $1" )
 }
 #文件本人无权限
 file_not_owned() {
@@ -176,7 +198,7 @@ file_not_owned() {
 }
 #获取所属的组
 get_group() {
-  stat -f "%g" "$1"
+  $(shell_join "$STAT %g $1" )
 }
 #不在所属组
 file_not_grpowned() {
@@ -184,7 +206,7 @@ file_not_grpowned() {
 }
 #获得当前文件夹权限 例如777
 get_permission() {
-  stat -f "%A" "$1"
+  $(shell_join "$STAT %A $1" )
 }
 #授权当前用户权限
 user_only_chmod() {
@@ -370,11 +392,19 @@ case $MY_DOWN_NUM in
 "2")
     echo "
     你选择了清华大学下载源"
-    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
+    if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
+        USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
+    else
+        USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/linuxbrew-bottles/
+    fi
     #HomeBrew基础框架
     USER_BREW_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git
     #HomeBrew Core
-    USER_CORE_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git
+    if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
+        USER_CORE_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git
+    else
+        USER_CORE_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/linuxbrew-core.git
+    fi
     #HomeBrew Cask
     USER_CASK_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask.git
     USER_CASK_FONTS_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask-fonts.git
@@ -383,11 +413,19 @@ case $MY_DOWN_NUM in
 "3")
     echo "
     北京外国语大学下载源"
-    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
+    if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
+        USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
+    else
+        USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/linuxbrew-bottles/
+    fi
     #HomeBrew基础框架
     USER_BREW_GIT=https://mirrors.bfsu.edu.cn/git/homebrew/brew.git
     #HomeBrew Core
-    USER_CORE_GIT=https://mirrors.bfsu.edu.cn/git/homebrew/homebrew-core.git
+    if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
+        USER_CORE_GIT=https://mirrors.bfsu.edu.cn/git/homebrew/homebrew-core.git
+    else
+        USER_CORE_GIT=https://mirrors.bfsu.edu.cn/git/homebrew/linuxbrew-core.git
+    fi
     #HomeBrew Cask
     USER_CASK_GIT=https://mirrors.bfsu.edu.cn/git/homebrew/homebrew-cask.git
     USER_CASK_FONTS_GIT=https://mirrors.bfsu.edu.cn/git/homebrew/homebrew-cask-fonts.git
@@ -400,18 +438,27 @@ case $MY_DOWN_NUM in
     #HomeBrew基础框架
     USER_BREW_GIT=https://mirrors.cloud.tencent.com/homebrew/brew.git 
     #HomeBrew Core
-    USER_CORE_GIT=https://mirrors.cloud.tencent.com/homebrew/homebrew-core.git
+    if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
+        USER_CORE_GIT=https://mirrors.cloud.tencent.com/homebrew/homebrew-core.git
+    else
+        USER_CORE_GIT=https://mirrors.cloud.tencent.com/homebrew/linuxbrew-core.git
+    fi
     #HomeBrew Cask
     USER_CASK_GIT=https://mirrors.cloud.tencent.com/homebrew/homebrew-cask.git
 ;;
 "5")
     echo "
-    你选择了阿里巴巴下载源(阿里缺少cask源)"
+    你选择了阿里巴巴下载源(无mac的cask源,无Linux版本)"
     USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles
     #HomeBrew基础框架
     USER_BREW_GIT=https://mirrors.aliyun.com/homebrew/brew.git 
     #HomeBrew Core
-    USER_CORE_GIT=https://mirrors.aliyun.com/homebrew/homebrew-core.git
+    if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
+        USER_CORE_GIT=https://mirrors.aliyun.com/homebrew/homebrew-core.git
+    else
+        USER_CORE_GIT=https://mirrors.ustc.edu.cn/linuxbrew-core.git
+        echo "阿里巴巴无core，这里替换为了中国科学技术大学的linuxbrew-core"
+    fi
     #HomeBrew Cask
     USER_CASK_GIT=https://mirrors.aliyun.com/homebrew/homebrew-cask.git
 ;;
@@ -419,11 +466,19 @@ case $MY_DOWN_NUM in
   echo "
   你选择了中国科学技术大学下载源"
   #HomeBrew 下载源 install
-  USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles
+  if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
+    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles
+  else
+    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/linuxbrew-bottles/
+  fi
   #HomeBrew基础框架
   USER_BREW_GIT=https://mirrors.ustc.edu.cn/brew.git
   #HomeBrew Core
-  USER_CORE_GIT=https://mirrors.ustc.edu.cn/homebrew-core.git
+  if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
+    USER_CORE_GIT=https://mirrors.ustc.edu.cn/homebrew-core.git
+  else
+    USER_CORE_GIT=https://mirrors.ustc.edu.cn/linuxbrew-core.git
+  fi
   #HomeBrew Cask
   USER_CASK_GIT=https://mirrors.ustc.edu.cn/homebrew-cask.git
 ;;
@@ -608,7 +663,7 @@ if [[ "$UNAME_MACHINE" == "arm64" ]]; then
 fi
 #极速模式提示Update修复方法
 if [[ $0 == "speed" ]]; then
-  echo "\033[1;31m  极速版本安装完成，install功能正常，如果需要update功能请自行运行下面两句话命令
+  echo "\033[1;31m  极速版本安装完成，install功能正常，如果需要update功能请自行运行下面两句命令
 
     git -C ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core fetch --unshallow
 
