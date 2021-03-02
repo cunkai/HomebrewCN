@@ -550,11 +550,11 @@ else
   fi
   HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
 fi
-
+#删除以前的Homebrew
+RmCreate ${HOMEBREW_REPOSITORY}
 # 让环境暂时纯粹，重启终端后恢复
 if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
     export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:${HOMEBREW_REPOSITORY}/bin
-    RmCreate ${HOMEBREW_REPOSITORY}
     RmAndCopy /Users/$(whoami)/Library/Caches/Homebrew/
     RmAndCopy /Users/$(whoami)/Library/Logs/Homebrew/
 fi
