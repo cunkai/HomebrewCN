@@ -34,6 +34,8 @@ tty_reset="$(tty_escape 0)"
 #用户输入极速安装speed，git克隆只取最近新版本
 #但是update会出错，提示需要下载全部数据
 GIT_SPEED=""
+echo $@
+echo $1
 for dir in $@; do
     echo $dir
     if [[ $dir == "speed" ]]; then
