@@ -415,7 +415,8 @@ if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
 #mac才显示腾讯 阿里，他们对linux目前支持很差
     echo '4、腾讯下载源（不显示下载进度） 5、阿里巴巴下载源(缺少cask源)'
 fi
-echo -n "$tty_blue请输入序号: "
+echo -n "
+$tty_blue请输入序号: "
 read MY_DOWN_NUM
 echo "$tty_reset"
 case $MY_DOWN_NUM in
@@ -718,7 +719,7 @@ echo '
 '
 HOMEBREW_BOTTLE_DOMAIN=${USER_HOMEBREW_BOTTLE_DOMAIN}
 brew update
-if [[ $? -ne 0 ]] && [[ $GIT_SPEED -eq "" ]];then
+if [[ $? -ne 0 ]] && [[ $GIT_SPEED == "" ]];then
     error_game_over
     exit 0
 else
@@ -742,7 +743,7 @@ if [[ "$UNAME_MACHINE" == "arm64" ]]; then
   echo "${tty_red}  M1芯片重启终端或者运行${tty_green} source ${shell_profile}${tty_red}  ，否则可能无法使用  ${tty_reset}"
 fi
 #极速模式提示Update修复方法
-if [[ $GIT_SPEED -ne "" ]]; then
+if [[ $GIT_SPEED != "" ]]; then
   echo "${tty_red}  极速版本安装完成，install功能正常，如果需要update功能请自行运行下面两句命令
 
     git -C ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core fetch --unshallow
