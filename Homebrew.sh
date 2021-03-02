@@ -35,6 +35,7 @@ tty_reset="$(tty_escape 0)"
 #但是update会出错，提示需要下载全部数据
 GIT_SPEED=""
 for dir in $@; do
+    echo $dir
     if [[ $dir == "speed" ]]; then
         echo "$tty_red
             检测到参数speed，只拉取最新数据，可以正常install使用！
