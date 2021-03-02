@@ -21,6 +21,7 @@ elif [[ "$OS" != "Darwin" ]]; then
 fi
 
 # 字符串染色程序
+# 40: 黑 30: 黑  41:红  31: 红  42:绿  32: 绿  43:黄  33: 黄  44:蓝  34: 蓝  45:紫  35: 紫  46:深绿 36: 深绿  47:白色 37: 白色
 if [[ -t 1 ]]; then
   tty_escape() { printf "\033[%sm" "$1"; }
 else
@@ -36,26 +37,19 @@ tty_bold="$(tty_mkbold 39)"
 tty_light_green="$(tty_mkbold 36)"
 tty_reset="$(tty_escape 0)"
 
-# 40: 黑          30: 黑  
-# 41:红           31: 红  
-# 42:绿           32: 绿  
-# 43:黄           33: 黄  
-# 44:蓝           34: 蓝  
-# 45:紫           35: 紫  
-# 46:深绿         36: 深绿  
-# 47:白色         37: 白色  
-  
-
 #用户输入极速安装speed，git克隆只取最近新版本
 #但是update会出错，提示需要下载全部数据
 GIT_SPEED=""
-if [[ $0 == "speed" ]]; then
-    echo "$tty_red
-          检测到参数speed，只拉取最新数据，可以正常install使用！
-    但是以后brew update的时候会报错，运行报错提示的两句命令即可修复
-    $tty_reset"
-    GIT_SPEED="--depth=1"
-fi
+for dir in $@; do
+    if [[ $dir == "speed" ]]; then
+        echo "$tty_red
+            检测到参数speed，只拉取最新数据，可以正常install使用！
+        但是以后brew update的时候会报错，运行报错提示的两句命令即可修复
+        $tty_reset"
+        GIT_SPEED="--depth=1"
+    fi
+done
+
 #设置一些平台地址
 if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
     #Mac
@@ -590,7 +584,7 @@ if [ $? -ne 0 ];then
         xcode-select --install
         exit 0
     else
-        echo "安装git"
+        echo "$tty_red 发现缺少git，开始安装，请输入Y ${tty_reset}"
         sudo apt install git
     fi
 fi
@@ -694,6 +688,7 @@ if [[ -n "${HOMEBREW_ON_LINUX-}" ]]; then
         if [ $? -ne 0 ];then
             sudo yum install curl
             if [ $? -ne 0 ];then
+                echo '失败 请自行安装curl 可以参考https://www.howtoing.com/install-curl-in-linux'
                 error_game_over
             fi
         fi
@@ -719,7 +714,7 @@ echo '
 '
 HOMEBREW_BOTTLE_DOMAIN=${USER_HOMEBREW_BOTTLE_DOMAIN}
 brew update
-if [[ $? -ne 0 ]] && [[ $0 -ne "speed" ]];then
+if [[ $? -ne 0 ]] && [[ GIT_SPEED -eq "" ]];then
     error_game_over
     exit 0
 else
@@ -743,7 +738,7 @@ if [[ "$UNAME_MACHINE" == "arm64" ]]; then
   echo "${tty_red}  M1芯片重启终端或者运行${tty_green} source ${shell_profile}${tty_red}  ，否则可能无法使用  ${tty_reset}"
 fi
 #极速模式提示Update修复方法
-if [[ $0 == "speed" ]]; then
+if [[ GIT_SPEED -ne "" ]]; then
   echo "${tty_red}  极速版本安装完成，install功能正常，如果需要update功能请自行运行下面两句命令
 
     git -C ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core fetch --unshallow
