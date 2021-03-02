@@ -735,10 +735,7 @@ ${tty_green}
         https://zhuanlan.zhihu.com/p/111014448 ${tty_reset}
     "
 fi
-#M1芯片提醒 环境变量
-if [[ "$UNAME_MACHINE" == "arm64" ]]; then
-  echo "${tty_red}  M1芯片重启终端或者运行${tty_green} source ${shell_profile}${tty_red}  ，否则可能无法使用  ${tty_reset}"
-fi
+
 #极速模式提示Update修复方法
 if [[ $GIT_SPEED != "" ]]; then
   echo "${tty_red}  极速版本安装完成，install功能正常，如果需要update功能请自行运行下面两句命令
@@ -749,3 +746,7 @@ if [[ $GIT_SPEED != "" ]]; then
 
     ${tty_reset}"
 fi
+
+echo "
+${tty_red} 重启或者运行${tty_green} source ${shell_profile}${tty_red}  ，否则可能无法使用  ${tty_reset}
+"
