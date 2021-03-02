@@ -70,6 +70,7 @@ if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
     fi
     HOMEBREW_CACHE="${HOME}/Library/Caches/Homebrew"
 
+    USER_WHOAMI="/Users/${whoami}"
     STAT="stat -f"
     CHOWN="/usr/sbin/chown"
     CHGRP="/usr/bin/chgrp"
@@ -82,6 +83,7 @@ else
   HOMEBREW_PREFIX_DEFAULT="/home/linuxbrew/.linuxbrew"
   HOMEBREW_CACHE="${HOME}/.cache/Homebrew"
 
+  USER_WHOAMI="/home/${whoami}"
   STAT="stat --printf"
   CHOWN="/bin/chown"
   CHGRP="/bin/chgrp"
@@ -189,10 +191,10 @@ RmAndCopy()
 {
   if [[ -d $1 ]]; then
     echo "  ---备份要删除的$1到系统桌面...."
-    if ! [[ -d /Users/$(whoami)/Desktop/Old_Homebrew/$TIME/$1 ]]; then
-      mkdir -p /Users/$(whoami)/Desktop/Old_Homebrew/$TIME/$1
+    if ! [[ -d $USER_WHOAMI/Desktop/Old_Homebrew/$TIME/$1 ]]; then
+      mkdir -p $USER_WHOAMI/Desktop/Old_Homebrew/$TIME/$1
     fi
-    cp -rf $1 /Users/$(whoami)/Desktop/Old_Homebrew/$TIME/$1
+    cp -rf $1 $USER_WHOAMI/Desktop/Old_Homebrew/$TIME/$1
     echo "   ---$1 备份完成"
   fi
   sudo rm -rf $1
@@ -562,11 +564,12 @@ fi
 sudo echo '开始执行'
 #删除以前的Homebrew
 RmCreate ${HOMEBREW_REPOSITORY}
-# 让环境暂时纯粹，重启终端后恢复
+RmAndCopy $USER_WHOAMI/Library/Caches/Homebrew/
+RmAndCopy $USER_WHOAMI/Library/Logs/Homebrew/
+
+# 让环境暂时纯粹，脚本运行结束后恢复
 if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
     export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:${HOMEBREW_REPOSITORY}/bin
-    RmAndCopy /Users/$(whoami)/Library/Caches/Homebrew/
-    RmAndCopy /Users/$(whoami)/Library/Logs/Homebrew/
 fi
 git --version
 if [ $? -ne 0 ];then
@@ -676,7 +679,7 @@ HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
 brew -v
 if [ $? -ne 0 ];then
     echo '发现错误，自动修复一次！'
-    rm -rf /Users/$(whoami)/Library/Caches/Homebrew/
+    rm -rf $USER_WHOAMI/Library/Caches/Homebrew/
     export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:${HOMEBREW_REPOSITORY}/bin
     brew update-reset
     if [ $? -ne 0 ];then
