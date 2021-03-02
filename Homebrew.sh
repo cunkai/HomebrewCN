@@ -397,8 +397,8 @@ warning_if(){
 }
 
 echo "
-              $tty_green 开始执行Brew自动安装程序$tty_reset
-             $tty_light_green[cunkai.wang@foxmail.com]$tty_reset
+              $tty_green 开始执行Brew自动安装程序 $tty_reset
+             $tty_light_green [cunkai.wang@foxmail.com] $tty_reset
            ['$TIME']['$macos_version']
        ${tty_light_green} https://zhuanlan.zhihu.com/p/111014448 ${tty_reset}
 "
