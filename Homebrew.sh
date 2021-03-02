@@ -7,6 +7,16 @@ UNAME_MACHINE="$(uname -m)"
 #在X86电脑上测试arm电脑
 # UNAME_MACHINE="arm64"
 
+#用户输入极速安装speed，git克隆只取最近新版本
+#但是update会出错，提示需要下载全部数据
+GIT_SPEED=""
+if [[ $0 == "speed" ]] then
+    echo "\033[1;31m
+          检测到参数speed，只拉取最新数据，可以正常install使用！
+    但是以后brew update的时候会报错，运行报错提示的两句命令即可修复\033[0m
+    "
+    GIT_SPEED="--depth=1"
+fi
 
 #Mac
 if [[ "$UNAME_MACHINE" == "arm64" ]]; then
@@ -461,7 +471,7 @@ echo '
 ==> 克隆Homebrew基本文件(32M+)
 '
 warning_if
-sudo git clone $USER_BREW_GIT ${HOMEBREW_REPOSITORY}
+sudo git clone ${GIT_SPEED} $USER_BREW_GIT ${HOMEBREW_REPOSITORY}
 JudgeSuccess 尝试再次运行自动脚本选择其他下载源或者切换网络 out
 
 #依赖目录创建 授权等等
@@ -476,7 +486,7 @@ fi
 echo '==> 克隆Homebrew Core(224M+) 
 \033[1;36m此处如果显示Password表示需要再次输入开机密码，输入完后回车\033[0m'
 sudo mkdir -p ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core
-sudo git clone $USER_CORE_GIT ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core/
+sudo git clone ${GIT_SPEED} $USER_CORE_GIT ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core/
 JudgeSuccess 尝试再次运行自动脚本选择其他下载源或者切换网络 out
 echo '==> 克隆Homebrew Cask(248M+) 类似AppStore 
 \033[1;36m此处如果显示Password表示需要再次输入开机密码，输入完后回车\033[0m'
@@ -484,7 +494,7 @@ if [[ "$MY_DOWN_NUM" -eq "5" ]];then
   echo '\033[1;33m阿里源没有Cask 跳过\033[0m'
 else
   sudo mkdir -p ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask
-  sudo git clone $USER_CASK_GIT ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask/
+  sudo git clone ${GIT_SPEED} $USER_CASK_GIT ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask/
   if [ $? -ne 0 ];then
       sudo rm -rf ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask
       echo '\033[1;31m尝试切换下载源或者切换网络,不过Cask组件非必须模块。可以忽略\033[0m'
@@ -569,12 +579,13 @@ echo '
 '
 HOMEBREW_BOTTLE_DOMAIN=${USER_HOMEBREW_BOTTLE_DOMAIN}
 brew update
-if [ $? -ne 0 ];then
+if [[ $? -ne 0 ]] && [[ $0 -ne "speed" ]];then
     echo '
     \033[1;31m失败 去下面文章看一下第二部分的常见错误解决办法
     https://zhuanlan.zhihu.com/p/111014448
     如果没有解决，把运行脚本过程截图发到 cunkai.wang@foxmail.com \033[0m
     '
+    exit 0
 else
     echo "
         \033[1;32m上一句如果提示Already up-to-date表示成功\033[0m
@@ -591,6 +602,17 @@ else
         https://zhuanlan.zhihu.com/p/111014448 \033[0m
     "
 fi
+#M1芯片提醒 环境变量
 if [[ "$UNAME_MACHINE" == "arm64" ]]; then
   echo "\033[1;31m  M1芯片重启终端或者运行\033[1;32m source ${shell_profile}\033[1;31m  ，否则可能无法使用  \033[0m"
+fi
+#极速模式提示Update修复方法
+if [[ $0 == "speed" ]]; then
+  echo "\033[1;31m  极速版本安装完成，install功能正常，如果需要update功能请自行运行下面两句命令
+
+    git -C ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core fetch --unshallow
+
+    git -C ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask fetch --unshallow
+
+    \033[0m"
 fi
