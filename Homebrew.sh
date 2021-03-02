@@ -44,6 +44,11 @@ for dir in $@; do
     fi
 done
 
+#获取前面两个.的数据
+major_minor() {
+  echo "${1%%.*}.$(x="${1#*.}"; echo "${x%%.*}")"
+}
+
 #设置一些平台地址
 if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
     #Mac
@@ -80,10 +85,7 @@ else
   TOUCH="/bin/touch"
 fi
 
-#获取前面两个.的数据
-major_minor() {
-  echo "${1%%.*}.$(x="${1#*.}"; echo "${x%%.*}")"
-}
+
 
 #获取系统时间
 TIME=$(date "+%Y-%m-%d %H:%M:%S")
