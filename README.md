@@ -36,7 +36,10 @@ macOS 和 Linux 缺失软件包的管理器
 
  **--Homebrew中的扩展cask如何使用** 
 
-假设安装firefox运行： brew install --cask firefox
+假设安装firefox运行： 
+
+`brew install --cask firefox`
+
 cask的图形化软件一般国内没有任何缓冲，下载很慢。
 
 
