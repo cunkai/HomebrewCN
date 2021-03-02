@@ -34,11 +34,10 @@ tty_reset="$(tty_escape 0)"
 #用户输入极速安装speed，git克隆只取最近新版本
 #但是update会出错，提示需要下载全部数据
 GIT_SPEED=""
-echo $@
-echo $1
+
 for dir in $@; do
     echo $dir
-    if [[ $dir == "speed" ]]; then
+    if [[ $dir == "speed" ]] || [[ $0 == "speed" ]]; then
         echo "$tty_red
             检测到参数speed，只拉取最新数据，可以正常install使用！
         但是以后brew update的时候会报错，运行报错提示的两句命令即可修复
