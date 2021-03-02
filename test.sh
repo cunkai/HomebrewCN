@@ -607,7 +607,7 @@ if [[ "$UNAME_MACHINE" == "arm64" ]]; then
   echo "\033[1;31m  M1芯片重启终端或者运行\033[1;32m source ${shell_profile}\033[1;31m  ，否则可能无法使用  \033[0m"
 fi
 #极速模式提示Update修复方法
-if [[ $0 -ne "speed" ]]; then
+if [[ $0 == "speed" ]]; then
   echo "\033[1;31m  极速版本安装完成，install功能正常，如果需要update功能请自行运行下面两句话命令
 
     git -C ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core fetch --unshallow
