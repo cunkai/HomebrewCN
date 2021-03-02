@@ -2,13 +2,21 @@
 
 安装脚本：（已经支持M1芯片，可以直接运行）
 
+
+```
 /bin/zsh -c "$(curl -fsSL https://gitee.com/cunkai/HomebrewCN/raw/master/Homebrew.sh)"
+
+```
 
 
 
 卸载脚本：
 
+
+```
 /bin/zsh -c "$(curl -fsSL https://gitee.com/cunkai/HomebrewCN/raw/master/HomebrewUninstall.sh)"
+
+```
 
 
 
