@@ -12,8 +12,8 @@ UNAME_MACHINE="$(uname -m)"
 GIT_SPEED=""
 if [[ $0 == "speed" ]] then
     echo "\033[1;31m
-            检测到参数speed，只拉去最新数据，可以正常使用！
-    speed模式下以后brew update的时候会报错，运行报错提示的两句话即可\033[0m
+          检测到参数speed，只拉取最新数据，可以正常install使用！
+    但是以后brew update的时候会报错，运行报错提示的两句命令即可修复\033[0m
     "
     GIT_SPEED="--depth=1"
 fi
@@ -585,6 +585,7 @@ if [[ $? -ne 0 ]] && [[ $0 -ne "speed" ]];then
     https://zhuanlan.zhihu.com/p/111014448
     如果没有解决，把运行脚本过程截图发到 cunkai.wang@foxmail.com \033[0m
     '
+    exit 0
 else
     echo "
         \033[1;32m上一句如果提示Already up-to-date表示成功\033[0m
@@ -601,6 +602,17 @@ else
         https://zhuanlan.zhihu.com/p/111014448 \033[0m
     "
 fi
+#M1芯片提醒 环境变量
 if [[ "$UNAME_MACHINE" == "arm64" ]]; then
   echo "\033[1;31m  M1芯片重启终端或者运行\033[1;32m source ${shell_profile}\033[1;31m  ，否则可能无法使用  \033[0m"
+fi
+#极速模式提示Update修复方法
+if [[ "$UNAME_MACHINE" == "arm64" ]]; then
+  echo "\033[1;31m  极速版本安装完成，install功能正常，如果需要update功能请自行运行下面两句话命令
+
+    git -C ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core fetch --unshallow
+
+    git -C ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask fetch --unshallow
+
+    \033[0m"
 fi
