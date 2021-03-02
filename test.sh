@@ -576,7 +576,7 @@ echo '
 '
 HOMEBREW_BOTTLE_DOMAIN=${USER_HOMEBREW_BOTTLE_DOMAIN}
 brew update
-if [[ $? -ne 0 ] && [ $0 -ne "speed" ]];then
+if [[ $? -ne 0 ]] && [[ $0 -ne "speed" ]];then
     echo '
     \033[1;31m失败 去下面文章看一下第二部分的常见错误解决办法
     https://zhuanlan.zhihu.com/p/111014448
