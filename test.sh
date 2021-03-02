@@ -498,7 +498,7 @@ case $MY_DOWN_NUM in
   USER_CASK_GIT=https://mirrors.ustc.edu.cn/homebrew-cask.git
 ;;
 esac
-echo "$tty_green！！！此脚本将要删除之前的brew(包括它下载的软件)，请自行备份。
+echo -n "$tty_green！！！此脚本将要删除之前的brew(包括它下载的软件)，请自行备份。
 ->是否现在开始执行脚本（N/Y） "
 read MY_Del_Old
 echo "$tty_reset"
@@ -528,11 +528,17 @@ RmAndCopy /Users/$(whoami)/Library/Logs/Homebrew/
 
 git --version
 if [ $? -ne 0 ];then
-  sudo rm -rf "/Library/Developer/CommandLineTools/"
-  echo "${tty_light_green}安装Git${tty_reset}后再运行此脚本，${tty_red}在系统弹窗中点击“安装”按钮
-如果没有弹窗的老系统，需要自己下载安装：https://sourceforge.net/projects/git-osx-installer/ ${tty_reset}"
-  xcode-select --install
-  exit 0
+
+    if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
+        sudo rm -rf "/Library/Developer/CommandLineTools/"
+        echo "${tty_light_green}安装Git${tty_reset}后再运行此脚本，${tty_red}在系统弹窗中点击“安装”按钮
+        如果没有弹窗的老系统，需要自己下载安装：https://sourceforge.net/projects/git-osx-installer/ ${tty_reset}"
+        xcode-select --install
+        exit 0
+    else
+        echo "安装git"
+        sudo apt install git
+    fi
 fi
 
 echo "
