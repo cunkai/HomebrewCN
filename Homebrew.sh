@@ -412,13 +412,13 @@ echo "
        ${tty_light_green} https://zhuanlan.zhihu.com/p/111014448 ${tty_reset}
 "
 #选择一个下载源
-echo -n "$tty_green
+echo -n "$tty_light_green
 请选择一个下载镜像，例如中科大，输入1回车。
 源有时候不稳定，如果git克隆报错重新运行脚本选择源。cask非必须，有部分人需要。
 1、中科大下载源 2、清华大学下载源 3、北京外国语大学下载源 $tty_reset"
 if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
 #mac才显示腾讯 阿里，他们对linux目前支持很差
-    echo '4、腾讯下载源（不显示下载进度） 5、阿里巴巴下载源(缺少cask源)'
+    echo "$tty_green 4、腾讯下载源（不显示下载进度） 5、阿里巴巴下载源(缺少cask源) $tty_reset "
 fi
 echo -n "
 $tty_blue请输入序号: "
