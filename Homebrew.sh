@@ -15,7 +15,6 @@ elif [[ "$OS" != "Darwin" ]]; then
 fi
 
 # 字符串染色程序
-# 40: 黑 30: 黑  41:红  31: 红  42:绿  32: 绿  43:黄  33: 黄  44:蓝  34: 蓝  45:紫  35: 紫  46:深绿 36: 深绿  47:白色 37: 白色
 if [[ -t 1 ]]; then
   tty_escape() { printf "\033[%sm" "$1"; }
 else
@@ -28,7 +27,7 @@ tty_red="$(tty_mkbold 31)"
 tty_green="$(tty_mkbold 32)"
 tty_yellow="$(tty_mkbold 33)"
 tty_bold="$(tty_mkbold 39)"
-tty_light_green="$(tty_mkbold 36)"
+tty_cyan="$(tty_mkbold 36)"
 tty_reset="$(tty_escape 0)"
 
 #用户输入极速安装speed，git克隆只取最近新版本
@@ -407,12 +406,12 @@ warning_if(){
 
 echo "
               $tty_green 开始执行Brew自动安装程序 $tty_reset
-             $tty_light_green [cunkai.wang@foxmail.com] $tty_reset
+             $tty_cyan [cunkai.wang@foxmail.com] $tty_reset
            ['$TIME']['$macos_version']
-       ${tty_light_green} https://zhuanlan.zhihu.com/p/111014448 ${tty_reset}
+       ${tty_cyan} https://zhuanlan.zhihu.com/p/111014448 ${tty_reset}
 "
 #选择一个下载源
-echo -n "$tty_light_green
+echo -n "$tty_green
 请选择一个下载镜像，例如中科大，输入1回车。
 源有时候不稳定，如果git克隆报错重新运行脚本选择源。cask非必须，有部分人需要。
 1、中科大下载源 2、清华大学下载源 3、北京外国语大学下载源 $tty_reset"
@@ -548,7 +547,7 @@ if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
   echo "==> 通过命令删除之前的brew、创建一个新的Homebrew文件夹
 (设置开机密码：在左上角苹果图标->系统偏好设置->"用户与群组"->更改密码)
 (如果提示This incident will be reported. 在"用户与群组"中查看是否管理员)
-${tty_light_green}请输入开机密码，输入过程不显示，输入完后回车${tty_reset}"
+${tty_cyan}请输入开机密码，输入过程不显示，输入完后回车${tty_reset}"
 else
 #Linux
   trap exit SIGINT
@@ -582,7 +581,7 @@ if [ $? -ne 0 ];then
 
     if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
         sudo rm -rf "/Library/Developer/CommandLineTools/"
-        echo "${tty_light_green}安装Git${tty_reset}后再运行此脚本，${tty_red}在系统弹窗中点击“安装”按钮
+        echo "${tty_cyan}安装Git${tty_reset}后再运行此脚本，${tty_red}在系统弹窗中点击“安装”按钮
         如果没有弹窗的老系统，需要自己下载安装：https://sourceforge.net/projects/git-osx-installer/ ${tty_reset}"
         xcode-select --install
         exit 0
@@ -593,7 +592,7 @@ if [ $? -ne 0 ];then
 fi
 
 echo "
-${tty_light_green}下载速度觉得慢可以ctrl+c或control+c重新运行脚本选择下载源${tty_reset}
+${tty_cyan}下载速度觉得慢可以ctrl+c或control+c重新运行脚本选择下载源${tty_reset}
 ==> 克隆Homebrew基本文件
 "
 warning_if
@@ -610,12 +609,12 @@ if [[ "${HOMEBREW_REPOSITORY}" != "${HOMEBREW_PREFIX}" ]]; then
 fi
 
 echo "==> 克隆Homebrew Core
-${tty_light_green}此处如果显示Password表示需要再次输入开机密码，输入完后回车${tty_reset}"
+${tty_cyan}此处如果显示Password表示需要再次输入开机密码，输入完后回车${tty_reset}"
 sudo mkdir -p ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core
 sudo git clone ${GIT_SPEED} $USER_CORE_GIT ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core/
 JudgeSuccess 尝试再次运行自动脚本选择其他下载源或者切换网络 out
 echo "==> 克隆Homebrew Cask 图形化软件
-${tty_light_green}此处如果显示Password表示需要再次输入开机密码，输入完后回车${tty_reset}"
+${tty_cyan}此处如果显示Password表示需要再次输入开机密码，输入完后回车${tty_reset}"
 if [[ "$MY_DOWN_NUM" -eq "5" ]];then
   echo "$tty_yellow阿里源没有Cask 跳过${tty_reset}"
 else
