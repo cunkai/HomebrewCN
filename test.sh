@@ -546,7 +546,8 @@ else
     trap exit SIGINT
     if ! /usr/bin/sudo -n -v &>/dev/null; then
       ohai "通过命令删除之前的brew、创建一个新的Homebrew文件夹"
-      echo "- ${tty_bold}输入你的开机密码${tty_reset} brew将安装到 ${tty_underline}${HOMEBREW_PREFIX_DEFAULT}${tty_reset} (${tty_bold}recommended${tty_reset})"
+      echo "- ${tty_bold}输入你的开机密码${tty_reset} brew将安装到 ${tty_underline}${HOMEBREW_PREFIX_DEFAULT}${tty_reset} (${tty_bold}recommended${tty_reset})
+            输入过程中不显示，输入完成直接回车即可。"
     fi
     if have_sudo_access; then
       HOMEBREW_PREFIX="$HOMEBREW_PREFIX_DEFAULT"
