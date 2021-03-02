@@ -70,12 +70,14 @@ if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
     fi
     HOMEBREW_CACHE="${HOME}/Library/Caches/Homebrew"
 
-    USER_WHOAMI="/Users/${whoami}"
     STAT="stat -f"
     CHOWN="/usr/sbin/chown"
     CHGRP="/usr/bin/chgrp"
     GROUP="admin"
     TOUCH="/usr/bin/touch"
+
+    #获取Mac系统版本
+    macos_version="$(major_minor "$(/usr/bin/sw_vers -productVersion)")"
 else
   #Linux
   UNAME_MACHINE="$(uname -m)"
@@ -83,7 +85,6 @@ else
   HOMEBREW_PREFIX_DEFAULT="/home/linuxbrew/.linuxbrew"
   HOMEBREW_CACHE="${HOME}/.cache/Homebrew"
 
-  USER_WHOAMI="/home/${whoami}"
   STAT="stat --printf"
   CHOWN="/bin/chown"
   CHGRP="/bin/chgrp"
@@ -96,8 +97,6 @@ major_minor() {
   echo "${1%%.*}.$(x="${1#*.}"; echo "${x%%.*}")"
 }
 
-#获取系统版本
-macos_version="$(major_minor "$(/usr/bin/sw_vers -productVersion)")"
 #获取系统时间
 TIME=$(date "+%Y-%m-%d %H:%M:%S")
 
@@ -191,10 +190,10 @@ RmAndCopy()
 {
   if [[ -d $1 ]]; then
     echo "  ---备份要删除的$1到系统桌面...."
-    if ! [[ -d $USER_WHOAMI/Desktop/Old_Homebrew/$TIME/$1 ]]; then
-      mkdir -p $USER_WHOAMI/Desktop/Old_Homebrew/$TIME/$1
+    if ! [[ -d $HOME/Desktop/Old_Homebrew/$TIME/$1 ]]; then
+      mkdir -p $HOME/Desktop/Old_Homebrew/$TIME/$1
     fi
-    cp -rf $1 $USER_WHOAMI/Desktop/Old_Homebrew/$TIME/$1
+    cp -rf $1 $HOME/Desktop/Old_Homebrew/$TIME/$1
     echo "   ---$1 备份完成"
   fi
   sudo rm -rf $1
@@ -546,15 +545,14 @@ else
   else
     trap exit SIGINT
     if ! /usr/bin/sudo -n -v &>/dev/null; then
-      ohai "Select the Homebrew installation directory"
-      echo "- ${tty_bold}输入你的开机密码${tty_reset} 安装到 ${tty_underline}${HOMEBREW_PREFIX_DEFAULT}${tty_reset} (${tty_bold}recommended${tty_reset})"
-      echo "- ${tty_bold}按下 Control-D${tty_reset} 安装到 ${tty_underline}$HOME/.linuxbrew${tty_reset}"
-      echo "- ${tty_bold}按下 Control-C${tty_reset} 取消安装"
+      ohai "通过命令删除之前的brew、创建一个新的Homebrew文件夹"
+      echo "- ${tty_bold}输入你的开机密码${tty_reset} brew将安装到 ${tty_underline}${HOMEBREW_PREFIX_DEFAULT}${tty_reset} (${tty_bold}recommended${tty_reset})"
     fi
     if have_sudo_access; then
       HOMEBREW_PREFIX="$HOMEBREW_PREFIX_DEFAULT"
     else
-      HOMEBREW_PREFIX="$HOME/.linuxbrew"
+      echo "${tty_red}失败 没有获取权限${tty_reset}"
+      exit 0
     fi
     trap - SIGINT
   fi
@@ -564,8 +562,8 @@ fi
 sudo echo '开始执行'
 #删除以前的Homebrew
 RmCreate ${HOMEBREW_REPOSITORY}
-RmAndCopy $USER_WHOAMI/Library/Caches/Homebrew/
-RmAndCopy $USER_WHOAMI/Library/Logs/Homebrew/
+RmAndCopy $HOME/Library/Caches/Homebrew/
+RmAndCopy $HOME/Library/Logs/Homebrew/
 
 # 让环境暂时纯粹，脚本运行结束后恢复
 if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
@@ -679,7 +677,7 @@ HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
 brew -v
 if [ $? -ne 0 ];then
     echo '发现错误，自动修复一次！'
-    rm -rf $USER_WHOAMI/Library/Caches/Homebrew/
+    rm -rf $HOME/Library/Caches/Homebrew/
     export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:${HOMEBREW_REPOSITORY}/bin
     brew update-reset
     if [ $? -ne 0 ];then
