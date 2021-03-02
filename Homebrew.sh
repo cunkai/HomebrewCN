@@ -35,16 +35,23 @@ tty_reset="$(tty_escape 0)"
 #但是update会出错，提示需要下载全部数据
 GIT_SPEED=""
 
-for dir in $@; do
-    echo $dir
-    if [[ $dir == "speed" ]] || [[ $0 == "speed" ]]; then
-        echo "$tty_red
-            检测到参数speed，只拉取最新数据，可以正常install使用！
-        但是以后brew update的时候会报错，运行报错提示的两句命令即可修复
-        $tty_reset"
-        GIT_SPEED="--depth=1"
-    fi
-done
+if [[ $0 == "speed" ]]; then
+  GIT_SPEED="--depth=1"
+else
+  for dir in $@; do
+      echo $dir
+      if [[ $dir == "speed" ]]; then
+          GIT_SPEED="--depth=1"
+      fi
+  done
+fi
+
+if [[ $GIT_SPEED != "" ]]; then
+echo "$tty_red
+              检测到参数speed，只拉取最新数据，可以正常install使用！
+          但是以后brew update的时候会报错，运行报错提示的两句命令即可修复
+          $tty_reset"
+fi
 
 #获取前面两个.的数据
 major_minor() {
