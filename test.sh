@@ -1,6 +1,12 @@
 #HomeBrew自动安装脚本
 #cunkai.wang@foxmail.com
 
+#检查脚本是否以非交互non-interactively方式运行（例如CI）
+#如果它是非交互式non-interactively运行的，则不应提示输入密码。
+if [[ ! -t 0 || -n "${CI-}" ]]; then
+  NONINTERACTIVE=1
+fi
+
 #获取硬件信息
 UNAME_MACHINE="$(uname -m)"
 #在X86电脑上测试arm电脑
@@ -520,14 +526,16 @@ echo "你输入了 $MY_Del_Old ，自行备份老版brew和它下载的软件, �
 exit 0
 ;;
 esac
-echo "==> 通过命令删除之前的brew、创建一个新的Homebrew文件夹
+
+
+if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
+#MAC
+  echo "==> 通过命令删除之前的brew、创建一个新的Homebrew文件夹
 (设置开机密码：在左上角苹果图标->系统偏好设置->"用户与群组"->更改密码)
 (如果提示This incident will be reported. 在"用户与群组"中查看是否管理员)
 ${tty_light_green}请输入开机密码，输入过程不显示，输入完后回车${tty_reset}"
-
-if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-  sudo echo '开始执行'
 else
+#Linux
   if [[ -n "${NONINTERACTIVE-}" ]] ||
      [[ -w "${HOMEBREW_PREFIX_DEFAULT}" ]] ||
      [[ -w "/home/linuxbrew" ]] ||
@@ -537,9 +545,9 @@ else
     trap exit SIGINT
     if ! /usr/bin/sudo -n -v &>/dev/null; then
       ohai "Select the Homebrew installation directory"
-      echo "- ${tty_bold}Enter your password${tty_reset} to install to ${tty_underline}${HOMEBREW_PREFIX_DEFAULT}${tty_reset} (${tty_bold}recommended${tty_reset})"
-      echo "- ${tty_bold}Press Control-D${tty_reset} to install to ${tty_underline}$HOME/.linuxbrew${tty_reset}"
-      echo "- ${tty_bold}Press Control-C${tty_reset} to cancel installation"
+      echo "- ${tty_bold}输入你的开机密码${tty_reset} 安装到 ${tty_underline}${HOMEBREW_PREFIX_DEFAULT}${tty_reset} (${tty_bold}recommended${tty_reset})"
+      echo "- ${tty_bold}按下 Control-D${tty_reset} 安装到 ${tty_underline}$HOME/.linuxbrew${tty_reset}"
+      echo "- ${tty_bold}按下 Control-C${tty_reset} 取消安装"
     fi
     if have_sudo_access; then
       HOMEBREW_PREFIX="$HOMEBREW_PREFIX_DEFAULT"
@@ -550,6 +558,8 @@ else
   fi
   HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
 fi
+
+sudo echo '开始执行'
 #删除以前的Homebrew
 RmCreate ${HOMEBREW_REPOSITORY}
 # 让环境暂时纯粹，重启终端后恢复
