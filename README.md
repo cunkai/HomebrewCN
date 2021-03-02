@@ -30,9 +30,9 @@ macOS 和 Linux 缺失软件包的管理器
 
  **--Homebrew自身如何使用** 
 
-知道软件包具体名称，直接brew install 软件包名
-只知道一小部分名称，用 brew search 查询即可
-例如brew search chrome就会把带chrome的软件包全部列出
+知道软件包具体名称，直接 `brew install 软件包名`
+只知道一小部分名称，用 `brew search 小部分名称` 查询即可
+例如`brew search chrome`就会把带chrome的软件包全部列出
 
  **--Homebrew中的扩展cask如何使用** 
 
