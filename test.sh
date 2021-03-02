@@ -379,6 +379,16 @@ version_lt() {
   [[ "${1%.*}" -lt "${2%.*}" ]] || [[ "${1%.*}" -eq "${2%.*}" && "${1#*.}" -lt "${2#*.}" ]]
 }
 
+#发现错误 关闭脚本 提示如何解决
+error_game_over(){
+    echo "
+    ${tty_red}失败 去下面文章看一下第二部分的常见错误解决办法
+    https://zhuanlan.zhihu.com/p/111014448
+    如果没有解决，把运行脚本过程截图发到 cunkai.wang@foxmail.com ${tty_reset}
+    "
+    exit 0
+}
+
 #一些警告判断
 warning_if(){
   git_https_proxy=$(git config --global https.proxy)
@@ -546,7 +556,7 @@ else
     trap exit SIGINT
     if ! /usr/bin/sudo -n -v &>/dev/null; then
       ohai "通过命令删除之前的brew、创建一个新的Homebrew文件夹"
-      echo "- ${tty_bold}输入你的开机密码${tty_reset} brew将安装到 ${tty_underline}${HOMEBREW_PREFIX_DEFAULT}${tty_reset} (${tty_bold}recommended${tty_reset})
+      echo "- ${tty_bold}输入你的开机密码${tty_reset} brew将安装到 ${tty_underline}${HOMEBREW_PREFIX_DEFAULT}${tty_reset}
             输入过程中不显示，输入完成直接回车即可。"
     fi
     if have_sudo_access; then
@@ -587,7 +597,7 @@ fi
 
 echo "
 ${tty_light_green}下载速度觉得慢可以ctrl+c或control+c重新运行脚本选择下载源${tty_reset}
-==> 克隆Homebrew基本文件(32M+)
+==> 克隆Homebrew基本文件
 "
 warning_if
 sudo git clone ${GIT_SPEED} $USER_BREW_GIT ${HOMEBREW_REPOSITORY}
@@ -602,12 +612,12 @@ if [[ "${HOMEBREW_REPOSITORY}" != "${HOMEBREW_PREFIX}" ]]; then
   execute "ln" "-sf" "${HOMEBREW_REPOSITORY}/bin/brew" "${HOMEBREW_PREFIX}/bin/brew"
 fi
 
-echo "==> 克隆Homebrew Core(224M+) 
+echo "==> 克隆Homebrew Core
 ${tty_light_green}此处如果显示Password表示需要再次输入开机密码，输入完后回车${tty_reset}"
 sudo mkdir -p ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core
 sudo git clone ${GIT_SPEED} $USER_CORE_GIT ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core/
 JudgeSuccess 尝试再次运行自动脚本选择其他下载源或者切换网络 out
-echo "==> 克隆Homebrew Cask(248M+) 类似AppStore 
+echo "==> 克隆Homebrew Cask 图形化软件
 ${tty_light_green}此处如果显示Password表示需要再次输入开机密码，输入完后回车${tty_reset}"
 if [[ "$MY_DOWN_NUM" -eq "5" ]];then
   echo "$tty_yellow阿里源没有Cask 跳过${tty_reset}"
@@ -675,20 +685,31 @@ AddPermission ${HOMEBREW_REPOSITORY}
 #先暂时设置到清华大学源，中科大没有Ruby下载镜像
 HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
 
+if [[ -n "${HOMEBREW_ON_LINUX-}" ]]; then
+    #检测linux curl是否有安装
+    echo "-检测curl是否安装"
+    curl -V
+    if [ $? -ne 0 ];then
+        sudo apt-get install curl
+        if [ $? -ne 0 ];then
+            sudo yum install curl
+            if [ $? -ne 0 ];then
+                error_game_over
+            fi
+        fi
+    fi
+fi
+
+
 brew -v
 if [ $? -ne 0 ];then
     echo '发现错误，自动修复一次！'
     rm -rf $HOME/Library/Caches/Homebrew/
     export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:${HOMEBREW_REPOSITORY}/bin
     brew update-reset
+    brew -v
     if [ $? -ne 0 ];then
-      echo "
-      ${tty_red}还是失败 查看下面文章第二部分的常见错误
-      https://zhuanlan.zhihu.com/p/111014448
-      如果没有解决，把运行脚本过程截图发到 cunkai.wang@foxmail.com --end
-      ${tty_reset}"
-      brew -v
-      exit 0
+      error_game_over
     fi
 else
     echo "${tty_green}Brew前期配置成功${tty_reset}"
@@ -699,11 +720,7 @@ echo '
 HOMEBREW_BOTTLE_DOMAIN=${USER_HOMEBREW_BOTTLE_DOMAIN}
 brew update
 if [[ $? -ne 0 ]] && [[ $0 -ne "speed" ]];then
-    echo "
-    ${tty_red}失败 去下面文章看一下第二部分的常见错误解决办法
-    https://zhuanlan.zhihu.com/p/111014448
-    如果没有解决，把运行脚本过程截图发到 cunkai.wang@foxmail.com ${tty_reset}
-    "
+    error_game_over
     exit 0
 else
     echo "
