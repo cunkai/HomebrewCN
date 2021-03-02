@@ -11,7 +11,10 @@ UNAME_MACHINE="$(uname -m)"
 #但是update会出错，提示需要下载全部数据
 GIT_SPEED=""
 if [[ $0 == "speed" ]] then
-    echo "检测到参数speed，只拉去最新数据，可以正常使用！update的时候会报错，运行提示的两句话即可"
+    echo "\033[1;32m
+            检测到参数speed，只拉去最新数据，可以正常使用！
+    speed模式下以后brew update的时候会报错，运行报错提示的两句话即可\033[0m
+    "
     GIT_SPEED="--depth=1"
 fi
 
