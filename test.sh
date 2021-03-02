@@ -50,7 +50,7 @@ if [[ $0 == "speed" ]]; then
     $tty_reset"
     GIT_SPEED="--depth=1"
 fi
-
+#设置一些平台地址
 if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
     #Mac
     if [[ "$UNAME_MACHINE" == "arm64" ]]; then
@@ -406,7 +406,8 @@ echo "$tty_reset"
 case $MY_DOWN_NUM in
 "2")
     echo "
-    你选择了清华大学下载源"
+    你选择了清华大学下载源
+    "
     if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
         USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
     else
@@ -427,7 +428,8 @@ case $MY_DOWN_NUM in
 ;;
 "3")
     echo "
-    北京外国语大学下载源"
+    北京外国语大学下载源
+    "
     if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
         USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
     else
@@ -448,7 +450,8 @@ case $MY_DOWN_NUM in
 ;;
 "4")
     echo "
-    你选择了腾讯下载源"
+    你选择了腾讯下载源
+    "
     USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.cloud.tencent.com/homebrew-bottles
     #HomeBrew基础框架
     USER_BREW_GIT=https://mirrors.cloud.tencent.com/homebrew/brew.git 
@@ -463,7 +466,8 @@ case $MY_DOWN_NUM in
 ;;
 "5")
     echo "
-    你选择了阿里巴巴下载源(无mac的cask源,无Linux版本)"
+    你选择了阿里巴巴下载源(无mac的cask源,无Linux版本)
+    "
     USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles
     #HomeBrew基础框架
     USER_BREW_GIT=https://mirrors.aliyun.com/homebrew/brew.git 
@@ -479,7 +483,8 @@ case $MY_DOWN_NUM in
 ;;
 *)
   echo "
-  你选择了中国科学技术大学下载源"
+  你选择了中国科学技术大学下载源
+  "
   #HomeBrew 下载源 install
   if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
     USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles
@@ -519,13 +524,40 @@ echo "==> 通过命令删除之前的brew、创建一个新的Homebrew文件夹
 (设置开机密码：在左上角苹果图标->系统偏好设置->"用户与群组"->更改密码)
 (如果提示This incident will be reported. 在"用户与群组"中查看是否管理员)
 ${tty_light_green}请输入开机密码，输入过程不显示，输入完后回车${tty_reset}"
-sudo echo '开始执行'
-# 让环境暂时纯粹，重启终端后恢复
-export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:${HOMEBREW_REPOSITORY}/bin
-RmCreate ${HOMEBREW_REPOSITORY}
-RmAndCopy /Users/$(whoami)/Library/Caches/Homebrew/
-RmAndCopy /Users/$(whoami)/Library/Logs/Homebrew/
 
+if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
+  sudo echo '开始执行'
+else
+  if [[ -n "${NONINTERACTIVE-}" ]] ||
+     [[ -w "${HOMEBREW_PREFIX_DEFAULT}" ]] ||
+     [[ -w "/home/linuxbrew" ]] ||
+     [[ -w "/home" ]]; then
+    HOMEBREW_PREFIX="$HOMEBREW_PREFIX_DEFAULT"
+  else
+    trap exit SIGINT
+    if ! /usr/bin/sudo -n -v &>/dev/null; then
+      ohai "Select the Homebrew installation directory"
+      echo "- ${tty_bold}Enter your password${tty_reset} to install to ${tty_underline}${HOMEBREW_PREFIX_DEFAULT}${tty_reset} (${tty_bold}recommended${tty_reset})"
+      echo "- ${tty_bold}Press Control-D${tty_reset} to install to ${tty_underline}$HOME/.linuxbrew${tty_reset}"
+      echo "- ${tty_bold}Press Control-C${tty_reset} to cancel installation"
+    fi
+    if have_sudo_access; then
+      HOMEBREW_PREFIX="$HOMEBREW_PREFIX_DEFAULT"
+    else
+      HOMEBREW_PREFIX="$HOME/.linuxbrew"
+    fi
+    trap - SIGINT
+  fi
+  HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
+fi
+
+# 让环境暂时纯粹，重启终端后恢复
+if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
+    export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:${HOMEBREW_REPOSITORY}/bin
+    RmCreate ${HOMEBREW_REPOSITORY}
+    RmAndCopy /Users/$(whoami)/Library/Caches/Homebrew/
+    RmAndCopy /Users/$(whoami)/Library/Logs/Homebrew/
+fi
 git --version
 if [ $? -ne 0 ];then
 
