@@ -1,6 +1,6 @@
 # Homebrew国内源
 
-安装脚本：（已经支持M1芯片，可以直接运行）
+标准安装脚本：（分级别安装）
 
 
 ```
@@ -8,7 +8,13 @@
 
 ```
 
+极速安装脚本：（秒级别安装）
 
+
+```
+/bin/zsh -c "$(curl -fsSL https://gitee.com/cunkai/HomebrewCN/raw/master/Homebrew.sh)" speed
+
+```
 
 卸载脚本：
 
