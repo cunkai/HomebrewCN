@@ -20,15 +20,16 @@ if [[ -t 1 ]]; then
 else
   tty_escape() { :; }
 fi
-tty_mkbold() { tty_escape "1;$1"; }
-tty_underline="$(tty_escape "4;39")"
-tty_blue="$(tty_mkbold 34)"
-tty_red="$(tty_mkbold 31)"
-tty_green="$(tty_mkbold 32)"
-tty_yellow="$(tty_mkbold 33)"
-tty_bold="$(tty_mkbold 39)"
-tty_cyan="$(tty_mkbold 36)"
-tty_reset="$(tty_escape 0)"
+tty_universal() { tty_escape "0;$1"; } #正常显示
+tty_mkbold() { tty_escape "1;$1"; } #设置高亮
+tty_underline="$(tty_escape "4;39")" #下划线
+tty_blue="$(tty_universal 34)" #蓝色
+tty_red="$(tty_universal 31)" #红色
+tty_green="$(tty_universal 32)" #绿色
+tty_yellow="$(tty_universal 33)" #黄色
+tty_bold="$(tty_universal 39)" #加黑
+tty_cyan="$(tty_universal 36)" #青色
+tty_reset="$(tty_escape 0)" #去除颜色
 
 #用户输入极速安装speed，git克隆只取最近新版本
 #但是update会出错，提示需要下载全部数据
@@ -46,10 +47,10 @@ else
 fi
 
 if [[ $GIT_SPEED != "" ]]; then
-echo "$tty_red
+echo "${tty_red}
               检测到参数speed，只拉取最新数据，可以正常install使用！
           但是以后brew update的时候会报错，运行报错提示的两句命令即可修复
-          $tty_reset"
+          ${tty_reset}"
 fi
 
 #获取前面两个.的数据
@@ -106,12 +107,12 @@ TIME=$(date "+%Y-%m-%d %H:%M:%S")
 JudgeSuccess()
 {
     if [ $? -ne 0 ];then
-        echo "$tty_redm此步骤失败 '$1'$tty_reset"
+        echo "${tty_red}m此步骤失败 '$1'${tty_reset}"
         if [[ "$2" == 'out' ]]; then
           exit 0
         fi
     else
-        echo "$tty_green此步骤成功$tty_reset"
+        echo "${tty_green}此步骤成功${tty_reset}"
 
     fi
 }
@@ -123,7 +124,7 @@ have_sudo_access() {
   fi
 
   if [[ "$HAVE_SUDO_ACCESS" -ne 0 ]]; then
-    echo "$tty_red开机密码输入错误，获取权限失败!$tty_reset"
+    echo "${tty_red}开机密码输入错误，获取权限失败!${tty_reset}"
   fi
 
   return "$HAVE_SUDO_ACCESS"
@@ -147,7 +148,7 @@ shell_join() {
 
 execute() {
   if ! "$@"; then
-    abort "$(printf "$tty_red此命令运行失败:sudo %s$tty_reset" "$(shell_join "$@")")"
+    abort "$(printf "${tty_red}此命令运行失败:sudo %s${tty_reset}" "$(shell_join "$@")")"
   fi
 }
 
@@ -399,35 +400,35 @@ warning_if(){
   if [[ -z "$git_https_proxy"  &&  -z "$git_http_proxy" ]]; then
   echo "未发现Git代理（属于正常状态）"
   else
-  echo "$tty_yellow
+  echo "${tty_yellow}
       提示：发现你电脑设置了Git代理，如果Git报错，请运行下面两句话：
 
               git config --global --unset https.proxy
 
-              git config --global --unset http.proxy$tty_reset
+              git config --global --unset http.proxy${tty_reset}
   "
   fi
 }
 
 echo "
-              $tty_green 开始执行Brew自动安装程序 $tty_reset
-             $tty_cyan [cunkai.wang@foxmail.com] $tty_reset
+              ${tty_green} 开始执行Brew自动安装程序 ${tty_reset}
+             ${tty_cyan} [cunkai.wang@foxmail.com] ${tty_reset}
            ['$TIME']['$macos_version']
        ${tty_cyan} https://zhuanlan.zhihu.com/p/111014448 ${tty_reset}
 "
 #选择一个下载源
-echo -n "$tty_green
+echo -n "${tty_green}
 请选择一个下载镜像，例如中科大，输入1回车。
 源有时候不稳定，如果git克隆报错重新运行脚本选择源。cask非必须，有部分人需要。
-1、中科大下载源 2、清华大学下载源 3、北京外国语大学下载源 $tty_reset"
+1、中科大下载源 2、清华大学下载源 3、北京外国语大学下载源 ${tty_reset}"
 if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
 #mac才显示腾讯 阿里，他们对linux目前支持很差
-    echo "$tty_green 4、腾讯下载源（不显示下载进度） 5、阿里巴巴下载源(缺少cask源) $tty_reset "
+    echo "${tty_green} 4、腾讯下载源（不显示下载进度） 5、阿里巴巴下载源(缺少cask源) ${tty_reset} "
 fi
 echo -n "
-$tty_blue请输入序号: "
+${tty_blue}请输入序号: "
 read MY_DOWN_NUM
-echo "$tty_reset"
+echo "${tty_reset}"
 case $MY_DOWN_NUM in
 "2")
     echo "
@@ -528,10 +529,10 @@ case $MY_DOWN_NUM in
   USER_CASK_GIT=https://mirrors.ustc.edu.cn/homebrew-cask.git
 ;;
 esac
-echo -n "$tty_green！！！此脚本将要删除之前的brew(包括它下载的软件)，请自行备份。
+echo -n "${tty_green}！！！此脚本将要删除之前的brew(包括它下载的软件)，请自行备份。
 ->是否现在开始执行脚本（N/Y） "
 read MY_Del_Old
-echo "$tty_reset"
+echo "${tty_reset}"
 case $MY_Del_Old in
 "y")
 echo "--> 脚本开始执行"
@@ -577,7 +578,7 @@ if [ $? -ne 0 ];then
         xcode-select --install
         exit 0
     else
-        echo "$tty_red 发现缺少git，开始安装，请输入Y ${tty_reset}"
+        echo "${tty_red} 发现缺少git，开始安装，请输入Y ${tty_reset}"
         sudo apt install git
     fi
 fi
@@ -751,11 +752,11 @@ fi
 
 if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
   #Mac
-  echo "${tty_green} 重启终端 或者 运行${tty_reset} source ${shell_profile}  ，否则可能无法使用
+  echo "${tty_green} 重启终端 或者 运行${tty_bold} source ${shell_profile}  ${tty_reset}，否则可能无法使用
   <----->"
 else
   #Linux
-  echo "${tty_green} Linux需要重启电脑 或者暂时运行${tty_reset} source ${shell_profile} ，否则可能无法使用
+  echo "${tty_green} Linux需要重启电脑 或者暂时运行${tty_bold} source ${shell_profile} ${tty_reset}，否则可能无法使用
   <----->"
 fi
 

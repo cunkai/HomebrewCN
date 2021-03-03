@@ -16,15 +16,16 @@ if [[ -t 1 ]]; then
 else
   tty_escape() { :; }
 fi
-tty_mkbold() { tty_escape "1;$1"; }
-tty_underline="$(tty_escape "4;39")"
-tty_blue="$(tty_mkbold 34)"
-tty_red="$(tty_mkbold 31)"
-tty_green="$(tty_mkbold 32)"
-tty_yellow="$(tty_mkbold 33)"
-tty_bold="$(tty_mkbold 39)"
-tty_cyan="$(tty_mkbold 36)"
-tty_reset="$(tty_escape 0)"
+tty_universal() { tty_escape "0;$1"; } #正常显示
+tty_mkbold() { tty_escape "1;$1"; } #设置高亮
+tty_underline="$(tty_escape "4;39")" #下划线
+tty_blue="$(tty_universal 34)" #蓝色
+tty_red="$(tty_universal 31)" #红色
+tty_green="$(tty_universal 32)" #绿色
+tty_yellow="$(tty_universal 33)" #黄色
+tty_bold="$(tty_universal 39)" #加黑
+tty_cyan="$(tty_universal 36)" #青色
+tty_reset="$(tty_escape 0)" #去除颜色
 
 #获取前面两个.的数据
 major_minor() {
@@ -93,8 +94,8 @@ RmAndCopy()
 
 
 echo "
-              $tty_green 开始执行Brew自动卸载程序 $tty_reset
-             $tty_cyan [cunkai.wang@foxmail.com] $tty_reset
+              ${tty_green} 开始执行Brew自动卸载程序 ${tty_reset}
+             ${tty_cyan} [cunkai.wang@foxmail.com] ${tty_reset}
            ['$TIME']['$macos_version']
        ${tty_cyan} https://zhuanlan.zhihu.com/p/111014448 ${tty_reset}
 "
@@ -102,7 +103,7 @@ echo "
 echo -n "$tty_green ！！！此脚本将要完全删除brew(包括它下载的软件)。
 ->是否现在开始执行脚本（N/Y）"
 read MY_Del_Old
-echo "$tty_reset"
+echo "${tty_reset}"
 case $MY_Del_Old in
 "y")
 echo "--> 脚本开始执行"
@@ -148,7 +149,7 @@ else
 fi
 
 echo "
-$tty_yellow
+$tty_green
 脚本运行结束，删除的文件备份到了桌面Old_Homebrew文件夹中，请自行删除。
 $tty_reset
 "
