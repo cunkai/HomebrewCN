@@ -194,9 +194,9 @@ RmAndCopy()
   if [[ -d $1 ]]; then
     echo "  ---备份要删除的$1到系统桌面...."
     if ! [[ -d $HOME/Desktop/Old_Homebrew/$TIME/$1 ]]; then
-      sudo mkdir -p $HOME/Desktop/Old_Homebrew/$TIME/$1
+      sudo mkdir -p "$HOME/Desktop/Old_Homebrew/$TIME/$1"
     fi
-    sudo cp -rf $1 $HOME/Desktop/Old_Homebrew/$TIME/
+    sudo cp -rf $1 "$HOME/Desktop/Old_Homebrew/$TIME/$1"
     echo "   ---$1 备份完成"
   fi
   sudo rm -rf $1
