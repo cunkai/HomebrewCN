@@ -259,8 +259,7 @@ echo "\033[0;31m
 \033[0;32m
 1、去文件夹(访达中按下组合键Shift+cmd+G) /usr/local/etc/openssl@1.1/ 双击 .pem 扩展名的文件
 2、终端运行 /usr/local/opt/openssl@1.1/bin/c_rehash
-3、生效需要重启终端 或者 运行命令 source ${shell_profile}
-\033[0m
+\033[0;31m 3、生效需要重启终端 或者 运行命令\033[0m source ${shell_profile}
 
 更新后Gem版本为:"
 gem -v
