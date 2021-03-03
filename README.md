@@ -24,7 +24,7 @@ rm Homebrew.sh ; wget https://gitee.com/cunkai/HomebrewCN/raw/master/Homebrew.sh
 
 ```
 
-Linux 极速安装脚本：（优点安装速度快 缺点update功能需要命令修复 ）
+Linux 极速安装脚本：（优点安装速度快 缺点每次安装软件包提示克隆完整版）
 
 
 ```

@@ -69,7 +69,9 @@ if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
     HOMEBREW_PREFIX="/usr/local"
     HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
     fi
+
     HOMEBREW_CACHE="${HOME}/Library/Caches/Homebrew"
+    HOMEBREW_LOGS"${HOME}/Library/Logs/Homebrew"
 
     STAT="stat -f"
     CHOWN="/usr/sbin/chown"
@@ -87,6 +89,7 @@ else
   HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
 
   HOMEBREW_CACHE="${HOME}/.cache/Homebrew"
+  HOMEBREW_LOGS="${HOME}/.logs/Homebrew"
 
   STAT="stat --printf"
   CHOWN="/bin/chown"
@@ -558,7 +561,7 @@ sudo echo '开始执行'
 #删除以前的Homebrew
 RmCreate ${HOMEBREW_REPOSITORY}
 RmAndCopy $HOMEBREW_CACHE
-RmAndCopy $HOME/Library/Logs/Homebrew/
+RmAndCopy $HOMEBREW_LOGS
 
 # 让环境暂时纯粹，脚本运行结束后恢复
 if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
@@ -601,20 +604,27 @@ ${tty_cyan}此处如果显示Password表示需要再次输入开机密码，输�
 sudo mkdir -p ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core
 sudo git clone ${GIT_SPEED} $USER_CORE_GIT ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core/
 JudgeSuccess 尝试再次运行自动脚本选择其他下载源或者切换网络 out
-echo "==> 克隆Homebrew Cask 图形化软件
-${tty_cyan}此处如果显示Password表示需要再次输入开机密码，输入完后回车${tty_reset}"
-if [[ "$MY_DOWN_NUM" -eq "5" ]];then
-  echo "$tty_yellow阿里源没有Cask 跳过${tty_reset}"
-else
-  sudo mkdir -p ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask
-  sudo git clone ${GIT_SPEED} $USER_CASK_GIT ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask/
-  if [ $? -ne 0 ];then
-      sudo rm -rf ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask
-      echo "${tty_red}尝试切换下载源或者切换网络,不过Cask组件非必须模块。可以忽略${tty_reset}"
-  else
-      echo "${tty_green}此步骤成功${tty_reset}"
 
+if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
+#MAC
+  echo "==> 克隆Homebrew Cask 图形化软件
+  ${tty_cyan}此处如果显示Password表示需要再次输入开机密码，输入完后回车${tty_reset}"
+  if [[ "$MY_DOWN_NUM" -eq "5" ]];then
+    echo "${tty_yellow} 阿里源没有Cask 跳过${tty_reset}"
+  else
+    sudo mkdir -p ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask
+    sudo git clone ${GIT_SPEED} $USER_CASK_GIT ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask/
+    if [ $? -ne 0 ];then
+        sudo rm -rf ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask
+        echo "${tty_red}尝试切换下载源或者切换网络,不过Cask组件非必须模块。可以忽略${tty_reset}"
+    else
+        echo "${tty_green}此步骤成功${tty_reset}"
+
+    fi
   fi
+else
+#Linux
+  echo "${tty_yellow} Linux 不支持Cask图形化软件下载 此步骤跳过${tty_reset}"
 fi
 echo '==> 配置国内镜像源HOMEBREW BOTTLE'
 
@@ -639,7 +649,13 @@ if [[ -f ${shell_profile} ]]; then
   AddPermission ${shell_profile}
 fi
 #删除之前的环境变量
-sed -i "" "/ckbrew/d" ${shell_profile}
+if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
+  #Mac
+  sed -i "" "/ckbrew/d" ${shell_profile}
+else
+  #Linux
+  sed -i "/ckbrew/d" ${shell_profile}
+fi
 #写入环境变量到文件
 echo "环境变量写入->${shell_profile}"
 
@@ -726,15 +742,20 @@ fi
 
 #极速模式提示Update修复方法
 if [[ $GIT_SPEED != "" ]]; then
-  echo "${tty_red}  极速版本安装完成，install功能正常，如果需要update功能请自行运行下面两句命令
-
-    git -C ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core fetch --unshallow
-
-    git -C ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask fetch --unshallow
-
-    ${tty_reset}"
+  if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
+  #MAC
+    echo "${tty_red}  极速版本安装完成，install功能正常，如果需要update功能请自行运行下面两句命令
+git -C ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core fetch --unshallow
+git -C ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask fetch --unshallow
+  ${tty_reset}"
+  else
+  #Linux
+    echo "${tty_red}  极速版本安装完成，install功能正常，如果需要Update和烦每次报错，运行下面命令:
+git -C ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core fetch --unshallow
+  ${tty_reset}"
+  fi
 fi
 
 echo "
-${tty_red} 重启或者运行${tty_green} source ${shell_profile}${tty_red}  ，否则可能无法使用  ${tty_reset}
+${tty_red} Linux需要重启电脑 Mac os 运行${tty_green} source ${shell_profile}${tty_red}  ，否则可能无法使用  ${tty_reset}
 "

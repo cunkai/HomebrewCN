@@ -44,7 +44,9 @@ if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
     HOMEBREW_PREFIX="/usr/local"
     HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
     fi
+    
     HOMEBREW_CACHE="${HOME}/Library/Caches/Homebrew"
+    HOMEBREW_LOGS"${HOME}/Library/Logs/Homebrew"
 
     STAT="stat -f"
     CHOWN="/usr/sbin/chown"
@@ -62,6 +64,7 @@ else
   HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
 
   HOMEBREW_CACHE="${HOME}/.cache/Homebrew"
+  HOMEBREW_LOGS="${HOME}/.logs/Homebrew"
 
   STAT="stat --printf"
   CHOWN="/bin/chown"
@@ -112,15 +115,12 @@ echo "你输入了 $MY_Del_Old ，自行备份老版brew和它下载的软件, �
 "
 ;;
 esac
-echo "==> 
-(设置开机密码：在左上角苹果图标->系统偏好设置->"用户与群组"->更改密码)
-(如果提示This incident will be reported. 在"用户与群组"中查看是否管理员)
-$tty_cyan 请输入开机密码，输入过程不显示，输入完后回车 $tty_reset"
+echo "==>$tty_cyan 请输入开机密码，输入过程不显示，输入完后回车 $tty_reset"
 sudo echo '开始执行'
 
 RmAndCopy ${HOMEBREW_PREFIX}
 RmAndCopy $HOMEBREW_CACHE
-RmAndCopy $HOME/Library/Logs/Homebrew/
+RmAndCopy $HOMEBREW_LOGS
 
 #判断下终端是Bash还是zsh
 case "$SHELL" in
@@ -139,7 +139,13 @@ case "$SHELL" in
     ;;
 esac
 #删除之前的环境变量
-sed -i "" "/ckbrew/d" ${shell_profile}
+if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
+  #Mac
+  sed -i "" "/ckbrew/d" ${shell_profile}
+else
+  #Linux
+  sed -i "/ckbrew/d" ${shell_profile}
+fi
 
 echo "
 $tty_yellow
