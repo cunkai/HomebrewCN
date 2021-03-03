@@ -204,22 +204,36 @@ if [ $? -ne 0 ];then
 else
     echo "\033[1;32m此步骤成功\033[0m"
 fi
-export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"
-export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include"
-export LDFLAGS="-L/usr/local/opt/readline/lib"
-export CPPFLAGS="-I/usr/local/opt/readline/include"
-export LDFLAGS="-L/usr/local/opt/ruby/lib"
-export CPPFLAGS="-I/usr/local/opt/ruby/include"
-echo '\nexport PATH="/usr/local/opt/openssl@1.1/bin:$PATH"' >> ~/.zshrc
-export PATH=/usr/local/opt/openssl@1.1/bin:$PATH
-echo 'export PATH="/usr/local/opt/ruby/bin:$PATH"' >> ~/.zshrc
-export PATH=/usr/local/opt/ruby/bin:$PATH
-echo '\nexport PATH="/usr/local/opt/openssl@1.1/bin:$PATH"' >> ~/.bash_profile
-echo 'export PATH="/usr/local/opt/ruby/bin:$PATH"' >> ~/.bash_profile
-source ~/.zshrc
+
+#判断下终端是Bash还是zsh
+case "$SHELL" in
+  */bash*)
+    if [[ -r "$HOME/.bash_profile" ]]; then
+      shell_profile="${HOME}/.bash_profile"
+    else
+      shell_profile="${HOME}/.profile"
+    fi
+    ;;
+  */zsh*)
+    shell_profile="${HOME}/.zprofile"
+    ;;
+  *)
+    shell_profile="${HOME}/.profile"
+    ;;
+esac
+
+#写入环境变量到文件
+echo "环境变量写入->${shell_profile}"
+sed -i "" "/ckruby/d" ${shell_profile}
+echo '
+  export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"
+  export PATH="/usr/local/opt/ruby/bin:$PATH" #ckruby
+  export LDFLAGS="-L/usr/local/opt/ruby/lib" #ckruby
+  export CPPFLAGS="-I/usr/local/opt/ruby/include" #ckruby
+' >> ${shell_profile} 
 JudgeSuccess
-source ~/.bash_profile
-JudgeSuccess
+source "${shell_profile}"
+
 #系统版本低，切换回去brew版本。
 if [ -z "$USER_BREW_VERSION" ];then
     echo ""
@@ -248,3 +262,7 @@ gem -v
 echo "
 Ruby版本为："
 ruby -v
+
+echo "
+\033[1;32m 安装完成，生效需要重启终端 或者 运行命令${tty_bold} source ${shell_profile}  ${tty_reset} \033[0m
+  "
