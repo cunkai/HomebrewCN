@@ -1,6 +1,6 @@
 # Homebrew国内源
 
-标准安装脚本：（分级别安装 优点全面 缺点慢一点）
+苹果电脑标准安装脚本：（优点全面 缺点慢一点）
 
 
 ```
@@ -8,7 +8,7 @@
 
 ```
 
-极速安装脚本：（秒级别安装 优点速度快 缺点update功能需要命令修复 ）
+苹果电脑极速安装脚本：（优点安装速度快 缺点update功能需要命令修复 ）
 
 
 ```
@@ -16,11 +16,35 @@
 
 ```
 
-卸载脚本：
+Linux 标准安装脚本：（优点全面 缺点慢一点）
+
+
+```
+rm Homebrew.sh ; wget https://gitee.com/cunkai/HomebrewCN/raw/master/Homebrew.sh ; bash Homebrew.sh
+
+```
+
+Linux 极速安装脚本：（优点安装速度快 缺点update功能需要命令修复 ）
+
+
+```
+rm Homebrew.sh ; wget https://gitee.com/cunkai/HomebrewCN/raw/master/Homebrew.sh ; bash Homebrew.sh speed
+
+```
+
+苹果电脑卸载脚本：
 
 
 ```
 /bin/zsh -c "$(curl -fsSL https://gitee.com/cunkai/HomebrewCN/raw/master/HomebrewUninstall.sh)"
+
+```
+
+Linux卸载脚本：
+
+
+```
+rm HomebrewUninstall.sh ; wget https://gitee.com/cunkai/HomebrewCN/raw/master/HomebrewUninstall.sh ; bash HomebrewUninstall.sh
 
 ```
 
