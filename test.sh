@@ -4,14 +4,14 @@
 #获取硬件信息
 UNAME_MACHINE="$(uname -m)"
 #在X86电脑上测试arm电脑
-UNAME_MACHINE="arm64"
+# UNAME_MACHINE="arm64"
 
 # 判断是Linux还是Mac os
 OS="$(uname)"
 if [[ "$OS" == "Linux" ]]; then
   HOMEBREW_ON_LINUX=1
 elif [[ "$OS" != "Darwin" ]]; then
-  echo "Homebrew 只运行在 macOS 和 Linux."
+  echo "Homebrew 只运行在 Mac OS 或 Linux."
 fi
 
 # 字符串染色程序
@@ -20,15 +20,16 @@ if [[ -t 1 ]]; then
 else
   tty_escape() { :; }
 fi
-tty_mkbold() { tty_escape "1;$1"; }
-tty_underline="$(tty_escape "4;39")"
-tty_blue="$(tty_mkbold 34)"
-tty_red="$(tty_mkbold 31)"
-tty_green="$(tty_mkbold 32)"
-tty_yellow="$(tty_mkbold 33)"
-tty_bold="$(tty_mkbold 39)"
-tty_cyan="$(tty_mkbold 36)"
-tty_reset="$(tty_escape 0)"
+tty_universal() { tty_escape "0;$1"; } #正常显示
+tty_mkbold() { tty_escape "1;$1"; } #设置高亮
+tty_underline="$(tty_escape "4;39")" #下划线
+tty_blue="$(tty_universal 34)" #蓝色
+tty_red="$(tty_universal 31)" #红色
+tty_green="$(tty_universal 32)" #绿色
+tty_yellow="$(tty_universal 33)" #黄色
+tty_bold="$(tty_universal 39)" #加黑
+tty_cyan="$(tty_universal 36)" #青色
+tty_reset="$(tty_escape 0)" #去除颜色
 
 #用户输入极速安装speed，git克隆只取最近新版本
 #但是update会出错，提示需要下载全部数据
@@ -46,10 +47,10 @@ else
 fi
 
 if [[ $GIT_SPEED != "" ]]; then
-echo "$tty_red
+echo "${tty_red}
               检测到参数speed，只拉取最新数据，可以正常install使用！
           但是以后brew update的时候会报错，运行报错提示的两句命令即可修复
-          $tty_reset"
+          ${tty_reset}"
 fi
 
 #获取前面两个.的数据
@@ -69,7 +70,9 @@ if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
     HOMEBREW_PREFIX="/usr/local"
     HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
     fi
+
     HOMEBREW_CACHE="${HOME}/Library/Caches/Homebrew"
+    HOMEBREW_LOGS"${HOME}/Library/Logs/Homebrew"
 
     STAT="stat -f"
     CHOWN="/usr/sbin/chown"
@@ -83,8 +86,11 @@ else
   #Linux
   UNAME_MACHINE="$(uname -m)"
 
-  HOMEBREW_PREFIX_DEFAULT="/home/linuxbrew/.linuxbrew"
+  HOMEBREW_PREFIX="/home/linuxbrew/.linuxbrew"
+  HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
+
   HOMEBREW_CACHE="${HOME}/.cache/Homebrew"
+  HOMEBREW_LOGS="${HOME}/.logs/Homebrew"
 
   STAT="stat --printf"
   CHOWN="/bin/chown"
@@ -101,12 +107,12 @@ TIME=$(date "+%Y-%m-%d %H:%M:%S")
 JudgeSuccess()
 {
     if [ $? -ne 0 ];then
-        echo "$tty_redm此步骤失败 '$1'$tty_reset"
+        echo "${tty_red}m此步骤失败 '$1'${tty_reset}"
         if [[ "$2" == 'out' ]]; then
           exit 0
         fi
     else
-        echo "$tty_green此步骤成功$tty_reset"
+        echo "${tty_green}此步骤成功${tty_reset}"
 
     fi
 }
@@ -118,7 +124,7 @@ have_sudo_access() {
   fi
 
   if [[ "$HAVE_SUDO_ACCESS" -ne 0 ]]; then
-    echo "$tty_red开机密码输入错误，获取权限失败!$tty_reset"
+    echo "${tty_red}开机密码输入错误，获取权限失败!${tty_reset}"
   fi
 
   return "$HAVE_SUDO_ACCESS"
@@ -142,7 +148,7 @@ shell_join() {
 
 execute() {
   if ! "$@"; then
-    abort "$(printf "$tty_red此命令运行失败:sudo %s$tty_reset" "$(shell_join "$@")")"
+    abort "$(printf "${tty_red}此命令运行失败:sudo %s${tty_reset}" "$(shell_join "$@")")"
   fi
 }
 
@@ -189,9 +195,9 @@ RmAndCopy()
   if [[ -d $1 ]]; then
     echo "  ---备份要删除的$1到系统桌面...."
     if ! [[ -d $HOME/Desktop/Old_Homebrew/$TIME/$1 ]]; then
-      mkdir -p $HOME/Desktop/Old_Homebrew/$TIME/$1
+      sudo mkdir -p "$HOME/Desktop/Old_Homebrew/$TIME/$1"
     fi
-    cp -rf $1 $HOME/Desktop/Old_Homebrew/$TIME/$1
+    sudo cp -rf $1 "$HOME/Desktop/Old_Homebrew/$TIME/$1"
     echo "   ---$1 备份完成"
   fi
   sudo rm -rf $1
@@ -394,35 +400,35 @@ warning_if(){
   if [[ -z "$git_https_proxy"  &&  -z "$git_http_proxy" ]]; then
   echo "未发现Git代理（属于正常状态）"
   else
-  echo "$tty_yellow
+  echo "${tty_yellow}
       提示：发现你电脑设置了Git代理，如果Git报错，请运行下面两句话：
 
               git config --global --unset https.proxy
 
-              git config --global --unset http.proxy$tty_reset
+              git config --global --unset http.proxy${tty_reset}
   "
   fi
 }
 
 echo "
-              $tty_green 开始执行Brew自动安装程序 $tty_reset
-             $tty_cyan [cunkai.wang@foxmail.com] $tty_reset
+              ${tty_green} 开始执行Brew自动安装程序 ${tty_reset}
+             ${tty_cyan} [cunkai.wang@foxmail.com] ${tty_reset}
            ['$TIME']['$macos_version']
        ${tty_cyan} https://zhuanlan.zhihu.com/p/111014448 ${tty_reset}
 "
 #选择一个下载源
-echo -n "$tty_green
+echo -n "${tty_green}
 请选择一个下载镜像，例如中科大，输入1回车。
 源有时候不稳定，如果git克隆报错重新运行脚本选择源。cask非必须，有部分人需要。
-1、中科大下载源 2、清华大学下载源 3、北京外国语大学下载源 $tty_reset"
+1、中科大下载源 2、清华大学下载源 3、北京外国语大学下载源 ${tty_reset}"
 if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
 #mac才显示腾讯 阿里，他们对linux目前支持很差
-    echo "$tty_green 4、腾讯下载源（不显示下载进度） 5、阿里巴巴下载源(缺少cask源) $tty_reset "
+    echo "${tty_green} 4、腾讯下载源（不显示下载进度） 5、阿里巴巴下载源(缺少cask源) ${tty_reset} "
 fi
 echo -n "
-$tty_blue请输入序号: "
+${tty_blue}请输入序号: "
 read MY_DOWN_NUM
-echo "$tty_reset"
+echo "${tty_reset}"
 case $MY_DOWN_NUM in
 "2")
     echo "
@@ -523,10 +529,10 @@ case $MY_DOWN_NUM in
   USER_CASK_GIT=https://mirrors.ustc.edu.cn/homebrew-cask.git
 ;;
 esac
-echo -n "$tty_green！！！此脚本将要删除之前的brew(包括它下载的软件)，请自行备份。
+echo -n "${tty_green}！！！此脚本将要删除之前的brew(包括它下载的软件)，请自行备份。
 ->是否现在开始执行脚本（N/Y） "
 read MY_Del_Old
-echo "$tty_reset"
+echo "${tty_reset}"
 case $MY_Del_Old in
 "y")
 echo "--> 脚本开始执行"
@@ -544,33 +550,19 @@ esac
 
 if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
 #MAC
-  echo "==> 通过命令删除之前的brew、创建一个新的Homebrew文件夹
-(设置开机密码：在左上角苹果图标->系统偏好设置->"用户与群组"->更改密码)
-(如果提示This incident will be reported. 在"用户与群组"中查看是否管理员)
-${tty_cyan}请输入开机密码，输入过程不显示，输入完后回车${tty_reset}"
-else
-#Linux
-  trap exit SIGINT
-  if ! /usr/bin/sudo -n -v &>/dev/null; then
-    ohai "通过命令删除之前的brew、创建一个新的Homebrew文件夹"
-    echo "- ${tty_bold}输入你的开机密码${tty_reset} brew将安装到 ${tty_underline}${HOMEBREW_PREFIX_DEFAULT}${tty_reset}
-          输入过程中不显示，输入完成直接回车即可。"
-  fi
-  if have_sudo_access; then
-    HOMEBREW_PREFIX="$HOMEBREW_PREFIX_DEFAULT"
-  else
-    echo "${tty_red}失败 没有获取权限${tty_reset}"
-    exit 0
-  fi
-  trap - SIGINT
-  HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
+  echo "${tty_yellow} Mac os设置开机密码方法：
+  (设置开机密码：在左上角苹果图标->系统偏好设置->"用户与群组"->更改密码)
+  (如果提示This incident will be reported. 在"用户与群组"中查看是否管理员) ${tty_reset}"
 fi
+
+echo "==> 通过命令删除之前的brew、创建一个新的Homebrew文件夹
+${tty_cyan}请输入开机密码，输入过程不显示，输入完后回车${tty_reset}"
 
 sudo echo '开始执行'
 #删除以前的Homebrew
 RmCreate ${HOMEBREW_REPOSITORY}
-RmAndCopy $HOME/Library/Caches/Homebrew/
-RmAndCopy $HOME/Library/Logs/Homebrew/
+RmAndCopy $HOMEBREW_CACHE
+RmAndCopy $HOMEBREW_LOGS
 
 # 让环境暂时纯粹，脚本运行结束后恢复
 if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
@@ -586,7 +578,7 @@ if [ $? -ne 0 ];then
         xcode-select --install
         exit 0
     else
-        echo "$tty_red 发现缺少git，开始安装，请输入Y ${tty_reset}"
+        echo "${tty_red} 发现缺少git，开始安装，请输入Y ${tty_reset}"
         sudo apt install git
     fi
 fi
@@ -613,20 +605,27 @@ ${tty_cyan}此处如果显示Password表示需要再次输入开机密码，输�
 sudo mkdir -p ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core
 sudo git clone ${GIT_SPEED} $USER_CORE_GIT ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core/
 JudgeSuccess 尝试再次运行自动脚本选择其他下载源或者切换网络 out
-echo "==> 克隆Homebrew Cask 图形化软件
-${tty_cyan}此处如果显示Password表示需要再次输入开机密码，输入完后回车${tty_reset}"
-if [[ "$MY_DOWN_NUM" -eq "5" ]];then
-  echo "$tty_yellow阿里源没有Cask 跳过${tty_reset}"
-else
-  sudo mkdir -p ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask
-  sudo git clone ${GIT_SPEED} $USER_CASK_GIT ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask/
-  if [ $? -ne 0 ];then
-      sudo rm -rf ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask
-      echo "${tty_red}尝试切换下载源或者切换网络,不过Cask组件非必须模块。可以忽略${tty_reset}"
-  else
-      echo "${tty_green}此步骤成功${tty_reset}"
 
+if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
+#MAC
+  echo "==> 克隆Homebrew Cask 图形化软件
+  ${tty_cyan}此处如果显示Password表示需要再次输入开机密码，输入完后回车${tty_reset}"
+  if [[ "$MY_DOWN_NUM" -eq "5" ]];then
+    echo "${tty_yellow} 阿里源没有Cask 跳过${tty_reset}"
+  else
+    sudo mkdir -p ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask
+    sudo git clone ${GIT_SPEED} $USER_CASK_GIT ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask/
+    if [ $? -ne 0 ];then
+        sudo rm -rf ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask
+        echo "${tty_red}尝试切换下载源或者切换网络,不过Cask组件非必须模块。可以忽略${tty_reset}"
+    else
+        echo "${tty_green}此步骤成功${tty_reset}"
+
+    fi
   fi
+else
+#Linux
+  echo "${tty_yellow} Linux 不支持Cask图形化软件下载 此步骤跳过${tty_reset}"
 fi
 echo '==> 配置国内镜像源HOMEBREW BOTTLE'
 
@@ -651,7 +650,13 @@ if [[ -f ${shell_profile} ]]; then
   AddPermission ${shell_profile}
 fi
 #删除之前的环境变量
-sed -i "" "/ckbrew/d" ${shell_profile}
+if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
+  #Mac
+  sed -i "" "/ckbrew/d" ${shell_profile}
+else
+  #Linux
+  sed -i "/ckbrew/d" ${shell_profile}
+fi
 #写入环境变量到文件
 echo "环境变量写入->${shell_profile}"
 
@@ -701,7 +706,7 @@ fi
 brew -v
 if [ $? -ne 0 ];then
     echo '发现错误，自动修复一次！'
-    rm -rf $HOME/Library/Caches/Homebrew/
+    rm -rf $HOMEBREW_CACHE
     export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:${HOMEBREW_REPOSITORY}/bin
     brew update-reset
     brew -v
@@ -715,37 +720,42 @@ echo '
 ==> brew update
 '
 HOMEBREW_BOTTLE_DOMAIN=${USER_HOMEBREW_BOTTLE_DOMAIN}
-brew update
-if [[ $? -ne 0 ]] && [[ $GIT_SPEED == "" ]];then
-    error_game_over
-    exit 0
-else
+if [[ $GIT_SPEED == "" ]];then
+  brew update
+  if [[ $? -ne 0 ]];then
+      error_game_over
+      exit 0
+  else
     echo "
-        ${tty_green}上一句如果提示Already up-to-date表示成功${tty_reset}
             ${tty_green}Brew自动安装程序运行完成${tty_reset}
               ${tty_green}国内地址已经配置完成${tty_reset}
-桌面的Old_Homebrew文件夹，只是为了备份，不需要删除即可。
-                初步介绍几个brew命令
 
-        本地软件库列表：brew ls
-        查找软件：brew search google（其中google替换为要查找的软件关键字）
-        查看brew版本：brew -v  更新brew版本：brew update
-${tty_green}
-        欢迎右键点击下方地址-打开URL 来给点个赞
-        https://zhuanlan.zhihu.com/p/111014448 ${tty_reset}
-    "
+      桌面的Old_Homebrew文件夹，大致看看没有你需要的可以删除。
+                  初步介绍几个brew命令
+
+    本地软件库列表：brew ls
+    查找软件：brew search google（其中google替换为要查找的关键字）
+    查看brew版本：brew -v  更新brew版本：brew update
+            ${tty_green}
+            欢迎右键点击下方地址-打开URL 来给点个赞${tty_reset}
+            ${tty_underline} https://zhuanlan.zhihu.com/p/111014448 ${tty_reset}
+      "
+  fi
+else
+   #极速模式提示Update修复方法
+    echo "${tty_green}  极速版本安装完成，${tty_reset} install功能正常，如果需要update功能请自行运行下面两句命令
+git -C ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core fetch --unshallow
+git -C ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask fetch --unshallow
+  "
 fi
-#M1芯片提醒 环境变量
-if [[ "$UNAME_MACHINE" == "arm64" ]]; then
-  echo "${tty_red}  M1芯片重启终端或者运行${tty_green} source ${shell_profile}${tty_red}  ，否则可能无法使用  ${tty_reset}"
+
+if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
+  #Mac
+  echo "${tty_green} 重启终端 或者 运行${tty_bold} source ${shell_profile}  ${tty_reset}，否则可能无法使用
+  <----->"
+else
+  #Linux
+  echo "${tty_green} Linux需要重启电脑 或者暂时运行${tty_bold} source ${shell_profile} ${tty_reset}，否则可能无法使用
+  <----->"
 fi
-#极速模式提示Update修复方法
-if [[ $GIT_SPEED != "" ]]; then
-  echo "${tty_red}  极速版本安装完成，install功能正常，如果需要update功能请自行运行下面两句命令
 
-    git -C ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core fetch --unshallow
-
-    git -C ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask fetch --unshallow
-
-    ${tty_reset}"
-fi
