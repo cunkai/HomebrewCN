@@ -83,7 +83,7 @@ RmAndCopy()
     if ! [[ -d $HOME/Desktop/Old_Homebrew/$TIME/$1 ]]; then
       sudo mkdir -p $HOME/Desktop/Old_Homebrew/$TIME/$1
     fi
-    sudo cp -rf $1 $HOME/Desktop/Old_Homebrew/$TIME/$1
+    sudo cp -rf $1 $HOME/Desktop/Old_Homebrew/$TIME/
     echo "   ---$1 备份完成"
   fi
   sudo rm -rf $1
