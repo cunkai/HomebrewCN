@@ -11,7 +11,7 @@ OS="$(uname)"
 if [[ "$OS" == "Linux" ]]; then
   HOMEBREW_ON_LINUX=1
 elif [[ "$OS" != "Darwin" ]]; then
-  echo "Homebrew 只运行在 macOS 和 Linux."
+  echo "Homebrew 只运行在 Mac OS 或 Linux."
 fi
 
 # 字符串染色程序
@@ -83,7 +83,9 @@ else
   #Linux
   UNAME_MACHINE="$(uname -m)"
 
-  HOMEBREW_PREFIX_DEFAULT="/home/linuxbrew/.linuxbrew"
+  HOMEBREW_PREFIX="/home/linuxbrew/.linuxbrew"
+  HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
+
   HOMEBREW_CACHE="${HOME}/.cache/Homebrew"
 
   STAT="stat --printf"
@@ -544,32 +546,18 @@ esac
 
 if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
 #MAC
-  echo "==> 通过命令删除之前的brew、创建一个新的Homebrew文件夹
-(设置开机密码：在左上角苹果图标->系统偏好设置->"用户与群组"->更改密码)
-(如果提示This incident will be reported. 在"用户与群组"中查看是否管理员)
-${tty_cyan}请输入开机密码，输入过程不显示，输入完后回车${tty_reset}"
-else
-#Linux
-  trap exit SIGINT
-  if ! /usr/bin/sudo -n -v &>/dev/null; then
-    ohai "通过命令删除之前的brew、创建一个新的Homebrew文件夹"
-    echo "- ${tty_bold}输入你的开机密码${tty_reset} brew将安装到 ${tty_underline}${HOMEBREW_PREFIX_DEFAULT}${tty_reset}
-          输入过程中不显示，输入完成直接回车即可。"
-  fi
-  if have_sudo_access; then
-    HOMEBREW_PREFIX="$HOMEBREW_PREFIX_DEFAULT"
-  else
-    echo "${tty_red}失败 没有获取权限${tty_reset}"
-    exit 0
-  fi
-  trap - SIGINT
-  HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
+  echo "${tty_yellow} Mac os设置开机密码方法：
+  (设置开机密码：在左上角苹果图标->系统偏好设置->"用户与群组"->更改密码)
+  (如果提示This incident will be reported. 在"用户与群组"中查看是否管理员) ${tty_reset}"
 fi
+
+echo "==> 通过命令删除之前的brew、创建一个新的Homebrew文件夹
+${tty_cyan}请输入开机密码，输入过程不显示，输入完后回车${tty_reset}"
 
 sudo echo '开始执行'
 #删除以前的Homebrew
 RmCreate ${HOMEBREW_REPOSITORY}
-RmAndCopy $HOME/Library/Caches/Homebrew/
+RmAndCopy $HOMEBREW_CACHE
 RmAndCopy $HOME/Library/Logs/Homebrew/
 
 # 让环境暂时纯粹，脚本运行结束后恢复
@@ -701,7 +689,7 @@ fi
 brew -v
 if [ $? -ne 0 ];then
     echo '发现错误，自动修复一次！'
-    rm -rf $HOME/Library/Caches/Homebrew/
+    rm -rf $HOMEBREW_CACHE
     export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:${HOMEBREW_REPOSITORY}/bin
     brew update-reset
     brew -v
