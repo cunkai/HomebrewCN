@@ -26,9 +26,9 @@ fi
 JudgeSuccess()
 {
     if [ $? -ne 0 ];then
-        echo '\033[1;31m此步骤失败 '$1'\033[0m'
+        echo '\033[0;31m此步骤失败 '$1'\033[0m'
     else
-        echo "\033[1;32m此步骤成功\033[0m"
+        echo "\033[0;32m此步骤成功\033[0m"
 
     fi
 }
@@ -133,16 +133,16 @@ version_lt() {
 }
 
 echo '
-              \033[1;32m开始执行Ruby自动升级程序\033[0m
-             \033[1;36m[cunkai.wang@foxmail.com]\033[0m
+              \033[0;32m开始执行Ruby自动升级程序\033[0m
+             \033[0;36m[cunkai.wang@foxmail.com]\033[0m
                ['$TIME']
-       \033[1;36mhttps://zhuanlan.zhihu.com/p/113176932\033[0m
+       \033[0;36mhttps://zhuanlan.zhihu.com/p/113176932\033[0m
 '
 #提示用法
 if [ -z "$USER_BREW_VERSION" ];then
     echo '
 -> 为了防止系统版本和Brew版本不兼容问题；
-所以本\033[1;32m脚本可以后置参数\033[0m，假设回退Brew到2.1.9版本来更新Ruby，如下写法:(当然Brew一定有Git信息才行)
+所以本\033[0;32m脚本可以后置参数\033[0m，假设回退Brew到2.1.9版本来更新Ruby，如下写法:(当然Brew一定有Git信息才行)
 /bin/zsh -c "$(curl -fsSL https://gitee.com/cunkai/HomebrewCN/raw/master/UpdateRuby.sh)" 2.1.9
     '
 else
@@ -160,7 +160,7 @@ else
     done
 
     if [ $ifTagInGit -eq 0 ]; then
-        echo '\033[1;31m
+        echo '\033[0;31m
 版本号不正确,下面是正确的版本号：\033[0m'
         echo $tags
         echo ''
@@ -170,7 +170,7 @@ else
     fi
 fi
 #选择一个下载源
-echo '\033[1;32m
+echo '\033[0;32m
 请选择一个下载镜像，例如中科大，输入1回车。
 (选择后，下载速度觉得慢可以ctrl+c重新运行脚本选择)
 
@@ -186,7 +186,7 @@ fi
 echo '==> 通过命令删除之前的缓存
 (设置开机密码：在左上角苹果图标->系统偏好设置->用户与群组->更改密码)
 (如果就是不想设置密码，自行百度mac sudo免密码)
-\033[1;36m请输入开机密码，输入过程不显示，输入完后回车\033[0m'
+\033[0;36m请输入开机密码，输入过程不显示，输入完后回车\033[0m'
 RmCreate $HOMEBREW_CACHES
 RmCreate $HOMEBREW_CELLAR
 sudo chown -R $(whoami) ${HOMEBREW_REPOSITORY}
@@ -199,10 +199,10 @@ else
 fi
 brew install ruby
 if [ $? -ne 0 ];then
-    echo '\033[1;31m此步骤失败，尝试切换下载源 或者 网络 或者 brew版本号\033[0m'
+    echo '\033[0;31m此步骤失败，尝试切换下载源 或者 网络 或者 brew版本号\033[0m'
     exit 0
 else
-    echo "\033[1;32m此步骤成功\033[0m"
+    echo "\033[0;32m此步骤成功\033[0m"
 fi
 
 #判断下终端是Bash还是zsh
@@ -254,9 +254,9 @@ else
     sudo git branch
     brew -v
 fi
-echo "\033[1;31m
+echo "\033[0;31m
 设置完成，还需要手动安装证书
-\033[1;32m
+\033[0;32m
 1、去文件夹(访达中按下组合键Shift+cmd+G) /usr/local/etc/openssl@1.1/ 双击 .pem 扩展名的文件
 2、终端运行 /usr/local/opt/openssl@1.1/bin/c_rehash
 3、生效需要重启终端 或者 运行命令 source ${shell_profile}
