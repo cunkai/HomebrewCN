@@ -1,6 +1,6 @@
 # Homebrew国内源
 
-苹果电脑标准安装脚本：（优点全面 缺点慢一点）
+苹果电脑标准安装脚本：（推荐 优点全面 缺点慢一点）
 
 
 ```
@@ -16,19 +16,11 @@
 
 ```
 
-Linux 标准安装脚本：（优点全面 缺点慢一点）
+Linux 标准安装脚本：
 
 
 ```
 rm Homebrew.sh ; wget https://gitee.com/cunkai/HomebrewCN/raw/master/Homebrew.sh ; bash Homebrew.sh
-
-```
-
-Linux 极速安装脚本：（优点安装速度快 缺点每次安装软件包提示克隆完整版）
-
-
-```
-rm Homebrew.sh ; wget https://gitee.com/cunkai/HomebrewCN/raw/master/Homebrew.sh ; bash Homebrew.sh speed
 
 ```
 
