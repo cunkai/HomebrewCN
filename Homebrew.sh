@@ -725,19 +725,19 @@ if [[ $? -ne 0 ]] && [[ $GIT_SPEED == "" ]];then
     error_game_over
     exit 0
 else
-    echo "
-        ${tty_green}上一句如果提示Already up-to-date表示成功${tty_reset}
-            ${tty_green}Brew自动安装程序运行完成${tty_reset}
-              ${tty_green}国内地址已经配置完成${tty_reset}
-桌面的Old_Homebrew文件夹，只是为了备份，不需要删除即可。
+	echo "
+	    		${tty_green}Brew自动安装程序运行完成${tty_reset}
+	    		  ${tty_green}国内地址已经配置完成${tty_reset}
+
+  	桌面的Old_Homebrew文件夹，大致看看没有你需要的可以删除。
                 初步介绍几个brew命令
 
-        本地软件库列表：brew ls
-        查找软件：brew search google（其中google替换为要查找的软件关键字）
-        查看brew版本：brew -v  更新brew版本：brew update
-${tty_green}
-        欢迎右键点击下方地址-打开URL 来给点个赞
-        https://zhuanlan.zhihu.com/p/111014448 ${tty_reset}
+	本地软件库列表：brew ls
+	查找软件：brew search google（其中google替换为要查找的关键字）
+	查看brew版本：brew -v  更新brew版本：brew update
+	        ${tty_green}
+	        欢迎右键点击下方地址-打开URL 来给点个赞${tty_reset}
+	        ${tty_underline} https://zhuanlan.zhihu.com/p/111014448 ${tty_reset}
     "
 fi
 
