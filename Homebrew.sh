@@ -742,20 +742,18 @@ fi
 
 #极速模式提示Update修复方法
 if [[ $GIT_SPEED != "" ]]; then
-  if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
   #MAC
     echo "${tty_red}  极速版本安装完成，install功能正常，如果需要update功能请自行运行下面两句命令
 git -C ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core fetch --unshallow
 git -C ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask fetch --unshallow
   ${tty_reset}"
-  else
-  #Linux
-    echo "${tty_red}  极速版本安装完成，install功能正常，如果需要Update和烦每次报错，运行下面命令:
-git -C ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core fetch --unshallow
-  ${tty_reset}"
-  fi
 fi
 
-echo "
-${tty_red} Linux需要重启电脑 Mac os 运行${tty_green} source ${shell_profile}${tty_red}  ，否则可能无法使用  ${tty_reset}
-"
+if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
+  #Mac
+  echo "${tty_red} 重启终端 或者 运行${tty_green} source ${shell_profile}${tty_red}  ，否则可能无法使用  ${tty_reset}"
+else
+  #Linux
+  echo "${tty_red} Linux需要重启电脑 或者暂时运行${tty_green} source ${shell_profile}${tty_red}  ，否则可能无法使用  ${tty_reset}"
+fi
+
