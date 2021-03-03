@@ -215,7 +215,11 @@ case "$SHELL" in
     fi
     ;;
   */zsh*)
-    shell_profile="${HOME}/.zprofile"
+    if [[ -r "$HOME/.zshrc" ]]; then
+      shell_profile="${HOME}/.zshrc"
+    else
+      shell_profile="${HOME}/.profile"
+    fi
     ;;
   *)
     shell_profile="${HOME}/.profile"
@@ -226,7 +230,7 @@ esac
 echo "环境变量写入->${shell_profile}"
 sed -i "" "/ckruby/d" ${shell_profile}
 echo '
-  export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"
+  export PATH="/usr/local/opt/openssl@1.1/bin:$PATH" #ckruby
   export PATH="/usr/local/opt/ruby/bin:$PATH" #ckruby
   export LDFLAGS="-L/usr/local/opt/ruby/lib" #ckruby
   export CPPFLAGS="-I/usr/local/opt/ruby/include" #ckruby
@@ -255,6 +259,7 @@ echo "\033[1;31m
 \033[1;32m
 1、去文件夹(访达中按下组合键Shift+cmd+G) /usr/local/etc/openssl@1.1/ 双击 .pem 扩展名的文件
 2、终端运行 /usr/local/opt/openssl@1.1/bin/c_rehash
+3、生效需要重启终端 或者 运行命令 source ${shell_profile}
 \033[0m
 
 更新后Gem版本为:"
@@ -262,7 +267,3 @@ gem -v
 echo "
 Ruby版本为："
 ruby -v
-
-echo "
-\033[1;32m 安装完成，生效需要重启终端 或者 运行命令${tty_bold} source ${shell_profile}  ${tty_reset} \033[0m
-  "
