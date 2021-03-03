@@ -72,7 +72,7 @@ if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
     fi
 
     HOMEBREW_CACHE="${HOME}/Library/Caches/Homebrew"
-    HOMEBREW_LOGS"${HOME}/Library/Logs/Homebrew"
+    HOMEBREW_LOGS="${HOME}/Library/Logs/Homebrew"
 
     STAT="stat -f"
     CHOWN="/usr/sbin/chown"
@@ -720,43 +720,42 @@ echo '
 ==> brew update
 '
 HOMEBREW_BOTTLE_DOMAIN=${USER_HOMEBREW_BOTTLE_DOMAIN}
-brew update
-if [[ $? -ne 0 ]] && [[ $GIT_SPEED == "" ]];then
-    error_game_over
-    exit 0
+if [[ $GIT_SPEED == "" ]];then
+  brew update
+  if [[ $? -ne 0 ]];then
+      error_game_over
+      exit 0
+  fi
 else
-	echo "
-	    		${tty_green}Brew自动安装程序运行完成${tty_reset}
-	    		  ${tty_green}国内地址已经配置完成${tty_reset}
-
-  	桌面的Old_Homebrew文件夹，大致看看没有你需要的可以删除。
-                初步介绍几个brew命令
-
-	本地软件库列表：brew ls
-	查找软件：brew search google（其中google替换为要查找的关键字）
-	查看brew版本：brew -v  更新brew版本：brew update
-	        ${tty_green}
-	        欢迎右键点击下方地址-打开URL 来给点个赞${tty_reset}
-	        ${tty_underline} https://zhuanlan.zhihu.com/p/111014448 ${tty_reset}
-    "
-fi
-
-#极速模式提示Update修复方法
-if [[ $GIT_SPEED != "" ]]; then
-  #MAC
+   #极速模式提示Update修复方法
     echo "${tty_green}  极速版本安装完成，${tty_reset} install功能正常，如果需要update功能请自行运行下面两句命令
 git -C ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core fetch --unshallow
 git -C ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask fetch --unshallow
   "
 fi
 
+echo "
+        ${tty_green}Brew自动安装程序运行完成${tty_reset}
+          ${tty_green}国内地址已经配置完成${tty_reset}
+
+  桌面的Old_Homebrew文件夹，大致看看没有你需要的可以删除。
+
+              初步介绍几个brew命令
+本地软件库列表：brew ls
+查找软件：brew search google（其中google替换为要查找的关键字）
+查看brew版本：brew -v  更新brew版本：brew update
+        ${tty_green}
+        欢迎右键点击下方地址-打开URL 来给点个赞${tty_reset}
+        ${tty_underline} https://zhuanlan.zhihu.com/p/111014448 ${tty_reset}
+"
+
 if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
   #Mac
   echo "${tty_green} 重启终端 或者 运行${tty_bold} source ${shell_profile}  ${tty_reset}，否则可能无法使用
-  <----->"
+  "
 else
   #Linux
   echo "${tty_green} Linux需要重启电脑 或者暂时运行${tty_bold} source ${shell_profile} ${tty_reset}，否则可能无法使用
-  <----->"
+  "
 fi
 
