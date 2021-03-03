@@ -47,7 +47,7 @@ if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
     fi
     
     HOMEBREW_CACHE="${HOME}/Library/Caches/Homebrew"
-    HOMEBREW_LOGS"${HOME}/Library/Logs/Homebrew"
+    HOMEBREW_LOGS="${HOME}/Library/Logs/Homebrew"
 
     STAT="stat -f"
     CHOWN="/usr/sbin/chown"
