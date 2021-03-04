@@ -45,9 +45,7 @@ sudo "touch" "$clt_placeholder"
 clt_label_command="/usr/sbin/softwareupdate -l |
                     grep -B 1 -E 'Command Line Tools' |
                     awk -F'*' '/^ *\\*/ {print \$2}' |
-                    sed -e 's/^ *Label: //' -e 's/^ *//' |
-                    sort -V |
-                    tail -n1"
+                    sed -e 's/^ *Label: //' -e 's/^ *//'"
 clt_label="$(chomp "$(/bin/bash -c "$clt_label_command")")"
 
 if [[ -n "$clt_label" ]]; then
