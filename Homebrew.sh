@@ -148,7 +148,7 @@ shell_join() {
 
 execute() {
   if ! "$@"; then
-    abort "$(printf "${tty_red}此命令运行失败:sudo %s${tty_reset}" "$(shell_join "$@")")"
+    abort "$(printf "${tty_red}此命令运行失败: %s${tty_reset}" "$(shell_join "$@")")"
   fi
 }
 
@@ -671,17 +671,17 @@ if [ $? -ne 0 ];then
                 否则会导致提示 permission denied: brew${tty_reset}"
 fi
 
-#判断系统版本
-if version_gt "$macos_version" "10.14"; then
-    echo "电脑系统版本：$macos_version"
-else
-    echo "${tty_red}检测到你不是最新系统，会有一些报错，请稍等Ruby下载安装;${tty_reset}
-    "
+#判断Mac系统版本
+if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
+  if version_gt "$macos_version" "10.14"; then
+      echo "电脑系统版本：$macos_version"
+  else
+      echo "${tty_red}检测到你不是最新系统，会有一些报错，请稍等Ruby下载安装;${tty_reset}
+      "
+  fi
 fi
 
-echo '
-==> 安装完成，brew版本
-'
+
 AddPermission ${HOMEBREW_REPOSITORY}
 #先暂时设置到清华大学源，中科大没有Ruby下载镜像
 HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
@@ -702,7 +702,9 @@ if [[ -n "${HOMEBREW_ON_LINUX-}" ]]; then
     fi
 fi
 
-
+echo '
+==> 安装完成，brew版本
+'
 brew -v
 if [ $? -ne 0 ];then
     echo '发现错误，自动修复一次！'
