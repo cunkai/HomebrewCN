@@ -390,6 +390,7 @@ error_game_over(){
     https://zhuanlan.zhihu.com/p/111014448
     如果没有解决，把运行脚本过程截图发到 cunkai.wang@foxmail.com ${tty_reset}
     "
+
     exit 0
 }
 
@@ -423,7 +424,7 @@ echo -n "${tty_green}
 1、中科大下载源 2、清华大学下载源 3、北京外国语大学下载源 ${tty_reset}"
 if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
 #mac才显示腾讯 阿里，他们对linux目前支持很差
-    echo "${tty_green} 4、腾讯下载源（不显示下载进度） 5、阿里巴巴下载源(缺少cask源) ${tty_reset} "
+    echo "${tty_green} 4、腾讯下载源（不推荐） 5、阿里巴巴下载源(不推荐 缺少cask源) ${tty_reset} "
 fi
 echo -n "
 ${tty_blue}请输入序号: "
