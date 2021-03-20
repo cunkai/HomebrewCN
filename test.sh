@@ -681,17 +681,6 @@ if [ $? -ne 0 ];then
                 否则会导致提示 permission denied: brew${tty_reset}"
 fi
 
-#判断Mac系统版本
-if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-  if version_gt "$macos_version" "10.14"; then
-      echo "电脑系统版本：$macos_version"
-  else
-      echo "${tty_red}检测到你不是最新系统，会有一些报错，请稍等Ruby下载安装;${tty_reset}
-      "
-  fi
-fi
-
-
 AddPermission ${HOMEBREW_REPOSITORY}
 #先暂时设置到清华大学源，中科大没有Ruby下载镜像
 HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
@@ -728,11 +717,23 @@ if [ $? -ne 0 ];then
 else
     echo "${tty_green}Brew前期配置成功${tty_reset}"
 fi
-echo '
-==> brew update
-'
+
+#判断Mac系统版本
+if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
+  if version_gt "$macos_version" "10.14"; then
+      echo "电脑系统版本：$macos_version"
+  else
+      echo "${tty_red}检测到你不是最新系统，会有一些报错，请稍等Ruby下载安装;${tty_reset}
+      "
+  fi
+fi
+brew services cleanup
+
 HOMEBREW_BOTTLE_DOMAIN=${USER_HOMEBREW_BOTTLE_DOMAIN}
 if [[ $GIT_SPEED == "" ]];then
+  echo '
+  ==> brew update
+  '
   brew update
   if [[ $? -ne 0 ]];then
       error_game_over
