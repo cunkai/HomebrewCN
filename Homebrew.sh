@@ -386,7 +386,7 @@ version_lt() {
 #发现错误 关闭脚本 提示如何解决
 error_game_over(){
     echo "
-    ${tty_red}失败 去下面文章看一下第二部分的常见错误解决办法
+    ${tty_red}失败$MY_DOWN_NUM 去下面文章看一下第二部分的常见错误解决办法
     https://zhuanlan.zhihu.com/p/111014448
     如果没有解决，把运行脚本过程截图发到 cunkai.wang@foxmail.com ${tty_reset}
     "
