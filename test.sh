@@ -741,7 +741,8 @@ if [[ $GIT_SPEED == "" ]];then
   fi
 else
    #极速模式提示Update修复方法
-    echo "${tty_green}  极速版本安装完成，${tty_reset} install功能正常，如果需要update功能请自行运行下面两句命令
+    echo "
+${tty_red}  极速版本安装完成，${tty_reset} install功能正常，如果需要update功能请自行运行下面两句命令
 git -C ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core fetch --unshallow
 git -C ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask fetch --unshallow
   "
