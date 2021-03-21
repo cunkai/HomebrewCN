@@ -4,7 +4,7 @@
 #获取硬件信息
 UNAME_MACHINE="$(uname -m)"
 #在X86电脑上测试arm电脑
-# UNAME_MACHINE="arm64"
+UNAME_MACHINE="arm64"
 
 # 判断是Linux还是Mac os
 OS="$(uname)"
@@ -62,13 +62,13 @@ major_minor() {
 if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
     #Mac
     if [[ "$UNAME_MACHINE" == "arm64" ]]; then
-    #M1
-    HOMEBREW_PREFIX="/opt/homebrew"
-    HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}"
+      #M1
+      HOMEBREW_PREFIX="/opt/homebrew"
+      HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}"
     else
-    #Inter
-    HOMEBREW_PREFIX="/usr/local"
-    HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
+      #Inter
+      HOMEBREW_PREFIX="/usr/local"
+      HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
     fi
 
     HOMEBREW_CACHE="${HOME}/Library/Caches/Homebrew"
