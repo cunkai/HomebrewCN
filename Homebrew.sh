@@ -685,7 +685,7 @@ AddPermission ${HOMEBREW_REPOSITORY}
 
 if [[ -n "${HOMEBREW_ON_LINUX-}" ]]; then
     #检测linux curl是否有安装
-    echo "-检测curl是否安装"
+    echo "${tty_red}-检测curl是否安装 留意是否需要输入Y${tty_reset}"
     curl -V
     if [ $? -ne 0 ];then
         sudo apt-get install curl
@@ -716,6 +716,9 @@ else
     echo "${tty_green}Brew前期配置成功${tty_reset}"
 fi
 
+#brew 3.1.2版本 修改了很多地址，都写死在了代码中，没有调用环境变量。。额。。
+#ruby下载需要改官方文件
+ruby_URL_file=$HOMEBREW_REPOSITORY/Library/Homebrew/cmd/vendor-install.sh
 
 #判断Mac系统版本
 if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
@@ -726,13 +729,13 @@ if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
       "
   fi
 
-  #brew 3.1.2版本 修改了很多地址，都写死在了代码中，没有调用环境变量。。额。。
-  #ruby下载需要改官方文件
-  ruby_URL_file=$HOMEBREW_REPOSITORY/Library/Homebrew/cmd/vendor-install.sh
   if [[ -f ${ruby_URL_file} ]]; then
       sed -i "" "s/ruby_URL=/ruby_URL=\"https:\/\/mirrors.tuna.tsinghua.edu.cn\/homebrew-bottles\/bottles-portable-ruby\/\$ruby_FILENAME\" \#/g" $ruby_URL_file
   fi
-
+else
+  if [[ -f ${ruby_URL_file} ]]; then
+      sed -i "s/ruby_URL=/ruby_URL=\"https:\/\/mirrors.tuna.tsinghua.edu.cn\/linuxbrew-bottles\/bottles-portable-ruby\/\$ruby_FILENAME\" \#/g" $ruby_URL_file
+  fi
 fi
 
 brew services cleanup
