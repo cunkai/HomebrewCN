@@ -730,7 +730,7 @@ if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
   #ruby下载需要改官方文件
   ruby_URL_file=$HOMEBREW_REPOSITORY/Library/Homebrew/cmd/vendor-install.sh
   if [[ -f ${ruby_URL_file} ]]; then
-      sed -i "" "s/ruby_URL=/ruby_URL=\"https:\/\/mirrors.tuna.tsinghua.edu.cn\/homebrew-bottles\/bottles-portable-ruby\/\$ruby_FILENAME\"\#/g" $ruby_URL_file
+      sed -i "" "s/ruby_URL=/ruby_URL=\"https:\/\/mirrors.tuna.tsinghua.edu.cn\/homebrew-bottles\/bottles-portable-ruby\/\$ruby_FILENAME\" \#/g" $ruby_URL_file
   fi
 
 fi
