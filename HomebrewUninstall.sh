@@ -42,7 +42,7 @@ if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
     HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}"
     else
     #Inter
-    HOMEBREW_PREFIX="/usr/local"
+    HOMEBREW_PREFIX="/usr/homebrew"
     HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
     fi
     
