@@ -424,7 +424,7 @@ echo "
 echo -n "${tty_green}
 请选择一个下载镜像，例如中科大，输入1回车。
 源有时候不稳定，如果git克隆报错重新运行脚本选择源。cask非必须，有部分人需要。
-1、中科大下载源 2、清华大学下载源(推荐) 3、北京外国语大学下载源 ${tty_reset}"
+1、中科大下载源 2、清华大学下载源 3、北京外国语大学下载源 ${tty_reset}"
 if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
 #mac才显示腾讯 阿里，他们对linux目前支持很差
     echo "${tty_green} 4、腾讯下载源（不推荐） 5、阿里巴巴下载源(不推荐 缺少cask源) ${tty_reset} "
@@ -716,8 +716,6 @@ else
     echo "${tty_green}Brew前期配置成功${tty_reset}"
 fi
 
-#先暂时设置到清华大学源，中科大没有Ruby下载镜像
-HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/bottles-portable-ruby/
 
 #判断Mac系统版本
 if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
@@ -727,7 +725,16 @@ if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
       echo "${tty_red}检测到你不是最新系统，会有一些报错，请稍等Ruby下载安装;${tty_reset}
       "
   fi
+
+  #brew 3.1.2版本 修改了很多地址，都写死在了代码中，没有调用环境变量。。额。。
+  #ruby下载需要改官方文件
+  ruby_URL_file=$HOMEBREW_REPOSITORY/Library/Homebrew/cmd/vendor-install.sh
+  if [[ -f ${ruby_URL_file} ]]; then
+      sed -i "" "s/ruby_URL=/ruby_URL=\"https:\/\/mirrors.tuna.tsinghua.edu.cn\/homebrew-bottles\/bottles-portable-ruby\/\$ruby_FILENAME\"\#/g" $ruby_URL_file
+  fi
+
 fi
+
 brew services cleanup
 
 if [[ $GIT_SPEED == "" ]];then
@@ -736,6 +743,7 @@ if [[ $GIT_SPEED == "" ]];then
   '
   brew update
   if [[ $? -ne 0 ]];then
+      brew config
       error_game_over
       exit 0
   fi
