@@ -4,7 +4,7 @@
 #获取硬件信息
 UNAME_MACHINE="$(uname -m)"
 #在X86电脑上测试arm电脑
-UNAME_MACHINE="arm64"
+# UNAME_MACHINE="arm64"
 
 # 判断是Linux还是Mac os
 OS="$(uname)"
@@ -62,13 +62,13 @@ major_minor() {
 if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
     #Mac
     if [[ "$UNAME_MACHINE" == "arm64" ]]; then
-      #M1
-      HOMEBREW_PREFIX="/opt/homebrew"
-      HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}"
+    #M1
+    HOMEBREW_PREFIX="/opt/homebrew"
+    HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}"
     else
-      #Inter
-      HOMEBREW_PREFIX="/usr/local"
-      HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
+    #Inter
+    HOMEBREW_PREFIX="/usr/homebrew"
+    HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
     fi
 
     HOMEBREW_CACHE="${HOME}/Library/Caches/Homebrew"
@@ -439,9 +439,9 @@ case $MY_DOWN_NUM in
     你选择了清华大学下载源
     "
     if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-        USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
+        USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/bottles
     else
-        USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/linuxbrew-bottles/
+        USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/linuxbrew-bottles/bottles
     fi
     #HomeBrew基础框架
     USER_BREW_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git
@@ -461,9 +461,9 @@ case $MY_DOWN_NUM in
     北京外国语大学下载源
     "
     if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-        USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
+        USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.bfsu.edu.cn/homebrew-bottles/bottles
     else
-        USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/linuxbrew-bottles/
+        USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.bfsu.edu.cn/linuxbrew-bottles/bottles
     fi
     #HomeBrew基础框架
     USER_BREW_GIT=https://mirrors.bfsu.edu.cn/git/homebrew/brew.git
@@ -482,7 +482,7 @@ case $MY_DOWN_NUM in
     echo "
     你选择了腾讯下载源
     "
-    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.cloud.tencent.com/homebrew-bottles
+    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.cloud.tencent.com/homebrew-bottles/bottles
     #HomeBrew基础框架
     USER_BREW_GIT=https://mirrors.cloud.tencent.com/homebrew/brew.git 
     #HomeBrew Core
@@ -496,7 +496,7 @@ case $MY_DOWN_NUM in
 ;;
 "5")
     echo "
-    你选择了阿里巴巴下载源(无mac的cask源,无Linux版本)
+    你选择了阿里巴巴下载源(有可能维护中,无Linux版本)
     "
     USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles
     #HomeBrew基础框架
@@ -517,9 +517,9 @@ case $MY_DOWN_NUM in
   "
   #HomeBrew 下载源 install
   if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles
+    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles/bottles
   else
-    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/linuxbrew-bottles/
+    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/linuxbrew-bottles/bottles
   fi
   #HomeBrew基础框架
   USER_BREW_GIT=https://mirrors.ustc.edu.cn/brew.git
@@ -682,12 +682,10 @@ if [ $? -ne 0 ];then
 fi
 
 AddPermission ${HOMEBREW_REPOSITORY}
-#先暂时设置到清华大学源，中科大没有Ruby下载镜像
-HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
 
 if [[ -n "${HOMEBREW_ON_LINUX-}" ]]; then
     #检测linux curl是否有安装
-    echo "-检测curl是否安装"
+    echo "${tty_red}-检测curl是否安装 留意是否需要输入Y${tty_reset}"
     curl -V
     if [ $? -ne 0 ];then
         sudo apt-get install curl
@@ -718,6 +716,10 @@ else
     echo "${tty_green}Brew前期配置成功${tty_reset}"
 fi
 
+#brew 3.1.2版本 修改了很多地址，都写死在了代码中，没有调用环境变量。。额。。
+#ruby下载需要改官方文件
+ruby_URL_file=$HOMEBREW_REPOSITORY/Library/Homebrew/cmd/vendor-install.sh
+
 #判断Mac系统版本
 if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
   if version_gt "$macos_version" "10.14"; then
@@ -726,16 +728,25 @@ if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
       echo "${tty_red}检测到你不是最新系统，会有一些报错，请稍等Ruby下载安装;${tty_reset}
       "
   fi
+
+  if [[ -f ${ruby_URL_file} ]]; then
+      sed -i "" "s/ruby_URL=/ruby_URL=\"https:\/\/mirrors.tuna.tsinghua.edu.cn\/homebrew-bottles\/bottles-portable-ruby\/\$ruby_FILENAME\" \#/g" $ruby_URL_file
+  fi
+else
+  if [[ -f ${ruby_URL_file} ]]; then
+      sed -i "s/ruby_URL=/ruby_URL=\"https:\/\/mirrors.tuna.tsinghua.edu.cn\/linuxbrew-bottles\/bottles-portable-ruby\/\$ruby_FILENAME\" \#/g" $ruby_URL_file
+  fi
 fi
+
 brew services cleanup
 
-HOMEBREW_BOTTLE_DOMAIN=${USER_HOMEBREW_BOTTLE_DOMAIN}
 if [[ $GIT_SPEED == "" ]];then
   echo '
   ==> brew update
   '
   brew update
   if [[ $? -ne 0 ]];then
+      brew config
       error_game_over
       exit 0
   fi
