@@ -67,7 +67,7 @@ if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
     HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}"
     else
     #Inter
-    HOMEBREW_PREFIX="/usr/local"
+    HOMEBREW_PREFIX="/usr/local/homebrew"
     HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
     fi
 
@@ -777,11 +777,11 @@ echo "
 
 if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
   #Mac
-  echo "${tty_green} 重启终端 或者 运行${tty_bold} source ${shell_profile}  ${tty_reset}，否则可能无法使用
+  echo "${tty_red} 重启终端 或者 运行${tty_bold} source ${shell_profile}  ${tty_reset} ${tty_red}否则可能无法使用${tty_reset}
   "
 else
   #Linux
-  echo "${tty_green} Linux需要重启电脑 或者暂时运行${tty_bold} source ${shell_profile} ${tty_reset}，否则可能无法使用
+  echo "${tty_red} Linux需要重启电脑 或者暂时运行${tty_bold} source ${shell_profile} ${tty_reset} ${tty_red}否则可能无法使用${tty_reset}
   "
 fi
 
