@@ -742,9 +742,9 @@ brew services cleanup
 
 if [[ $GIT_SPEED == "" ]];then
   echo '
-  ==> brew update
+  ==> brew update-reset
   '
-  brew update
+  brew update-reset
   if [[ $? -ne 0 ]];then
       brew config
       error_game_over
@@ -753,9 +753,10 @@ if [[ $GIT_SPEED == "" ]];then
 else
    #极速模式提示Update修复方法
     echo "
-${tty_red}  极速版本安装完成，${tty_reset} install功能正常，如果需要update功能请自行运行下面两句命令
+${tty_red}  极速版本安装完成，${tty_reset} install功能正常，如果需要update功能请自行运行下面三句命令
 git -C ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core fetch --unshallow
 git -C ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask fetch --unshallow
+brew update-reset
   "
 fi
 
