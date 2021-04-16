@@ -119,7 +119,7 @@ esac
 echo "==>$tty_cyan 请输入开机密码，输入过程不显示，输入完后回车 $tty_reset"
 sudo echo '开始执行'
 
-RmAndCopy ${HOMEBREW_PREFIX}
+RmAndCopy ${HOMEBREW_REPOSITORY}
 RmAndCopy $HOMEBREW_CACHE
 RmAndCopy $HOMEBREW_LOGS
 
