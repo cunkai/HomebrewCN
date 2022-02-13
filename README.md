@@ -57,3 +57,6 @@ macOS 和 Linux 缺失软件包的管理器
 知道软件包具体名称，直接 `brew install 软件包名`
 只知道一小部分名称，用 `brew search 小部分名称` 查询即可
 例如`brew search chrome`就会把带chrome的软件包全部列出
+
+
+![输入图片说明](%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20220213130333.jpg)
