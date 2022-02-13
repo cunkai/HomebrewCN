@@ -1,5 +1,7 @@
 # Homebrew国内源
 
+知乎文章地址：[https://zhuanlan.zhihu.com/p/111014448](http://)
+
 苹果电脑标准安装脚本：（推荐 优点全面 缺点慢一点）
 
 
