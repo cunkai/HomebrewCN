@@ -57,14 +57,3 @@ macOS 和 Linux 缺失软件包的管理器
 知道软件包具体名称，直接 `brew install 软件包名`
 只知道一小部分名称，用 `brew search 小部分名称` 查询即可
 例如`brew search chrome`就会把带chrome的软件包全部列出
-
- **--Homebrew中的扩展cask如何使用** 
-
-假设安装firefox运行： 
-
-`brew install --cask firefox`
-
-cask的图形化软件一般国内没有任何缓冲，下载很慢。
-
-
-
