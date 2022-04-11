@@ -1,7 +1,8 @@
 #HomeBrew自动安装脚本
 #cunkai.wang@foxmail.com
+#brew brew brew brew
 
-#获取硬件信息
+#获取硬件信息 判断inter还是苹果M
 UNAME_MACHINE="$(uname -m)"
 #在X86电脑上测试arm电脑
 # UNAME_MACHINE="arm64"
@@ -424,7 +425,11 @@ echo "
 echo -n "${tty_green}
 请选择一个下载镜像，例如中科大，输入1回车。
 源有时候不稳定，如果git克隆报错重新运行脚本选择源。cask非必须，有部分人需要。
-1、中科大下载源 2、清华大学下载源 3、北京外国语大学下载源 4、腾讯下载源  5、阿里巴巴下载源 ${tty_reset}"
+1、中科大下载源（稳）
+2、清华大学下载源 （稳）
+3、北京外国语大学下载源 
+4、腾讯下载源 （Cloning不显示下载速度）
+5、阿里巴巴下载源（比较全 Cloning不显示下载速度） ${tty_reset}"
 echo -n "
 ${tty_blue}请输入序号: "
 read MY_DOWN_NUM
@@ -472,7 +477,7 @@ case $MY_DOWN_NUM in
 ;;
 "5")
     echo "
-    你选择了阿里巴巴下载源(有可能维护中,无Linux版本)
+    你选择了阿里巴巴下载源
     "
     USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles
     #HomeBrew基础框架
@@ -552,7 +557,7 @@ fi
 
 echo "
 ${tty_cyan}下载速度觉得慢可以ctrl+c或control+c重新运行脚本选择下载源${tty_reset}
-==> 克隆Homebrew基本文件
+==> 从 $USER_BREW_GIT 克隆Homebrew基本文件
 "
 warning_if
 sudo git clone ${GIT_SPEED} $USER_BREW_GIT ${HOMEBREW_REPOSITORY}
@@ -567,7 +572,7 @@ if [[ "${HOMEBREW_REPOSITORY}" != "${HOMEBREW_PREFIX}" ]]; then
   execute "ln" "-sf" "${HOMEBREW_REPOSITORY}/bin/brew" "${HOMEBREW_PREFIX}/bin/brew"
 fi
 
-echo "==> 克隆Homebrew Core
+echo "==> 从 $USER_CORE_GIT 克隆Homebrew Core
 ${tty_cyan}此处如果显示Password表示需要再次输入开机密码，输入完后回车${tty_reset}"
 sudo mkdir -p ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core
 sudo git clone ${GIT_SPEED} $USER_CORE_GIT ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core/
@@ -575,7 +580,7 @@ JudgeSuccess 尝试再次运行自动脚本选择其他下载源或者切换网�
 
 if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
 #MAC
-  echo "==> 克隆Homebrew Cask 图形化软件
+  echo "==> 从 $USER_CASK_GIT 克隆Homebrew Cask 图形化软件
   ${tty_cyan}此处如果显示Password表示需要再次输入开机密码，输入完后回车${tty_reset}"
   sudo mkdir -p ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask
   sudo git clone ${GIT_SPEED} $USER_CASK_GIT ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask/
@@ -587,7 +592,7 @@ if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
 
   fi
 
-  echo "==> 克隆Homebrew services 管理服务的启停
+  echo "==> 从 $USER_SERVICES_GIT 克隆Homebrew services 管理服务的启停
   "
   sudo mkdir -p ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask
   sudo git clone ${GIT_SPEED} $USER_SERVICES_GIT ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-services/
@@ -737,7 +742,7 @@ echo "
 
 if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
   #Mac
-  echo "${tty_red} 重启终端 或者 运行${tty_bold} source ${shell_profile}  ${tty_reset} ${tty_red}否则可能无法使用${tty_reset}
+  echo "${tty_red} 安装成功 但还需要重启终端 或者 运行${tty_bold} source ${shell_profile}  ${tty_reset} ${tty_red}否则可能无法使用${tty_reset}
   "
 else
   #Linux
