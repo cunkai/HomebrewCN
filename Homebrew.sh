@@ -424,11 +424,7 @@ echo "
 echo -n "${tty_green}
 请选择一个下载镜像，例如中科大，输入1回车。
 源有时候不稳定，如果git克隆报错重新运行脚本选择源。cask非必须，有部分人需要。
-1、中科大下载源 2、清华大学下载源 3、北京外国语大学下载源 ${tty_reset}"
-if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-#mac才显示腾讯 阿里，他们对linux目前支持很差
-    echo "${tty_green} 4、腾讯下载源（不推荐） 5、阿里巴巴下载源(不推荐 缺少cask源) ${tty_reset} "
-fi
+1、中科大下载源 2、清华大学下载源 3、北京外国语大学下载源 4、腾讯下载源  5、阿里巴巴下载源 ${tty_reset}"
 echo -n "
 ${tty_blue}请输入序号: "
 read MY_DOWN_NUM
@@ -438,19 +434,11 @@ case $MY_DOWN_NUM in
     echo "
     你选择了清华大学下载源
     "
-    if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-        USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/bottles
-    else
-        USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/linuxbrew-bottles/bottles
-    fi
+    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/
     #HomeBrew基础框架
     USER_BREW_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git
     #HomeBrew Core
-    if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-        USER_CORE_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git
-    else
-        USER_CORE_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/linuxbrew-core.git
-    fi
+    USER_CORE_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git
     #HomeBrew Cask
     USER_CASK_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask.git
     USER_CASK_FONTS_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask-fonts.git
@@ -460,19 +448,11 @@ case $MY_DOWN_NUM in
     echo "
     北京外国语大学下载源
     "
-    if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-        USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.bfsu.edu.cn/homebrew-bottles/bottles
-    else
-        USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.bfsu.edu.cn/linuxbrew-bottles/bottles
-    fi
+    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.bfsu.edu.cn/homebrew-bottles
     #HomeBrew基础框架
     USER_BREW_GIT=https://mirrors.bfsu.edu.cn/git/homebrew/brew.git
     #HomeBrew Core
-    if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-        USER_CORE_GIT=https://mirrors.bfsu.edu.cn/git/homebrew/homebrew-core.git
-    else
-        USER_CORE_GIT=https://mirrors.bfsu.edu.cn/git/homebrew/linuxbrew-core.git
-    fi
+    USER_CORE_GIT=https://mirrors.bfsu.edu.cn/git/homebrew/homebrew-core.git
     #HomeBrew Cask
     USER_CASK_GIT=https://mirrors.bfsu.edu.cn/git/homebrew/homebrew-cask.git
     USER_CASK_FONTS_GIT=https://mirrors.bfsu.edu.cn/git/homebrew/homebrew-cask-fonts.git
@@ -482,15 +462,11 @@ case $MY_DOWN_NUM in
     echo "
     你选择了腾讯下载源
     "
-    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.cloud.tencent.com/homebrew-bottles/bottles
+    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.cloud.tencent.com/homebrew-bottles
     #HomeBrew基础框架
     USER_BREW_GIT=https://mirrors.cloud.tencent.com/homebrew/brew.git 
     #HomeBrew Core
-    if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-        USER_CORE_GIT=https://mirrors.cloud.tencent.com/homebrew/homebrew-core.git
-    else
-        USER_CORE_GIT=https://mirrors.cloud.tencent.com/homebrew/linuxbrew-core.git
-    fi
+    USER_CORE_GIT=https://mirrors.cloud.tencent.com/homebrew/homebrew-core.git
     #HomeBrew Cask
     USER_CASK_GIT=https://mirrors.cloud.tencent.com/homebrew/homebrew-cask.git
 ;;
@@ -502,12 +478,7 @@ case $MY_DOWN_NUM in
     #HomeBrew基础框架
     USER_BREW_GIT=https://mirrors.aliyun.com/homebrew/brew.git 
     #HomeBrew Core
-    if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-        USER_CORE_GIT=https://mirrors.aliyun.com/homebrew/homebrew-core.git
-    else
-        USER_CORE_GIT=https://mirrors.ustc.edu.cn/linuxbrew-core.git
-        echo "阿里巴巴无core，这里替换为了中国科学技术大学的linuxbrew-core"
-    fi
+    USER_CORE_GIT=https://mirrors.aliyun.com/homebrew/homebrew-core.git
     #HomeBrew Cask
     USER_CASK_GIT=https://mirrors.aliyun.com/homebrew/homebrew-cask.git
 ;;
@@ -516,19 +487,11 @@ case $MY_DOWN_NUM in
   你选择了中国科学技术大学下载源
   "
   #HomeBrew 下载源 install
-  if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles/bottles
-  else
-    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/linuxbrew-bottles/bottles
-  fi
+  USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles
   #HomeBrew基础框架
   USER_BREW_GIT=https://mirrors.ustc.edu.cn/brew.git
   #HomeBrew Core
-  if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-    USER_CORE_GIT=https://mirrors.ustc.edu.cn/homebrew-core.git
-  else
-    USER_CORE_GIT=https://mirrors.ustc.edu.cn/linuxbrew-core.git
-  fi
+  USER_CORE_GIT=https://mirrors.ustc.edu.cn/homebrew-core.git
   #HomeBrew Cask
   USER_CASK_GIT=https://mirrors.ustc.edu.cn/homebrew-cask.git
 ;;
@@ -614,18 +577,14 @@ if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
 #MAC
   echo "==> 克隆Homebrew Cask 图形化软件
   ${tty_cyan}此处如果显示Password表示需要再次输入开机密码，输入完后回车${tty_reset}"
-  if [[ "$MY_DOWN_NUM" -eq "5" ]];then
-    echo "${tty_yellow} 阿里源没有Cask 跳过${tty_reset}"
+  sudo mkdir -p ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask
+  sudo git clone ${GIT_SPEED} $USER_CASK_GIT ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask/
+  if [ $? -ne 0 ];then
+      sudo rm -rf ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask
+      echo "${tty_red}尝试切换下载源或者切换网络,不过Cask组件非必须模块。可以忽略${tty_reset}"
   else
-    sudo mkdir -p ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask
-    sudo git clone ${GIT_SPEED} $USER_CASK_GIT ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask/
-    if [ $? -ne 0 ];then
-        sudo rm -rf ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask
-        echo "${tty_red}尝试切换下载源或者切换网络,不过Cask组件非必须模块。可以忽略${tty_reset}"
-    else
-        echo "${tty_green}此步骤成功${tty_reset}"
+      echo "${tty_green}此步骤成功${tty_reset}"
 
-    fi
   fi
 
   echo "==> 克隆Homebrew services 管理服务的启停
