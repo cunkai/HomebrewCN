@@ -50,6 +50,7 @@ fi
 if [[ $GIT_SPEED != "" ]]; then
 echo "${tty_red}
               检测到参数speed，只拉取最新数据，可以正常install使用！
+               腾讯和阿里不支持speed拉取，需要腾讯阿里需要完全模式。
           但是以后brew update的时候会报错，运行报错提示的两句命令即可修复
           ${tty_reset}"
 fi
@@ -111,7 +112,7 @@ TIME=$(date "+%Y-%m-%d %H:%M:%S")
 JudgeSuccess()
 {
     if [ $? -ne 0 ];then
-        echo "${tty_red}m此步骤失败 '$1'${tty_reset}"
+        echo "${tty_red}此步骤失败 '$1'${tty_reset}"
         if [[ "$2" == 'out' ]]; then
           exit 0
         fi
@@ -427,9 +428,12 @@ echo -n "${tty_green}
 源有时候不稳定，如果git克隆报错重新运行脚本选择源。cask非必须，有部分人需要。
 1、中科大下载源（稳）
 2、清华大学下载源 （稳）
-3、北京外国语大学下载源 
-4、腾讯下载源 （Cloning不显示下载速度）
-5、阿里巴巴下载源（比较全 Cloning不显示下载速度） ${tty_reset}"
+3、北京外国语大学下载源 ${tty_reset}"
+if [[ $GIT_SPEED == "" ]]; then
+  echo -n "${tty_green}
+4、腾讯下载源 
+5、阿里巴巴下载源（镜像库比较全） ${tty_reset}"
+fi
 echo -n "
 ${tty_blue}请输入序号: "
 read MY_DOWN_NUM
