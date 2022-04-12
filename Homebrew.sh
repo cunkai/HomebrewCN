@@ -426,13 +426,14 @@ echo "
 echo -n "${tty_green}
 请选择一个下载镜像，例如中科大，输入1回车。
 源有时候不稳定，如果git克隆报错重新运行脚本选择源。cask非必须，有部分人需要。
-1、中科大下载源（稳）
-2、清华大学下载源 （稳）
+1、中科大下载源
+2、清华大学下载源
 3、北京外国语大学下载源 ${tty_reset}"
 if [[ $GIT_SPEED == "" ]]; then
   echo -n "${tty_green}
 4、腾讯下载源 
-5、阿里巴巴下载源（镜像库比较全） ${tty_reset}"
+5、阿里巴巴下载源
+6、清华大学brew下载源+阿里巴巴bottles源 混合下载源 ${tty_reset}"
 fi
 echo -n "
 ${tty_blue}请输入序号: "
@@ -490,6 +491,20 @@ case $MY_DOWN_NUM in
     USER_CORE_GIT=https://mirrors.aliyun.com/homebrew/homebrew-core.git
     #HomeBrew Cask
     USER_CASK_GIT=https://mirrors.aliyun.com/homebrew/homebrew-cask.git
+;;
+"6")
+    echo "
+    你选择了清华大学brew下载源+阿里巴巴homebrew-bottles源
+    "
+    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles
+    #HomeBrew基础框架
+    USER_BREW_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git
+    #HomeBrew Core
+    USER_CORE_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git
+    #HomeBrew Cask
+    USER_CASK_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask.git
+    USER_CASK_FONTS_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask-fonts.git
+    USER_CASK_DRIVERS_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask-drivers.git
 ;;
 *)
   echo "
