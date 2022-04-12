@@ -1,7 +1,8 @@
 #HomeBrew自动安装脚本
 #cunkai.wang@foxmail.com
+#brew brew brew brew
 
-#获取硬件信息
+#获取硬件信息 判断inter还是苹果M
 UNAME_MACHINE="$(uname -m)"
 #在X86电脑上测试arm电脑
 # UNAME_MACHINE="arm64"
@@ -49,6 +50,7 @@ fi
 if [[ $GIT_SPEED != "" ]]; then
 echo "${tty_red}
               检测到参数speed，只拉取最新数据，可以正常install使用！
+               腾讯和阿里不支持speed拉取，需要腾讯阿里需要完全模式。
           但是以后brew update的时候会报错，运行报错提示的两句命令即可修复
           ${tty_reset}"
 fi
@@ -67,7 +69,7 @@ if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
     HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}"
     else
     #Inter
-    HOMEBREW_PREFIX="/usr/homebrew"
+    HOMEBREW_PREFIX="/usr/local"
     HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
     fi
 
@@ -110,7 +112,7 @@ TIME=$(date "+%Y-%m-%d %H:%M:%S")
 JudgeSuccess()
 {
     if [ $? -ne 0 ];then
-        echo "${tty_red}m此步骤失败 '$1'${tty_reset}"
+        echo "${tty_red}此步骤失败 '$1'${tty_reset}"
         if [[ "$2" == 'out' ]]; then
           exit 0
         fi
@@ -162,7 +164,7 @@ ohai() {
 }
 
 # 管理员运行
-execute_sudo() 
+execute_sudo()
 {
 
   local -a args=("$@")
@@ -389,9 +391,9 @@ version_lt() {
 #发现错误 关闭脚本 提示如何解决
 error_game_over(){
     echo "
-    ${tty_red}失败$MY_DOWN_NUM 去下面文章看一下第二部分的常见错误解决办法
-    https://zhuanlan.zhihu.com/p/111014448
-    如果没有解决，把运行脚本过程截图发到 cunkai.wang@foxmail.com ${tty_reset}
+    ${tty_red}失败$MY_DOWN_NUM 右键下面地址查看常见错误解决办法
+    https://gitee.com/cunkai/HomebrewCN/blob/master/error.md
+    如果没有解决，把全部运行过程截图发到 cunkai.wang@foxmail.com ${tty_reset}
     "
 
     exit 0
@@ -420,14 +422,17 @@ echo "
            ['$TIME']['$macos_version']
        ${tty_cyan} https://zhuanlan.zhihu.com/p/111014448 ${tty_reset}
 "
-#选择一个下载源
+#选择一个brew下载源
 echo -n "${tty_green}
-请选择一个下载镜像，例如中科大，输入1回车。
-源有时候不稳定，如果git克隆报错重新运行脚本选择源。cask非必须，有部分人需要。
-1、中科大下载源 2、清华大学下载源 3、北京外国语大学下载源 ${tty_reset}"
-if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-#mac才显示腾讯 阿里，他们对linux目前支持很差
-    echo "${tty_green} 4、腾讯下载源（不推荐） 5、阿里巴巴下载源(不推荐 缺少cask源) ${tty_reset} "
+请选择一个下载brew本体的序号，例如中科大，输入1回车。
+源有时候不稳定，如果git克隆报错重新运行脚本选择源。
+1、中科大下载源
+2、清华大学下载源
+3、北京外国语大学下载源 ${tty_reset}"
+if [[ $GIT_SPEED == "" ]]; then
+  echo -n "${tty_green}
+4、腾讯下载源
+5、阿里巴巴下载源 ${tty_reset}"
 fi
 echo -n "
 ${tty_blue}请输入序号: "
@@ -436,21 +441,13 @@ echo "${tty_reset}"
 case $MY_DOWN_NUM in
 "2")
     echo "
-    你选择了清华大学下载源
+    你选择了清华大学brew本体下载源
     "
-    if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-        USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/bottles
-    else
-        USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/linuxbrew-bottles/bottles
-    fi
+    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/
     #HomeBrew基础框架
     USER_BREW_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git
     #HomeBrew Core
-    if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-        USER_CORE_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git
-    else
-        USER_CORE_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/linuxbrew-core.git
-    fi
+    USER_CORE_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git
     #HomeBrew Cask
     USER_CASK_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask.git
     USER_CASK_FONTS_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask-fonts.git
@@ -458,21 +455,13 @@ case $MY_DOWN_NUM in
 ;;
 "3")
     echo "
-    北京外国语大学下载源
+    北京外国语大学brew本体下载源
     "
-    if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-        USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.bfsu.edu.cn/homebrew-bottles/bottles
-    else
-        USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.bfsu.edu.cn/linuxbrew-bottles/bottles
-    fi
+    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.bfsu.edu.cn/homebrew-bottles
     #HomeBrew基础框架
     USER_BREW_GIT=https://mirrors.bfsu.edu.cn/git/homebrew/brew.git
     #HomeBrew Core
-    if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-        USER_CORE_GIT=https://mirrors.bfsu.edu.cn/git/homebrew/homebrew-core.git
-    else
-        USER_CORE_GIT=https://mirrors.bfsu.edu.cn/git/homebrew/linuxbrew-core.git
-    fi
+    USER_CORE_GIT=https://mirrors.bfsu.edu.cn/git/homebrew/homebrew-core.git
     #HomeBrew Cask
     USER_CASK_GIT=https://mirrors.bfsu.edu.cn/git/homebrew/homebrew-cask.git
     USER_CASK_FONTS_GIT=https://mirrors.bfsu.edu.cn/git/homebrew/homebrew-cask-fonts.git
@@ -480,55 +469,38 @@ case $MY_DOWN_NUM in
 ;;
 "4")
     echo "
-    你选择了腾讯下载源
+    你选择了腾讯brew本体下载源
     "
-    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.cloud.tencent.com/homebrew-bottles/bottles
+    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.cloud.tencent.com/homebrew-bottles
     #HomeBrew基础框架
-    USER_BREW_GIT=https://mirrors.cloud.tencent.com/homebrew/brew.git 
+    USER_BREW_GIT=https://mirrors.cloud.tencent.com/homebrew/brew.git
     #HomeBrew Core
-    if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-        USER_CORE_GIT=https://mirrors.cloud.tencent.com/homebrew/homebrew-core.git
-    else
-        USER_CORE_GIT=https://mirrors.cloud.tencent.com/homebrew/linuxbrew-core.git
-    fi
+    USER_CORE_GIT=https://mirrors.cloud.tencent.com/homebrew/homebrew-core.git
     #HomeBrew Cask
     USER_CASK_GIT=https://mirrors.cloud.tencent.com/homebrew/homebrew-cask.git
 ;;
 "5")
     echo "
-    你选择了阿里巴巴下载源(有可能维护中,无Linux版本)
+    你选择了阿里巴巴brew本体下载源
     "
     USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles
     #HomeBrew基础框架
-    USER_BREW_GIT=https://mirrors.aliyun.com/homebrew/brew.git 
+    USER_BREW_GIT=https://mirrors.aliyun.com/homebrew/brew.git
     #HomeBrew Core
-    if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-        USER_CORE_GIT=https://mirrors.aliyun.com/homebrew/homebrew-core.git
-    else
-        USER_CORE_GIT=https://mirrors.ustc.edu.cn/linuxbrew-core.git
-        echo "阿里巴巴无core，这里替换为了中国科学技术大学的linuxbrew-core"
-    fi
+    USER_CORE_GIT=https://mirrors.aliyun.com/homebrew/homebrew-core.git
     #HomeBrew Cask
     USER_CASK_GIT=https://mirrors.aliyun.com/homebrew/homebrew-cask.git
 ;;
 *)
   echo "
-  你选择了中国科学技术大学下载源
+  你选择了中国科学技术大学brew本体下载源
   "
   #HomeBrew 下载源 install
-  if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles/bottles
-  else
-    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/linuxbrew-bottles/bottles
-  fi
+  USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles
   #HomeBrew基础框架
   USER_BREW_GIT=https://mirrors.ustc.edu.cn/brew.git
   #HomeBrew Core
-  if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-    USER_CORE_GIT=https://mirrors.ustc.edu.cn/homebrew-core.git
-  else
-    USER_CORE_GIT=https://mirrors.ustc.edu.cn/linuxbrew-core.git
-  fi
+  USER_CORE_GIT=https://mirrors.ustc.edu.cn/homebrew-core.git
   #HomeBrew Cask
   USER_CASK_GIT=https://mirrors.ustc.edu.cn/homebrew-cask.git
 ;;
@@ -589,7 +561,7 @@ fi
 
 echo "
 ${tty_cyan}下载速度觉得慢可以ctrl+c或control+c重新运行脚本选择下载源${tty_reset}
-==> 克隆Homebrew基本文件
+==> 从 $USER_BREW_GIT 克隆Homebrew基本文件
 "
 warning_if
 sudo git clone ${GIT_SPEED} $USER_BREW_GIT ${HOMEBREW_REPOSITORY}
@@ -604,7 +576,7 @@ if [[ "${HOMEBREW_REPOSITORY}" != "${HOMEBREW_PREFIX}" ]]; then
   execute "ln" "-sf" "${HOMEBREW_REPOSITORY}/bin/brew" "${HOMEBREW_PREFIX}/bin/brew"
 fi
 
-echo "==> 克隆Homebrew Core
+echo "==> 从 $USER_CORE_GIT 克隆Homebrew Core
 ${tty_cyan}此处如果显示Password表示需要再次输入开机密码，输入完后回车${tty_reset}"
 sudo mkdir -p ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core
 sudo git clone ${GIT_SPEED} $USER_CORE_GIT ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core/
@@ -612,23 +584,19 @@ JudgeSuccess 尝试再次运行自动脚本选择其他下载源或者切换网�
 
 if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
 #MAC
-  echo "==> 克隆Homebrew Cask 图形化软件
+  echo "==> 从 $USER_CASK_GIT 克隆Homebrew Cask 图形化软件
   ${tty_cyan}此处如果显示Password表示需要再次输入开机密码，输入完后回车${tty_reset}"
-  if [[ "$MY_DOWN_NUM" -eq "5" ]];then
-    echo "${tty_yellow} 阿里源没有Cask 跳过${tty_reset}"
+  sudo mkdir -p ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask
+  sudo git clone ${GIT_SPEED} $USER_CASK_GIT ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask/
+  if [ $? -ne 0 ];then
+      sudo rm -rf ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask
+      echo "${tty_red}尝试切换下载源或者切换网络,不过Cask组件非必须模块。可以忽略${tty_reset}"
   else
-    sudo mkdir -p ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask
-    sudo git clone ${GIT_SPEED} $USER_CASK_GIT ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask/
-    if [ $? -ne 0 ];then
-        sudo rm -rf ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask
-        echo "${tty_red}尝试切换下载源或者切换网络,不过Cask组件非必须模块。可以忽略${tty_reset}"
-    else
-        echo "${tty_green}此步骤成功${tty_reset}"
+      echo "${tty_green}此步骤成功${tty_reset}"
 
-    fi
   fi
 
-  echo "==> 克隆Homebrew services 管理服务的启停
+  echo "==> 从 $USER_SERVICES_GIT 克隆Homebrew services 管理服务的启停
   "
   sudo mkdir -p ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask
   sudo git clone ${GIT_SPEED} $USER_SERVICES_GIT ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-services/
@@ -652,7 +620,7 @@ case "$SHELL" in
     shell_profile="${HOME}/.zprofile"
     ;;
   *)
-    shell_profile="${HOME}/.profile"
+    shell_profile="/etc/profile" #Linux
     ;;
 esac
 
@@ -667,13 +635,69 @@ else
   #Linux
   sed -i "/ckbrew/d" ${shell_profile}
 fi
+
+#选择一个homebrew-bottles下载源
+echo -n "${tty_green}
+
+            Brew本体已经安装成功，接下来配置国内源。
+
+请选择今后brew install的时候访问那个国内镜像，例如阿里巴巴，输入5回车。
+
+1、中科大国内源
+2、清华大学国内源
+3、北京外国语大学国内源
+4、腾讯国内源
+5、阿里巴巴国内源 ${tty_reset}"
+
+echo -n "
+${tty_blue}请输入序号: "
+read MY_DOWN_NUM
+echo "${tty_reset}"
+case $MY_DOWN_NUM in
+"2")
+    echo "
+    你选择了清华大学国内源
+    "
+    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/
+;;
+"3")
+    echo "
+    北京外国语大学国内源
+    "
+    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.bfsu.edu.cn/homebrew-bottles
+;;
+"4")
+    echo "
+    你选择了腾讯国内源
+    "
+    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.cloud.tencent.com/homebrew-bottles
+;;
+"5")
+    echo "
+    你选择了阿里巴巴国内源
+    "
+    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles
+;;
+*)
+  echo "
+  你选择了中国科学技术大学国内源
+  "
+  #HomeBrew 下载源 install
+  USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles
+;;
+esac
+
 #写入环境变量到文件
-echo "环境变量写入->${shell_profile}"
+echo "
+
+        环境变量写入->${shell_profile}
+
+"
 
 echo "
   export HOMEBREW_BOTTLE_DOMAIN=${USER_HOMEBREW_BOTTLE_DOMAIN} #ckbrew
   eval \$(${HOMEBREW_REPOSITORY}/bin/brew shellenv) #ckbrew
-" >> ${shell_profile} 
+" >> ${shell_profile}
 JudgeSuccess
 source "${shell_profile}"
 if [ $? -ne 0 ];then
@@ -742,9 +766,9 @@ brew services cleanup
 
 if [[ $GIT_SPEED == "" ]];then
   echo '
-  ==> brew update
+  ==> brew update-reset
   '
-  brew update
+  brew update-reset
   if [[ $? -ne 0 ]];then
       brew config
       error_game_over
@@ -753,9 +777,10 @@ if [[ $GIT_SPEED == "" ]];then
 else
    #极速模式提示Update修复方法
     echo "
-${tty_red}  极速版本安装完成，${tty_reset} install功能正常，如果需要update功能请自行运行下面两句命令
+${tty_red}  极速版本安装完成，${tty_reset} install功能正常，如果需要update功能请自行运行下面三句命令
 git -C ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core fetch --unshallow
 git -C ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask fetch --unshallow
+brew update-reset
   "
 fi
 
@@ -777,11 +802,11 @@ echo "
 
 if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
   #Mac
-  echo "${tty_green} 重启终端 或者 运行${tty_bold} source ${shell_profile}  ${tty_reset}，否则可能无法使用
+  echo "${tty_red} 安装成功 但还需要重启终端 或者 运行${tty_bold} source ${shell_profile}  ${tty_reset} ${tty_red}否则可能无法使用${tty_reset}
   "
 else
   #Linux
-  echo "${tty_green} Linux需要重启电脑 或者暂时运行${tty_bold} source ${shell_profile} ${tty_reset}，否则可能无法使用
+  echo "${tty_red} Linux需要重启电脑 或者暂时运行${tty_bold} source ${shell_profile} ${tty_reset} ${tty_red}否则可能无法使用${tty_reset}
   "
 fi
 
