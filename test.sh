@@ -164,7 +164,7 @@ ohai() {
 }
 
 # 管理员运行
-execute_sudo()
+execute_sudo() 
 {
 
   local -a args=("$@")
@@ -431,7 +431,7 @@ echo -n "${tty_green}
 3、北京外国语大学下载源 ${tty_reset}"
 if [[ $GIT_SPEED == "" ]]; then
   echo -n "${tty_green}
-4、腾讯下载源
+4、腾讯下载源 
 5、阿里巴巴下载源 ${tty_reset}"
 fi
 echo -n "
@@ -473,7 +473,7 @@ case $MY_DOWN_NUM in
     "
     USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.cloud.tencent.com/homebrew-bottles
     #HomeBrew基础框架
-    USER_BREW_GIT=https://mirrors.cloud.tencent.com/homebrew/brew.git
+    USER_BREW_GIT=https://mirrors.cloud.tencent.com/homebrew/brew.git 
     #HomeBrew Core
     USER_CORE_GIT=https://mirrors.cloud.tencent.com/homebrew/homebrew-core.git
     #HomeBrew Cask
@@ -485,7 +485,7 @@ case $MY_DOWN_NUM in
     "
     USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles
     #HomeBrew基础框架
-    USER_BREW_GIT=https://mirrors.aliyun.com/homebrew/brew.git
+    USER_BREW_GIT=https://mirrors.aliyun.com/homebrew/brew.git 
     #HomeBrew Core
     USER_CORE_GIT=https://mirrors.aliyun.com/homebrew/homebrew-core.git
     #HomeBrew Cask
@@ -607,7 +607,7 @@ else
 fi
 echo '==> 配置国内镜像源HOMEBREW BOTTLE'
 
-#判断下终端是Bash还是zsh
+#判断下mac os终端是Bash还是zsh
 case "$SHELL" in
   */bash*)
     if [[ -r "$HOME/.bash_profile" ]]; then
@@ -620,7 +620,7 @@ case "$SHELL" in
     shell_profile="${HOME}/.zprofile"
     ;;
   *)
-    shell_profile="/etc/profile" #Linux
+    shell_profile="${HOME}/.profile"
     ;;
 esac
 
@@ -633,6 +633,7 @@ if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
   sed -i "" "/ckbrew/d" ${shell_profile}
 else
   #Linux
+  shell_profile="/etc/profile"
   sed -i "/ckbrew/d" ${shell_profile}
 fi
 
@@ -646,7 +647,7 @@ echo -n "${tty_green}
 1、中科大国内源
 2、清华大学国内源
 3、北京外国语大学国内源
-4、腾讯国内源
+4、腾讯国内源 
 5、阿里巴巴国内源 ${tty_reset}"
 
 echo -n "
@@ -697,7 +698,7 @@ echo "
 echo "
   export HOMEBREW_BOTTLE_DOMAIN=${USER_HOMEBREW_BOTTLE_DOMAIN} #ckbrew
   eval \$(${HOMEBREW_REPOSITORY}/bin/brew shellenv) #ckbrew
-" >> ${shell_profile}
+" >> ${shell_profile} 
 JudgeSuccess
 source "${shell_profile}"
 if [ $? -ne 0 ];then
