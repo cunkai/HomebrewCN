@@ -624,6 +624,11 @@ case "$SHELL" in
     ;;
 esac
 
+if [[ -n "${HOMEBREW_ON_LINUX-}" ]]; then
+  #Linux
+  shell_profile="/etc/profile"
+fi
+
 if [[ -f ${shell_profile} ]]; then
   AddPermission ${shell_profile}
 fi
@@ -633,7 +638,6 @@ if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
   sed -i "" "/ckbrew/d" ${shell_profile}
 else
   #Linux
-  shell_profile="/etc/profile"
   sed -i "/ckbrew/d" ${shell_profile}
 fi
 
