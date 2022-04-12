@@ -648,7 +648,7 @@ echo -n "${tty_green}
 3、北京外国语大学国内源
 4、腾讯国内源 
 5、阿里巴巴国内源 ${tty_reset}"
-fi
+
 echo -n "
 ${tty_blue}请输入序号: "
 read MY_DOWN_NUM
