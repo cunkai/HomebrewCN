@@ -422,18 +422,17 @@ echo "
            ['$TIME']['$macos_version']
        ${tty_cyan} https://zhuanlan.zhihu.com/p/111014448 ${tty_reset}
 "
-#选择一个下载源
+#选择一个brew下载源
 echo -n "${tty_green}
-请选择一个下载镜像，例如中科大，输入1回车。
-源有时候不稳定，如果git克隆报错重新运行脚本选择源。cask非必须，有部分人需要。
+请选择一个下载brew本体的序号，例如中科大，输入1回车。
+源有时候不稳定，如果git克隆报错重新运行脚本选择源。
 1、中科大下载源
 2、清华大学下载源
 3、北京外国语大学下载源 ${tty_reset}"
 if [[ $GIT_SPEED == "" ]]; then
   echo -n "${tty_green}
 4、腾讯下载源 
-5、阿里巴巴下载源
-6、清华大学brew下载源+阿里巴巴bottles源 混合下载源 ${tty_reset}"
+5、阿里巴巴下载源 ${tty_reset}"
 fi
 echo -n "
 ${tty_blue}请输入序号: "
@@ -442,7 +441,7 @@ echo "${tty_reset}"
 case $MY_DOWN_NUM in
 "2")
     echo "
-    你选择了清华大学下载源
+    你选择了清华大学brew本体下载源
     "
     USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/
     #HomeBrew基础框架
@@ -456,7 +455,7 @@ case $MY_DOWN_NUM in
 ;;
 "3")
     echo "
-    北京外国语大学下载源
+    北京外国语大学brew本体下载源
     "
     USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.bfsu.edu.cn/homebrew-bottles
     #HomeBrew基础框架
@@ -470,7 +469,7 @@ case $MY_DOWN_NUM in
 ;;
 "4")
     echo "
-    你选择了腾讯下载源
+    你选择了腾讯brew本体下载源
     "
     USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.cloud.tencent.com/homebrew-bottles
     #HomeBrew基础框架
@@ -482,7 +481,7 @@ case $MY_DOWN_NUM in
 ;;
 "5")
     echo "
-    你选择了阿里巴巴下载源
+    你选择了阿里巴巴brew本体下载源
     "
     USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles
     #HomeBrew基础框架
@@ -492,23 +491,9 @@ case $MY_DOWN_NUM in
     #HomeBrew Cask
     USER_CASK_GIT=https://mirrors.aliyun.com/homebrew/homebrew-cask.git
 ;;
-"6")
-    echo "
-    你选择了清华大学brew下载源+阿里巴巴homebrew-bottles源
-    "
-    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles
-    #HomeBrew基础框架
-    USER_BREW_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git
-    #HomeBrew Core
-    USER_CORE_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git
-    #HomeBrew Cask
-    USER_CASK_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask.git
-    USER_CASK_FONTS_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask-fonts.git
-    USER_CASK_DRIVERS_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask-drivers.git
-;;
 *)
   echo "
-  你选择了中国科学技术大学下载源
+  你选择了中国科学技术大学brew本体下载源
   "
   #HomeBrew 下载源 install
   USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles
@@ -650,8 +635,64 @@ else
   #Linux
   sed -i "/ckbrew/d" ${shell_profile}
 fi
+
+#选择一个homebrew-bottles下载源
+echo -n "${tty_green}
+
+            Brew本体已经安装成功，接下来配置国内源。
+
+请选择今后brew install的时候访问那个国内镜像，例如阿里巴巴，输入5回车。
+
+1、中科大国内源
+2、清华大学国内源
+3、北京外国语大学国内源
+4、腾讯国内源 
+5、阿里巴巴国内源 ${tty_reset}"
+fi
+echo -n "
+${tty_blue}请输入序号: "
+read MY_DOWN_NUM
+echo "${tty_reset}"
+case $MY_DOWN_NUM in
+"2")
+    echo "
+    你选择了清华大学国内源
+    "
+    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/
+;;
+"3")
+    echo "
+    北京外国语大学国内源
+    "
+    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.bfsu.edu.cn/homebrew-bottles
+;;
+"4")
+    echo "
+    你选择了腾讯国内源
+    "
+    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.cloud.tencent.com/homebrew-bottles
+;;
+"5")
+    echo "
+    你选择了阿里巴巴国内源
+    "
+    USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles
+;;
+*)
+  echo "
+  你选择了中国科学技术大学国内源
+  "
+  #HomeBrew 下载源 install
+  USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles
+;;
+esac
+
 #写入环境变量到文件
-echo "环境变量写入->${shell_profile}"
+echo "
+
+        环境变量写入->${shell_profile}
+
+"
 
 echo "
   export HOMEBREW_BOTTLE_DOMAIN=${USER_HOMEBREW_BOTTLE_DOMAIN} #ckbrew
