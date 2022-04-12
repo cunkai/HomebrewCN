@@ -607,7 +607,7 @@ else
 fi
 echo '==> 配置国内镜像源HOMEBREW BOTTLE'
 
-#判断下终端是Bash还是zsh
+#判断下mac os终端是Bash还是zsh
 case "$SHELL" in
   */bash*)
     if [[ -r "$HOME/.bash_profile" ]]; then
@@ -623,6 +623,11 @@ case "$SHELL" in
     shell_profile="${HOME}/.profile"
     ;;
 esac
+
+if [[ -n "${HOMEBREW_ON_LINUX-}" ]]; then
+  #Linux
+  shell_profile="/etc/profile"
+fi
 
 if [[ -f ${shell_profile} ]]; then
   AddPermission ${shell_profile}
