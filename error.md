@@ -1,6 +1,6 @@
 ### Mac os 常见错误说明
 
-> Mac 10.11系统版本以下的（ **包括10.11** ）brew官方已经 **停止** 支持，有办法降级但是此安装脚本没有这个功能，太冗余。 
+> 2022年10.14系统版本以下的（ **包括10.14** ）brew官方已经 **停止** 支持，官方表示只支持最新的三个Mac os版本。
 
 .>如果错误提示去https://zhuanlan.zhihu.com/p/111014448 查看错误，说明你脚本太老了，去提示地址用最新的安装。
 
@@ -41,7 +41,7 @@ brew update
 As Homebrew does not drop privileges on installation you would be giving all
  **build scripts full access to your system.** 
 
-   此报错原因是执行过su命令，把账户切换到了root权限，退出root权限即可。一般关闭终端重新打开即可，或者输入命令exit回车 或者su - 用户名
+此报错原因是执行过su命令，把账户切换到了root权限，退出root权限即可。一般关闭终端重新打开即可，或者输入命令exit回车 或者su - 用户名
 
  **8.** /usr/local/bin/brew:  **bad interpreter: /bin/bash^M: no such file or directory** 
 
@@ -65,3 +65,6 @@ As Homebrew does not drop privileges on installation you would be giving all
 /bin/zsh -c "$(curl -fsSL https://gitee.com/cunkai/HomebrewCN/raw/master/Homebrew.sh)"
 
 ```
+
+ **11.** The x86_64 architecture is required**
+这句话意思是，这个软件不支持M1芯片，只支持x86_64架构的CPU。
