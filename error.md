@@ -1,8 +1,8 @@
 ### Mac os 常见错误说明
 
-> 2022年10.14系统版本以下的（ **包括10.14** ）brew官方已经 **停止** 支持，官方表示只支持最新的三个Mac os版本。
-
-.>如果错误提示去https://zhuanlan.zhihu.com/p/111014448 查看错误，说明你脚本太老了，去提示地址用最新的安装。
+> 官方表示只支持最新的三个Mac os版本,老的Mac系统可以试试MacPorts。
+ 
+.>首先确保运行的/bin/zsh -c "$(curl -fsSL https://gitee.com/ **cunkai** /HomebrewCN/raw/master/Homebrew.sh)" 中间那个 **cunkai** 不是别的。
 
 
  **1.** 如果遇到安装软件报错 **404** ，切换网络如果还不行：
