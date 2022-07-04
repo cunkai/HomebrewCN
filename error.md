@@ -1,6 +1,6 @@
 ### Mac os 常见错误说明
 
-> 官方表示只支持最新的三个Mac os版本,老的Mac系统可以试试MacPorts。
+> [官方表示只支持最新的三个Mac os版本](https://brew.sh/blog/),老的Mac系统可以试试MacPorts。
  
 .>首先确保运行的/bin/zsh -c "$(curl -fsSL https://gitee.com/ **cunkai** /HomebrewCN/raw/master/Homebrew.sh)" 中间那个 **cunkai** 不是别的。
 
