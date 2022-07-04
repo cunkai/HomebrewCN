@@ -68,3 +68,6 @@ As Homebrew does not drop privileges on installation you would be giving all
 
  **11.** The x86_64 architecture is required**
 这句话意思是，这个软件不支持M1芯片，只支持x86_64架构的CPU。
+
+ **12.** Warning: No remote 'origin' in /usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask, skipping update!
+看评论区说解决方法：https://blog.csdn.net/qq_20349639/article/details/125069418
