@@ -71,4 +71,4 @@ As Homebrew does not drop privileges on installation you would be giving all
 
  **12.** Warning: No remote 'origin' in /usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask, skipping update!**
 
-看评论区说解决方法（我未测试）：https://blog.csdn.net/qq_20349639/article/details/125069418
+看评论区说解决方法（我未测试）：https://gitee.com/cunkai/HomebrewCN/issues/I5A7RV
