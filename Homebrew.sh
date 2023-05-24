@@ -489,6 +489,7 @@ error_game_over(){
     ${tty_red}失败$MY_DOWN_NUM 终端输入 ${HOMEBREW_REPOSITORY}/bin/brew -v 没有反应表示失败
     右键下面地址查看常见错误解决办法
     https://gitee.com/cunkai/HomebrewCN/blob/master/error.md
+    或者别的安装方法：https://mirrors.tuna.tsinghua.edu.cn/help/homebrew/
     如果没有解决，把全部运行过程截图发到 cunkai.wang@foxmail.com ${tty_reset}
     "
 
@@ -830,8 +831,9 @@ echo "
         环境变量写入->${shell_profile}
 
 "
-
+#这里暂时把api写死吧，很多源还没有更新
 echo "
+  export HOMEBREW_API_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api"  #ckbrew
   export HOMEBREW_BOTTLE_DOMAIN=${USER_HOMEBREW_BOTTLE_DOMAIN} #ckbrew
   eval \$(${HOMEBREW_REPOSITORY}/bin/brew shellenv) #ckbrew
 " >> ${shell_profile} 
