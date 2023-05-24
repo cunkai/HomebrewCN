@@ -64,13 +64,13 @@ major_minor() {
 if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
     #Mac
     if [[ "$UNAME_MACHINE" == "arm64" ]]; then
-    #M1
-    HOMEBREW_PREFIX="/opt/homebrew"
-    HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}"
+      #M1
+      HOMEBREW_PREFIX="/opt/homebrew"
+      HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}"
     else
-    #Inter
-    HOMEBREW_PREFIX="/usr/local"
-    HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
+      #Inter
+      HOMEBREW_PREFIX="/usr/local"
+      HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
     fi
 
     HOMEBREW_CACHE="${HOME}/Library/Caches/Homebrew"
@@ -79,11 +79,13 @@ if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
     #国内没有homebrew-services，手动在gitee创建了一个，有少数人用到。
     USER_SERVICES_GIT=https://gitee.com/cunkai/homebrew-services.git
 
-    STAT="stat -f"
-    CHOWN="/usr/sbin/chown"
-    CHGRP="/usr/bin/chgrp"
+    STAT_PRINTF=("stat" "-f")
+    PERMISSION_FORMAT="%A"
+    CHOWN=("/usr/sbin/chown")
+    CHGRP=("/usr/bin/chgrp")
     GROUP="admin"
-    TOUCH="/usr/bin/touch"
+    TOUCH=("/usr/bin/touch")
+    INSTALL=("/usr/bin/install" -d -o "root" -g "wheel" -m "0755")
 
     #获取Mac系统版本
     macos_version="$(major_minor "$(/usr/bin/sw_vers -productVersion)")"
@@ -97,11 +99,13 @@ else
   HOMEBREW_CACHE="${HOME}/.cache/Homebrew"
   HOMEBREW_LOGS="${HOME}/.logs/Homebrew"
 
-  STAT="stat --printf"
-  CHOWN="/bin/chown"
-  CHGRP="/bin/chgrp"
+  STAT_PRINTF=("stat" "--printf")
+  PERMISSION_FORMAT="%a"
+  CHOWN=("/bin/chown")
+  CHGRP=("/bin/chgrp")
   GROUP="$(id -gn)"
-  TOUCH="/bin/touch"
+  TOUCH=("/bin/touch")
+  INSTALL=("/usr/bin/install" -d -o "${USER}" -g "${GROUP}" -m "0755")
 fi
 
 
@@ -220,7 +224,7 @@ exists_but_not_writable() {
 }
 #文件所有者
 get_owner() {
-  $(shell_join "$STAT %u $1" )
+  "${STAT_PRINTF[@]}" "%u" "$1"
 }
 #文件本人无权限
 file_not_owned() {
@@ -228,11 +232,11 @@ file_not_owned() {
 }
 #获取所属的组
 get_group() {
-  $(shell_join "$STAT %g $1" )
+  "${STAT_PRINTF[@]}" "%g" "$1"
 }
 #不在所属组
 file_not_grpowned() {
-  [[ " $(id -G "$USER") " != *" $(get_group "$1") "*  ]]
+  [[ " $(id -G "${USER}") " != *" $(get_group "$1") "* ]]
 }
 #获得当前文件夹权限 例如777
 get_permission() {
@@ -248,124 +252,221 @@ user_only_chmod() {
 CreateBrewLinkFolder()
 {
   echo "--创建Brew所需要的目录"
-  directories=(bin etc include lib sbin share opt var
-             Frameworks
-             etc/bash_completion.d lib/pkgconfig
-             share/aclocal share/doc share/info share/locale share/man
-             share/man/man1 share/man/man2 share/man/man3 share/man/man4
-             share/man/man5 share/man/man6 share/man/man7 share/man/man8
-             var/log var/homebrew var/homebrew/linked
-             bin/brew)
-  group_chmods=()
-  for dir in "${directories[@]}"; do
-    if exists_but_not_writable "${HOMEBREW_PREFIX}/${dir}"; then
-      group_chmods+=("${HOMEBREW_PREFIX}/${dir}")
+  directories=(
+  bin etc include lib sbin share opt var
+  Frameworks
+  etc/bash_completion.d lib/pkgconfig
+  share/aclocal share/doc share/info share/locale share/man
+  share/man/man1 share/man/man2 share/man/man3 share/man/man4
+  share/man/man5 share/man/man6 share/man/man7 share/man/man8
+  var/log var/homebrew var/homebrew/linked
+  bin/brew
+)
+group_chmods=()
+for dir in "${directories[@]}"
+do
+  if exists_but_not_writable "${HOMEBREW_PREFIX}/${dir}"
+  then
+    group_chmods+=("${HOMEBREW_PREFIX}/${dir}")
+  fi
+done
+
+# zsh refuses to read from these directories if group writable
+directories=(share/zsh share/zsh/site-functions)
+zsh_dirs=()
+for dir in "${directories[@]}"
+do
+  zsh_dirs+=("${HOMEBREW_PREFIX}/${dir}")
+done
+
+directories=(
+  bin etc include lib sbin share var opt
+  share/zsh share/zsh/site-functions
+  var/homebrew var/homebrew/linked
+  Cellar Caskroom Frameworks
+)
+mkdirs=()
+for dir in "${directories[@]}"
+do
+  if ! [[ -d "${HOMEBREW_PREFIX}/${dir}" ]]
+  then
+    mkdirs+=("${HOMEBREW_PREFIX}/${dir}")
+  fi
+done
+
+user_chmods=()
+mkdirs_user_only=()
+if [[ "${#zsh_dirs[@]}" -gt 0 ]]
+then
+  for dir in "${zsh_dirs[@]}"
+  do
+    if [[ ! -d "${dir}" ]]
+    then
+      mkdirs_user_only+=("${dir}")
+    elif user_only_chmod "${dir}"
+    then
+      user_chmods+=("${dir}")
     fi
   done
+fi
 
-  directories=(share/zsh share/zsh/site-functions)
-  zsh_dirs=()
-  for dir in "${directories[@]}"; do
-    zsh_dirs+=("${HOMEBREW_PREFIX}/${dir}")
-  done
+chmods=()
+if [[ "${#group_chmods[@]}" -gt 0 ]]
+then
+  chmods+=("${group_chmods[@]}")
+fi
+if [[ "${#user_chmods[@]}" -gt 0 ]]
+then
+  chmods+=("${user_chmods[@]}")
+fi
 
-  directories=(bin etc include lib sbin share var opt
-              share/zsh share/zsh/site-functions
-              var/homebrew var/homebrew/linked
-              Cellar Caskroom Frameworks)
-  mkdirs=()
-  for dir in "${directories[@]}"; do
-    if ! [[ -d "${HOMEBREW_PREFIX}/${dir}" ]]; then
-      mkdirs+=("${HOMEBREW_PREFIX}/${dir}")
+chowns=()
+chgrps=()
+if [[ "${#chmods[@]}" -gt 0 ]]
+then
+  for dir in "${chmods[@]}"
+  do
+    if file_not_owned "${dir}"
+    then
+      chowns+=("${dir}")
+    fi
+    if file_not_grpowned "${dir}"
+    then
+      chgrps+=("${dir}")
     fi
   done
+fi
 
-  user_chmods=()
-  if [[ "${#zsh_dirs[@]}" -gt 0 ]]; then
-    for dir in "${zsh_dirs[@]}"; do
-      if user_only_chmod "${dir}"; then
-        user_chmods+=("${dir}")
-      fi
-    done
-  fi
+if [[ "${#group_chmods[@]}" -gt 0 ]]
+then
+  ohai "The following existing directories will be made group writable:"
+  printf "%s\n" "${group_chmods[@]}"
+fi
+if [[ "${#user_chmods[@]}" -gt 0 ]]
+then
+  ohai "The following existing directories will be made writable by user only:"
+  printf "%s\n" "${user_chmods[@]}"
+fi
+if [[ "${#chowns[@]}" -gt 0 ]]
+then
+  ohai "The following existing directories will have their owner set to ${tty_underline}${USER}${tty_reset}:"
+  printf "%s\n" "${chowns[@]}"
+fi
+if [[ "${#chgrps[@]}" -gt 0 ]]
+then
+  ohai "The following existing directories will have their group set to ${tty_underline}${GROUP}${tty_reset}:"
+  printf "%s\n" "${chgrps[@]}"
+fi
+if [[ "${#mkdirs[@]}" -gt 0 ]]
+then
+  ohai "The following new directories will be created:"
+  printf "%s\n" "${mkdirs[@]}"
+fi
 
-  chmods=()
-  if [[ "${#group_chmods[@]}" -gt 0 ]]; then
-    chmods+=("${group_chmods[@]}")
-  fi
-  if [[ "${#user_chmods[@]}" -gt 0 ]]; then
-    chmods+=("${user_chmods[@]}")
-  fi
+if should_install_command_line_tools
+then
+  ohai "The Xcode Command Line Tools will be installed."
+fi
 
-  chowns=()
-  chgrps=()
-  if [[ "${#chmods[@]}" -gt 0 ]]; then
-    for dir in "${chmods[@]}"; do
-      if file_not_owned "${dir}"; then
-        chowns+=("${dir}")
-      fi
-      if file_not_grpowned "${dir}"; then
-        chgrps+=("${dir}")
-      fi
-    done
-  fi
+non_default_repos=""
+additional_shellenv_commands=()
+if [[ "${HOMEBREW_BREW_DEFAULT_GIT_REMOTE}" != "${HOMEBREW_BREW_GIT_REMOTE}" ]]
+then
+  ohai "HOMEBREW_BREW_GIT_REMOTE is set to a non-default URL:"
+  echo "${tty_underline}${HOMEBREW_BREW_GIT_REMOTE}${tty_reset} will be used as the Homebrew/brew Git remote."
+  non_default_repos="Homebrew/brew"
+  additional_shellenv_commands+=("export HOMEBREW_BREW_GIT_REMOTE=\"${HOMEBREW_BREW_GIT_REMOTE}\"")
+fi
 
-  if [[ -d "${HOMEBREW_PREFIX}" ]]; then
-    if [[ "${#chmods[@]}" -gt 0 ]]; then
-      execute_sudo "/bin/chmod" "u+rwx" "${chmods[@]}"
-    fi
-    if [[ "${#group_chmods[@]}" -gt 0 ]]; then
-      execute_sudo "/bin/chmod" "g+rwx" "${group_chmods[@]}"
-    fi
-    if [[ "${#user_chmods[@]}" -gt 0 ]]; then
-      execute_sudo "/bin/chmod" "755" "${user_chmods[@]}"
-    fi
-    if [[ "${#chowns[@]}" -gt 0 ]]; then
-      execute_sudo "$CHOWN" "$USER" "${chowns[@]}"
-    fi
-    if [[ "${#chgrps[@]}" -gt 0 ]]; then
-      execute_sudo "$CHGRP" "$GROUP" "${chgrps[@]}"
-    fi
+if [[ "${HOMEBREW_CORE_DEFAULT_GIT_REMOTE}" != "${HOMEBREW_CORE_GIT_REMOTE}" ]]
+then
+  ohai "HOMEBREW_CORE_GIT_REMOTE is set to a non-default URL:"
+  echo "${tty_underline}${HOMEBREW_CORE_GIT_REMOTE}${tty_reset} will be used as the Homebrew/homebrew-core Git remote."
+  non_default_repos="${non_default_repos:-}${non_default_repos:+ and }Homebrew/homebrew-core"
+  additional_shellenv_commands+=("export HOMEBREW_CORE_GIT_REMOTE=\"${HOMEBREW_CORE_GIT_REMOTE}\"")
+fi
+
+if [[ -n "${HOMEBREW_NO_INSTALL_FROM_API-}" ]]
+then
+  ohai "HOMEBREW_NO_INSTALL_FROM_API is set."
+  echo "Homebrew/homebrew-core will be tapped during this ${tty_bold}install${tty_reset} run."
+fi
+
+if [[ -z "${NONINTERACTIVE-}" ]]
+then
+  ring_bell
+  wait_for_user
+fi
+
+if [[ -d "${HOMEBREW_PREFIX}" ]]
+then
+  if [[ "${#chmods[@]}" -gt 0 ]]
+  then
+    execute_sudo "${CHMOD[@]}" "u+rwx" "${chmods[@]}"
+  fi
+  if [[ "${#group_chmods[@]}" -gt 0 ]]
+  then
+    execute_sudo "${CHMOD[@]}" "g+rwx" "${group_chmods[@]}"
+  fi
+  if [[ "${#user_chmods[@]}" -gt 0 ]]
+  then
+    execute_sudo "${CHMOD[@]}" "go-w" "${user_chmods[@]}"
+  fi
+  if [[ "${#chowns[@]}" -gt 0 ]]
+  then
+    execute_sudo "${CHOWN[@]}" "${USER}" "${chowns[@]}"
+  fi
+  if [[ "${#chgrps[@]}" -gt 0 ]]
+  then
+    execute_sudo "${CHGRP[@]}" "${GROUP}" "${chgrps[@]}"
+  fi
+else
+  execute_sudo "${INSTALL[@]}" "${HOMEBREW_PREFIX}"
+fi
+
+if [[ "${#mkdirs[@]}" -gt 0 ]]
+then
+  execute_sudo "${MKDIR[@]}" "${mkdirs[@]}"
+  execute_sudo "${CHMOD[@]}" "ug=rwx" "${mkdirs[@]}"
+  if [[ "${#mkdirs_user_only[@]}" -gt 0 ]]
+  then
+    execute_sudo "${CHMOD[@]}" "go-w" "${mkdirs_user_only[@]}"
+  fi
+  execute_sudo "${CHOWN[@]}" "${USER}" "${mkdirs[@]}"
+  execute_sudo "${CHGRP[@]}" "${GROUP}" "${mkdirs[@]}"
+fi
+
+if ! [[ -d "${HOMEBREW_REPOSITORY}" ]]
+then
+  execute_sudo "${MKDIR[@]}" "${HOMEBREW_REPOSITORY}"
+fi
+execute_sudo "${CHOWN[@]}" "-R" "${USER}:${GROUP}" "${HOMEBREW_REPOSITORY}"
+
+if ! [[ -d "${HOMEBREW_CACHE}" ]]
+then
+  if [[ -n "${HOMEBREW_ON_MACOS-}" ]]
+  then
+    execute_sudo "${MKDIR[@]}" "${HOMEBREW_CACHE}"
   else
-    execute_sudo "/bin/mkdir" "-p" "${HOMEBREW_PREFIX}"
-    if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-      execute_sudo "$CHOWN" "root:wheel" "${HOMEBREW_PREFIX}"
-    else
-      execute_sudo "$CHOWN" "$USER:$GROUP" "${HOMEBREW_PREFIX}"
-    fi
+    execute "${MKDIR[@]}" "${HOMEBREW_CACHE}"
   fi
-
-  if [[ "${#mkdirs[@]}" -gt 0 ]]; then
-    execute_sudo "/bin/mkdir" "-p" "${mkdirs[@]}"
-    execute_sudo "/bin/chmod" "g+rwx" "${mkdirs[@]}"
-    execute_sudo "$CHOWN" "$USER" "${mkdirs[@]}"
-    execute_sudo "$CHGRP" "$GROUP" "${mkdirs[@]}"
-  fi
-
-  if ! [[ -d "${HOMEBREW_REPOSITORY}" ]]; then
-    execute_sudo "/bin/mkdir" "-p" "${HOMEBREW_REPOSITORY}"
-  fi
-  execute_sudo "$CHOWN" "-R" "$USER:$GROUP" "${HOMEBREW_REPOSITORY}"
-
-  if ! [[ -d "${HOMEBREW_CACHE}" ]]; then
-    if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-      execute_sudo "/bin/mkdir" "-p" "${HOMEBREW_CACHE}"
-    else
-      execute "/bin/mkdir" "-p" "${HOMEBREW_CACHE}"
-    fi
-  fi
-  if exists_but_not_writable "${HOMEBREW_CACHE}"; then
-    execute_sudo "/bin/chmod" "g+rwx" "${HOMEBREW_CACHE}"
-  fi
-  if file_not_owned "${HOMEBREW_CACHE}"; then
-    execute_sudo "$CHOWN" "-R" "$USER" "${HOMEBREW_CACHE}"
-  fi
-  if file_not_grpowned "${HOMEBREW_CACHE}"; then
-    execute_sudo "$CHGRP" "-R" "$GROUP" "${HOMEBREW_CACHE}"
-  fi
-  if [[ -d "${HOMEBREW_CACHE}" ]]; then
-    execute "$TOUCH" "${HOMEBREW_CACHE}/.cleaned"
-  fi
+fi
+if exists_but_not_writable "${HOMEBREW_CACHE}"
+then
+  execute_sudo "${CHMOD[@]}" "g+rwx" "${HOMEBREW_CACHE}"
+fi
+if file_not_owned "${HOMEBREW_CACHE}"
+then
+  execute_sudo "${CHOWN[@]}" "-R" "${USER}" "${HOMEBREW_CACHE}"
+fi
+if file_not_grpowned "${HOMEBREW_CACHE}"
+then
+  execute_sudo "${CHGRP[@]}" "-R" "${GROUP}" "${HOMEBREW_CACHE}"
+fi
+if [[ -d "${HOMEBREW_CACHE}" ]]
+then
+  execute "${TOUCH[@]}" "${HOMEBREW_CACHE}/.cleaned"
+fi
   echo "--依赖目录脚本运行完成"
 }
 
@@ -391,7 +492,8 @@ version_lt() {
 #发现错误 关闭脚本 提示如何解决
 error_game_over(){
     echo "
-    ${tty_red}失败$MY_DOWN_NUM 右键下面地址查看常见错误解决办法
+    ${tty_red}失败$MY_DOWN_NUM 终端输入 brew -v 没有反应表示失败
+    右键下面地址查看常见错误解决办法
     https://gitee.com/cunkai/HomebrewCN/blob/master/error.md
     如果没有解决，把全部运行过程截图发到 cunkai.wang@foxmail.com ${tty_reset}
     "
@@ -452,6 +554,8 @@ case $MY_DOWN_NUM in
     USER_CASK_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask.git
     USER_CASK_FONTS_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask-fonts.git
     USER_CASK_DRIVERS_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask-drivers.git
+    #API
+    HOMEBREW_API_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api"
 ;;
 "3")
     echo "
@@ -503,6 +607,8 @@ case $MY_DOWN_NUM in
   USER_CORE_GIT=https://mirrors.ustc.edu.cn/homebrew-core.git
   #HomeBrew Cask
   USER_CASK_GIT=https://mirrors.ustc.edu.cn/homebrew-cask.git
+  #API
+  HOMEBREW_API_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles/api
 ;;
 esac
 echo -n "${tty_green}！！！此脚本将要删除之前的brew(包括它下载的软件)，请自行备份。
