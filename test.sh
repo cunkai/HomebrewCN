@@ -9,9 +9,13 @@ UNAME_MACHINE="$(uname -m)"
 
 # 判断是Linux还是Mac os
 OS="$(uname)"
-if [[ "$OS" == "Linux" ]]; then
+if [[ "${OS}" == "Linux" ]]
+then
   HOMEBREW_ON_LINUX=1
-elif [[ "$OS" != "Darwin" ]]; then
+elif [[ "${OS}" == "Darwin" ]]
+then
+  HOMEBREW_ON_MACOS=1
+else
   echo "Homebrew 只运行在 Mac OS 或 Linux."
 fi
 
