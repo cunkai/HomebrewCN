@@ -486,7 +486,7 @@ version_lt() {
 #发现错误 关闭脚本 提示如何解决
 error_game_over(){
     echo "
-    ${tty_red}失败$MY_DOWN_NUM 终端输入 brew -v 没有反应表示失败
+    ${tty_red}失败$MY_DOWN_NUM 终端输入 ${HOMEBREW_REPOSITORY}/bin/brew -v 没有反应表示失败
     右键下面地址查看常见错误解决办法
     https://gitee.com/cunkai/HomebrewCN/blob/master/error.md
     如果没有解决，把全部运行过程截图发到 cunkai.wang@foxmail.com ${tty_reset}
@@ -733,9 +733,9 @@ else
   start_clone_brew
 fi
 
-echo '==> 配置国内镜像源HOMEBREW BOTTLE     
-${tty_cyan}此处如果显示Password表示需要再次输入开机密码，看不到，输入完后回车${tty_reset}"
-'
+echo "==> 配置国内镜像源HOMEBREW BOTTLE     
+${tty_cyan}此处如果显示Password表示需要再次输入开机密码，输入完后回车${tty_reset}"
+
 
 #判断下mac os终端是Bash还是zsh
 case "$SHELL" in
