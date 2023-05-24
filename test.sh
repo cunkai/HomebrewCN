@@ -244,11 +244,11 @@ file_not_grpowned() {
 }
 #获得当前文件夹权限 例如777
 get_permission() {
-  $(shell_join "$STAT_PRINTF %A $1" )
+  "${STAT_PRINTF[@]}" "${PERMISSION_FORMAT}" "$1"
 }
 #授权当前用户权限
 user_only_chmod() {
-  [[ -d "$1" ]] && [[ "$(get_permission "$1")" != "755" ]]
+  [[ -d "$1" ]] && [[ "$(get_permission "$1")" != 75[0145] ]]
 }
 
 
