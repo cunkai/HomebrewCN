@@ -223,7 +223,6 @@ RmCreate()
     RmAndCopy $1
     CreateFolder $1
 }
-
 #判断文件夹存在但不可写
 exists_but_not_writable() {
   [[ -e "$1" ]] && ! [[ -r "$1" && -w "$1" && -x "$1" ]]
@@ -369,11 +368,6 @@ then
   printf "%s\n" "${mkdirs[@]}"
 fi
 
-if should_install_command_line_tools
-then
-  ohai "The Xcode Command Line Tools will be installed."
-fi
-
 non_default_repos=""
 additional_shellenv_commands=()
 if [[ "${HOMEBREW_BREW_DEFAULT_GIT_REMOTE}" != "${HOMEBREW_BREW_GIT_REMOTE}" ]]
@@ -396,12 +390,6 @@ if [[ -n "${HOMEBREW_NO_INSTALL_FROM_API-}" ]]
 then
   ohai "HOMEBREW_NO_INSTALL_FROM_API is set."
   echo "Homebrew/homebrew-core will be tapped during this ${tty_bold}install${tty_reset} run."
-fi
-
-if [[ -z "${NONINTERACTIVE-}" ]]
-then
-  ring_bell
-  wait_for_user
 fi
 
 if [[ -d "${HOMEBREW_PREFIX}" ]]
@@ -748,6 +736,8 @@ fi
 if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
   #Mac
   sed -i "" "/ckbrew/d" ${shell_profile}
+  #游戏人xcode和git混乱，再运行一次。
+  xcode-select --install
 else
   #Linux
   sed -i "/ckbrew/d" ${shell_profile}
