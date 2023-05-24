@@ -113,6 +113,8 @@ else
 fi
 
 
+CHMOD=("/bin/chmod")
+MKDIR=("/bin/mkdir" "-p")
 
 #获取系统时间
 TIME=$(date "+%Y-%m-%d %H:%M:%S")
