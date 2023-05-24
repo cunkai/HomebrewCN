@@ -726,13 +726,15 @@ case $MY_DOWN_NUM in
 ;;
 esac
 
-if [[$MY_DOWN_NUM == "6"]]; then
+if [[ $MY_DOWN_NUM == "6" ]]; then
   echo '==> 跳过克隆brew，准备配置国内镜像源'
 else
   start_clone_brew
 fi
 
-echo '==> 配置国内镜像源HOMEBREW BOTTLE'
+echo '==> 配置国内镜像源HOMEBREW BOTTLE     
+${tty_cyan}此处如果显示Password表示需要再次输入开机密码，看不到，输入完后回车${tty_reset}"
+'
 
 #判断下mac os终端是Bash还是zsh
 case "$SHELL" in
@@ -763,7 +765,7 @@ fi
 if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
   #Mac
   sed -i "" "/ckbrew/d" ${shell_profile}
-  #游戏人xcode和git混乱，再运行一次。
+  echo '有些电脑xcode和git混乱，再运行一次，此处如果有error正常。'
   xcode-select --install
 else
   #Linux
@@ -924,12 +926,12 @@ echo "
 
               初步介绍几个brew命令
 查看版本：brew -v  更新brew版本：brew update
-查找：brew search python3（其中python替换为要查找的关键字）
+查找：brew search python（其中python替换为要查找的关键字）
 安装：brew install python  安装完成输入 python3 -h 查看
 本地软件库列表：brew ls
 
         ${tty_green}
-        欢迎右键点击下方地址-打开URL 来给点个赞${tty_reset}
+        欢迎右键点击下方地址-打开链接 点个赞吧${tty_reset}
         ${tty_underline} https://zhuanlan.zhihu.com/p/111014448 ${tty_reset}
 "
 
