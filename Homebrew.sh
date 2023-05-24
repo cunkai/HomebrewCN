@@ -833,7 +833,8 @@ echo "
 "
 #这里暂时把api写死吧，很多源还没有更新
 echo "
-  export HOMEBREW_API_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api"  #ckbrew
+  export HOMEBREW_PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple #ckbrew
+  export HOMEBREW_API_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api  #ckbrew
   export HOMEBREW_BOTTLE_DOMAIN=${USER_HOMEBREW_BOTTLE_DOMAIN} #ckbrew
   eval \$(${HOMEBREW_REPOSITORY}/bin/brew shellenv) #ckbrew
 " >> ${shell_profile} 
