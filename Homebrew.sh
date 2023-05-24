@@ -9,9 +9,13 @@ UNAME_MACHINE="$(uname -m)"
 
 # 判断是Linux还是Mac os
 OS="$(uname)"
-if [[ "$OS" == "Linux" ]]; then
+if [[ "${OS}" == "Linux" ]]
+then
   HOMEBREW_ON_LINUX=1
-elif [[ "$OS" != "Darwin" ]]; then
+elif [[ "${OS}" == "Darwin" ]]
+then
+  HOMEBREW_ON_MACOS=1
+else
   echo "Homebrew 只运行在 Mac OS 或 Linux."
 fi
 
@@ -64,13 +68,13 @@ major_minor() {
 if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
     #Mac
     if [[ "$UNAME_MACHINE" == "arm64" ]]; then
-    #M1
-    HOMEBREW_PREFIX="/opt/homebrew"
-    HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}"
+      #M1
+      HOMEBREW_PREFIX="/opt/homebrew"
+      HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}"
     else
-    #Inter
-    HOMEBREW_PREFIX="/usr/local"
-    HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
+      #Inter
+      HOMEBREW_PREFIX="/usr/local"
+      HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}/Homebrew"
     fi
 
     HOMEBREW_CACHE="${HOME}/Library/Caches/Homebrew"
@@ -79,11 +83,13 @@ if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
     #国内没有homebrew-services，手动在gitee创建了一个，有少数人用到。
     USER_SERVICES_GIT=https://gitee.com/cunkai/homebrew-services.git
 
-    STAT="stat -f"
-    CHOWN="/usr/sbin/chown"
-    CHGRP="/usr/bin/chgrp"
+    STAT_PRINTF=("stat" "-f")
+    PERMISSION_FORMAT="%A"
+    CHOWN=("/usr/sbin/chown")
+    CHGRP=("/usr/bin/chgrp")
     GROUP="admin"
-    TOUCH="/usr/bin/touch"
+    TOUCH=("/usr/bin/touch")
+    INSTALL=("/usr/bin/install" -d -o "root" -g "wheel" -m "0755")
 
     #获取Mac系统版本
     macos_version="$(major_minor "$(/usr/bin/sw_vers -productVersion)")"
@@ -97,14 +103,18 @@ else
   HOMEBREW_CACHE="${HOME}/.cache/Homebrew"
   HOMEBREW_LOGS="${HOME}/.logs/Homebrew"
 
-  STAT="stat --printf"
-  CHOWN="/bin/chown"
-  CHGRP="/bin/chgrp"
+  STAT_PRINTF=("stat" "--printf")
+  PERMISSION_FORMAT="%a"
+  CHOWN=("/bin/chown")
+  CHGRP=("/bin/chgrp")
   GROUP="$(id -gn)"
-  TOUCH="/bin/touch"
+  TOUCH=("/bin/touch")
+  INSTALL=("/usr/bin/install" -d -o "${USER}" -g "${GROUP}" -m "0755")
 fi
 
 
+CHMOD=("/bin/chmod")
+MKDIR=("/bin/mkdir" "-p")
 
 #获取系统时间
 TIME=$(date "+%Y-%m-%d %H:%M:%S")
@@ -213,14 +223,13 @@ RmCreate()
     RmAndCopy $1
     CreateFolder $1
 }
-
 #判断文件夹存在但不可写
 exists_but_not_writable() {
   [[ -e "$1" ]] && ! [[ -r "$1" && -w "$1" && -x "$1" ]]
 }
 #文件所有者
 get_owner() {
-  $(shell_join "$STAT %u $1" )
+  "${STAT_PRINTF[@]}" "%u" "$1"
 }
 #文件本人无权限
 file_not_owned() {
@@ -228,19 +237,19 @@ file_not_owned() {
 }
 #获取所属的组
 get_group() {
-  $(shell_join "$STAT %g $1" )
+  "${STAT_PRINTF[@]}" "%g" "$1"
 }
 #不在所属组
 file_not_grpowned() {
-  [[ " $(id -G "$USER") " != *" $(get_group "$1") "*  ]]
+  [[ " $(id -G "${USER}") " != *" $(get_group "$1") "* ]]
 }
 #获得当前文件夹权限 例如777
 get_permission() {
-  $(shell_join "$STAT %A $1" )
+  "${STAT_PRINTF[@]}" "${PERMISSION_FORMAT}" "$1"
 }
 #授权当前用户权限
 user_only_chmod() {
-  [[ -d "$1" ]] && [[ "$(get_permission "$1")" != "755" ]]
+  [[ -d "$1" ]] && [[ "$(get_permission "$1")" != 75[0145] ]]
 }
 
 
@@ -248,124 +257,210 @@ user_only_chmod() {
 CreateBrewLinkFolder()
 {
   echo "--创建Brew所需要的目录"
-  directories=(bin etc include lib sbin share opt var
-             Frameworks
-             etc/bash_completion.d lib/pkgconfig
-             share/aclocal share/doc share/info share/locale share/man
-             share/man/man1 share/man/man2 share/man/man3 share/man/man4
-             share/man/man5 share/man/man6 share/man/man7 share/man/man8
-             var/log var/homebrew var/homebrew/linked
-             bin/brew)
-  group_chmods=()
-  for dir in "${directories[@]}"; do
-    if exists_but_not_writable "${HOMEBREW_PREFIX}/${dir}"; then
-      group_chmods+=("${HOMEBREW_PREFIX}/${dir}")
+  directories=(
+  bin etc include lib sbin share opt var
+  Frameworks
+  etc/bash_completion.d lib/pkgconfig
+  share/aclocal share/doc share/info share/locale share/man
+  share/man/man1 share/man/man2 share/man/man3 share/man/man4
+  share/man/man5 share/man/man6 share/man/man7 share/man/man8
+  var/log var/homebrew var/homebrew/linked
+  bin/brew
+)
+group_chmods=()
+for dir in "${directories[@]}"
+do
+  if exists_but_not_writable "${HOMEBREW_PREFIX}/${dir}"
+  then
+    group_chmods+=("${HOMEBREW_PREFIX}/${dir}")
+  fi
+done
+
+# zsh refuses to read from these directories if group writable
+directories=(share/zsh share/zsh/site-functions)
+zsh_dirs=()
+for dir in "${directories[@]}"
+do
+  zsh_dirs+=("${HOMEBREW_PREFIX}/${dir}")
+done
+
+directories=(
+  bin etc include lib sbin share var opt
+  share/zsh share/zsh/site-functions
+  var/homebrew var/homebrew/linked
+  Cellar Caskroom Frameworks
+)
+mkdirs=()
+for dir in "${directories[@]}"
+do
+  if ! [[ -d "${HOMEBREW_PREFIX}/${dir}" ]]
+  then
+    mkdirs+=("${HOMEBREW_PREFIX}/${dir}")
+  fi
+done
+
+user_chmods=()
+mkdirs_user_only=()
+if [[ "${#zsh_dirs[@]}" -gt 0 ]]
+then
+  for dir in "${zsh_dirs[@]}"
+  do
+    if [[ ! -d "${dir}" ]]
+    then
+      mkdirs_user_only+=("${dir}")
+    elif user_only_chmod "${dir}"
+    then
+      user_chmods+=("${dir}")
     fi
   done
+fi
 
-  directories=(share/zsh share/zsh/site-functions)
-  zsh_dirs=()
-  for dir in "${directories[@]}"; do
-    zsh_dirs+=("${HOMEBREW_PREFIX}/${dir}")
-  done
+chmods=()
+if [[ "${#group_chmods[@]}" -gt 0 ]]
+then
+  chmods+=("${group_chmods[@]}")
+fi
+if [[ "${#user_chmods[@]}" -gt 0 ]]
+then
+  chmods+=("${user_chmods[@]}")
+fi
 
-  directories=(bin etc include lib sbin share var opt
-              share/zsh share/zsh/site-functions
-              var/homebrew var/homebrew/linked
-              Cellar Caskroom Frameworks)
-  mkdirs=()
-  for dir in "${directories[@]}"; do
-    if ! [[ -d "${HOMEBREW_PREFIX}/${dir}" ]]; then
-      mkdirs+=("${HOMEBREW_PREFIX}/${dir}")
+chowns=()
+chgrps=()
+if [[ "${#chmods[@]}" -gt 0 ]]
+then
+  for dir in "${chmods[@]}"
+  do
+    if file_not_owned "${dir}"
+    then
+      chowns+=("${dir}")
+    fi
+    if file_not_grpowned "${dir}"
+    then
+      chgrps+=("${dir}")
     fi
   done
+fi
 
-  user_chmods=()
-  if [[ "${#zsh_dirs[@]}" -gt 0 ]]; then
-    for dir in "${zsh_dirs[@]}"; do
-      if user_only_chmod "${dir}"; then
-        user_chmods+=("${dir}")
-      fi
-    done
-  fi
+if [[ "${#group_chmods[@]}" -gt 0 ]]
+then
+  ohai "The following existing directories will be made group writable:"
+  printf "%s\n" "${group_chmods[@]}"
+fi
+if [[ "${#user_chmods[@]}" -gt 0 ]]
+then
+  ohai "The following existing directories will be made writable by user only:"
+  printf "%s\n" "${user_chmods[@]}"
+fi
+if [[ "${#chowns[@]}" -gt 0 ]]
+then
+  ohai "The following existing directories will have their owner set to ${tty_underline}${USER}${tty_reset}:"
+  printf "%s\n" "${chowns[@]}"
+fi
+if [[ "${#chgrps[@]}" -gt 0 ]]
+then
+  ohai "The following existing directories will have their group set to ${tty_underline}${GROUP}${tty_reset}:"
+  printf "%s\n" "${chgrps[@]}"
+fi
+if [[ "${#mkdirs[@]}" -gt 0 ]]
+then
+  ohai "The following new directories will be created:"
+  printf "%s\n" "${mkdirs[@]}"
+fi
 
-  chmods=()
-  if [[ "${#group_chmods[@]}" -gt 0 ]]; then
-    chmods+=("${group_chmods[@]}")
-  fi
-  if [[ "${#user_chmods[@]}" -gt 0 ]]; then
-    chmods+=("${user_chmods[@]}")
-  fi
+non_default_repos=""
+additional_shellenv_commands=()
+if [[ "${HOMEBREW_BREW_DEFAULT_GIT_REMOTE}" != "${HOMEBREW_BREW_GIT_REMOTE}" ]]
+then
+  ohai "HOMEBREW_BREW_GIT_REMOTE is set to a non-default URL:"
+  echo "${tty_underline}${HOMEBREW_BREW_GIT_REMOTE}${tty_reset} will be used as the Homebrew/brew Git remote."
+  non_default_repos="Homebrew/brew"
+  additional_shellenv_commands+=("export HOMEBREW_BREW_GIT_REMOTE=\"${HOMEBREW_BREW_GIT_REMOTE}\"")
+fi
 
-  chowns=()
-  chgrps=()
-  if [[ "${#chmods[@]}" -gt 0 ]]; then
-    for dir in "${chmods[@]}"; do
-      if file_not_owned "${dir}"; then
-        chowns+=("${dir}")
-      fi
-      if file_not_grpowned "${dir}"; then
-        chgrps+=("${dir}")
-      fi
-    done
-  fi
+if [[ "${HOMEBREW_CORE_DEFAULT_GIT_REMOTE}" != "${HOMEBREW_CORE_GIT_REMOTE}" ]]
+then
+  ohai "HOMEBREW_CORE_GIT_REMOTE is set to a non-default URL:"
+  echo "${tty_underline}${HOMEBREW_CORE_GIT_REMOTE}${tty_reset} will be used as the Homebrew/homebrew-core Git remote."
+  non_default_repos="${non_default_repos:-}${non_default_repos:+ and }Homebrew/homebrew-core"
+  additional_shellenv_commands+=("export HOMEBREW_CORE_GIT_REMOTE=\"${HOMEBREW_CORE_GIT_REMOTE}\"")
+fi
 
-  if [[ -d "${HOMEBREW_PREFIX}" ]]; then
-    if [[ "${#chmods[@]}" -gt 0 ]]; then
-      execute_sudo "/bin/chmod" "u+rwx" "${chmods[@]}"
-    fi
-    if [[ "${#group_chmods[@]}" -gt 0 ]]; then
-      execute_sudo "/bin/chmod" "g+rwx" "${group_chmods[@]}"
-    fi
-    if [[ "${#user_chmods[@]}" -gt 0 ]]; then
-      execute_sudo "/bin/chmod" "755" "${user_chmods[@]}"
-    fi
-    if [[ "${#chowns[@]}" -gt 0 ]]; then
-      execute_sudo "$CHOWN" "$USER" "${chowns[@]}"
-    fi
-    if [[ "${#chgrps[@]}" -gt 0 ]]; then
-      execute_sudo "$CHGRP" "$GROUP" "${chgrps[@]}"
-    fi
+if [[ -n "${HOMEBREW_NO_INSTALL_FROM_API-}" ]]
+then
+  ohai "HOMEBREW_NO_INSTALL_FROM_API is set."
+  echo "Homebrew/homebrew-core will be tapped during this ${tty_bold}install${tty_reset} run."
+fi
+
+if [[ -d "${HOMEBREW_PREFIX}" ]]
+then
+  if [[ "${#chmods[@]}" -gt 0 ]]
+  then
+    execute_sudo "${CHMOD[@]}" "u+rwx" "${chmods[@]}"
+  fi
+  if [[ "${#group_chmods[@]}" -gt 0 ]]
+  then
+    execute_sudo "${CHMOD[@]}" "g+rwx" "${group_chmods[@]}"
+  fi
+  if [[ "${#user_chmods[@]}" -gt 0 ]]
+  then
+    execute_sudo "${CHMOD[@]}" "go-w" "${user_chmods[@]}"
+  fi
+  if [[ "${#chowns[@]}" -gt 0 ]]
+  then
+    execute_sudo "${CHOWN[@]}" "${USER}" "${chowns[@]}"
+  fi
+  if [[ "${#chgrps[@]}" -gt 0 ]]
+  then
+    execute_sudo "${CHGRP[@]}" "${GROUP}" "${chgrps[@]}"
+  fi
+else
+  execute_sudo "${INSTALL[@]}" "${HOMEBREW_PREFIX}"
+fi
+
+if [[ "${#mkdirs[@]}" -gt 0 ]]
+then
+  execute_sudo "${MKDIR[@]}" "${mkdirs[@]}"
+  execute_sudo "${CHMOD[@]}" "ug=rwx" "${mkdirs[@]}"
+  if [[ "${#mkdirs_user_only[@]}" -gt 0 ]]
+  then
+    execute_sudo "${CHMOD[@]}" "go-w" "${mkdirs_user_only[@]}"
+  fi
+  execute_sudo "${CHOWN[@]}" "${USER}" "${mkdirs[@]}"
+  execute_sudo "${CHGRP[@]}" "${GROUP}" "${mkdirs[@]}"
+fi
+
+if ! [[ -d "${HOMEBREW_REPOSITORY}" ]]
+then
+  execute_sudo "${MKDIR[@]}" "${HOMEBREW_REPOSITORY}"
+fi
+execute_sudo "${CHOWN[@]}" "-R" "${USER}:${GROUP}" "${HOMEBREW_REPOSITORY}"
+
+if ! [[ -d "${HOMEBREW_CACHE}" ]]
+then
+  if [[ -n "${HOMEBREW_ON_MACOS-}" ]]
+  then
+    execute_sudo "${MKDIR[@]}" "${HOMEBREW_CACHE}"
   else
-    execute_sudo "/bin/mkdir" "-p" "${HOMEBREW_PREFIX}"
-    if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-      execute_sudo "$CHOWN" "root:wheel" "${HOMEBREW_PREFIX}"
-    else
-      execute_sudo "$CHOWN" "$USER:$GROUP" "${HOMEBREW_PREFIX}"
-    fi
+    execute "${MKDIR[@]}" "${HOMEBREW_CACHE}"
   fi
-
-  if [[ "${#mkdirs[@]}" -gt 0 ]]; then
-    execute_sudo "/bin/mkdir" "-p" "${mkdirs[@]}"
-    execute_sudo "/bin/chmod" "g+rwx" "${mkdirs[@]}"
-    execute_sudo "$CHOWN" "$USER" "${mkdirs[@]}"
-    execute_sudo "$CHGRP" "$GROUP" "${mkdirs[@]}"
-  fi
-
-  if ! [[ -d "${HOMEBREW_REPOSITORY}" ]]; then
-    execute_sudo "/bin/mkdir" "-p" "${HOMEBREW_REPOSITORY}"
-  fi
-  execute_sudo "$CHOWN" "-R" "$USER:$GROUP" "${HOMEBREW_REPOSITORY}"
-
-  if ! [[ -d "${HOMEBREW_CACHE}" ]]; then
-    if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-      execute_sudo "/bin/mkdir" "-p" "${HOMEBREW_CACHE}"
-    else
-      execute "/bin/mkdir" "-p" "${HOMEBREW_CACHE}"
-    fi
-  fi
-  if exists_but_not_writable "${HOMEBREW_CACHE}"; then
-    execute_sudo "/bin/chmod" "g+rwx" "${HOMEBREW_CACHE}"
-  fi
-  if file_not_owned "${HOMEBREW_CACHE}"; then
-    execute_sudo "$CHOWN" "-R" "$USER" "${HOMEBREW_CACHE}"
-  fi
-  if file_not_grpowned "${HOMEBREW_CACHE}"; then
-    execute_sudo "$CHGRP" "-R" "$GROUP" "${HOMEBREW_CACHE}"
-  fi
-  if [[ -d "${HOMEBREW_CACHE}" ]]; then
-    execute "$TOUCH" "${HOMEBREW_CACHE}/.cleaned"
-  fi
+fi
+if exists_but_not_writable "${HOMEBREW_CACHE}"
+then
+  execute_sudo "${CHMOD[@]}" "g+rwx" "${HOMEBREW_CACHE}"
+fi
+if file_not_owned "${HOMEBREW_CACHE}"
+then
+  execute_sudo "${CHOWN[@]}" "-R" "${USER}" "${HOMEBREW_CACHE}"
+fi
+if file_not_grpowned "${HOMEBREW_CACHE}"
+then
+  execute_sudo "${CHGRP[@]}" "-R" "${GROUP}" "${HOMEBREW_CACHE}"
+fi
+if [[ -d "${HOMEBREW_CACHE}" ]]
+then
+  execute "${TOUCH[@]}" "${HOMEBREW_CACHE}/.cleaned"
+fi
   echo "--依赖目录脚本运行完成"
 }
 
@@ -391,7 +486,8 @@ version_lt() {
 #发现错误 关闭脚本 提示如何解决
 error_game_over(){
     echo "
-    ${tty_red}失败$MY_DOWN_NUM 右键下面地址查看常见错误解决办法
+    ${tty_red}失败$MY_DOWN_NUM 终端输入 brew -v 没有反应表示失败
+    右键下面地址查看常见错误解决办法
     https://gitee.com/cunkai/HomebrewCN/blob/master/error.md
     如果没有解决，把全部运行过程截图发到 cunkai.wang@foxmail.com ${tty_reset}
     "
@@ -415,12 +511,132 @@ warning_if(){
   "
   fi
 }
+#开始克隆
+start_clone_brew(){
 
+  #询问是否删除之前的
+  echo -n "${tty_green}！！！此脚本将要删除之前的brew(包括它下载的软件)，请自行备份。
+  ->是否现在开始执行脚本（N/Y） "
+  read MY_Del_Old
+  echo "${tty_reset}"
+  case $MY_Del_Old in
+  "y")
+  echo "--> 脚本开始执行"
+  ;;
+  "Y")
+  echo "--> 脚本开始执行"
+  ;;
+  *)
+  echo "你输入了 $MY_Del_Old ，脚本运行中断, 如果继续运行脚本应该输入Y或者y
+  "
+  exit 0
+  ;;
+  esac
+
+
+  if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
+  #MAC
+    echo "${tty_yellow} Mac os设置开机密码方法：
+    (设置开机密码：在左上角苹果图标->系统偏好设置->"用户与群组"->更改密码)
+    (如果提示This incident will be reported. 在"用户与群组"中查看是否管理员) ${tty_reset}"
+  fi
+
+  echo "==> 通过命令删除之前的brew、创建一个新的Homebrew文件夹
+  ${tty_cyan}请输入开机密码，输入过程不显示，输入完后回车${tty_reset}"
+
+  sudo echo '开始执行'
+  #删除以前的Homebrew
+  RmCreate ${HOMEBREW_REPOSITORY}
+  RmAndCopy $HOMEBREW_CACHE
+  RmAndCopy $HOMEBREW_LOGS
+
+  # 让环境暂时纯粹，脚本运行结束后恢复
+  if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
+      export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:${HOMEBREW_REPOSITORY}/bin
+  fi
+  git --version
+  if [ $? -ne 0 ];then
+
+      if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
+          sudo rm -rf "/Library/Developer/CommandLineTools/"
+          echo "${tty_cyan}安装Git${tty_reset}后再运行此脚本，${tty_red}在系统弹窗中点击“安装”按钮
+          如果没有弹窗的老系统，需要自己下载安装：https://sourceforge.net/projects/git-osx-installer/ ${tty_reset}"
+          xcode-select --install
+          exit 0
+      else
+          echo "${tty_red} 发现缺少git，开始安装，请输入Y ${tty_reset}"
+          sudo apt install git
+      fi
+  fi
+
+  echo "
+  ${tty_cyan}下载速度觉得慢可以ctrl+c或control+c重新运行脚本选择下载源${tty_reset}
+  ==> 从 $USER_BREW_GIT 克隆Homebrew基本文件
+  "
+  warning_if
+  sudo git clone ${GIT_SPEED} $USER_BREW_GIT ${HOMEBREW_REPOSITORY}
+  JudgeSuccess 尝试再次运行自动脚本选择其他下载源或者切换网络 out
+  git config --global --add safe.directory ${HOMEBREW_REPOSITORY}
+
+
+  #依赖目录创建 授权等等
+  CreateBrewLinkFolder
+
+  echo '==> 创建brew的替身'
+  if [[ "${HOMEBREW_REPOSITORY}" != "${HOMEBREW_PREFIX}" ]]; then
+    find ${HOMEBREW_PREFIX}/bin -name brew -exec sudo rm -f {} \;
+    execute "ln" "-sf" "${HOMEBREW_REPOSITORY}/bin/brew" "${HOMEBREW_PREFIX}/bin/brew"
+  fi
+  #询问是否删除之前的
+  echo -n "${tty_green} 
+  brew下载完成。
+  如果需要Core、Cask、services的话，输入Y继续克隆
+  不需要的回车跳过："
+  read MY_BREW_CUSTOM
+  echo "${tty_reset}"
+  if [[ $MY_BREW_CUSTOM == "Y" || $MY_BREW_CUSTOM == "y" ]]; then
+    #继续克隆啊
+    echo "==> 从 $USER_CORE_GIT 克隆Homebrew Core
+    ${tty_cyan}此处如果显示Password表示需要再次输入开机密码，输入完后回车${tty_reset}"
+    sudo mkdir -p ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core
+    sudo git clone ${GIT_SPEED} $USER_CORE_GIT ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core/
+    JudgeSuccess 尝试再次运行自动脚本选择其他下载源或者切换网络 out
+    git config --global --add safe.directory ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core/
+
+    if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
+    #MAC
+      echo "==> 从 $USER_CASK_GIT 克隆Homebrew Cask 图形化软件
+      ${tty_cyan}此处如果显示Password表示需要再次输入开机密码，输入完后回车${tty_reset}"
+      sudo mkdir -p ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask
+      sudo git clone ${GIT_SPEED} $USER_CASK_GIT ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask/
+      if [ $? -ne 0 ];then
+          sudo rm -rf ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask
+          echo "${tty_red}尝试切换下载源或者切换网络,不过Cask组件非必须模块。可以忽略${tty_reset}"
+      else
+          echo "${tty_green}此步骤成功${tty_reset}"
+          git config --global --add safe.directory ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask/
+      fi
+
+      echo "==> 从 $USER_SERVICES_GIT 克隆Homebrew services 管理服务的启停
+      "
+      sudo mkdir -p ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask
+      sudo git clone ${GIT_SPEED} $USER_SERVICES_GIT ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-services/
+      JudgeSuccess
+      git config --global --add safe.directory ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-services/
+      brew services cleanup
+    else
+    #Linux
+      echo "${tty_yellow} Linux 不支持Cask图形化软件下载 此步骤跳过${tty_reset}"
+    fi
+  fi
+}
+
+#代码从这里开始执行
 echo "
-              ${tty_green} 开始执行Brew自动安装程序 ${tty_reset}
-             ${tty_cyan} [cunkai.wang@foxmail.com] ${tty_reset}
-           ['$TIME']['$macos_version']
-       ${tty_cyan} https://zhuanlan.zhihu.com/p/111014448 ${tty_reset}
+              ${tty_green} 开始执行Homebrew自动安装程序 ${tty_reset}
+            ${tty_cyan} [cunkai.wang@foxmail.com] ${tty_reset}
+          ['$TIME']['$macos_version']
+      ${tty_cyan} https://zhuanlan.zhihu.com/p/111014448 ${tty_reset}
 "
 #选择一个brew下载源
 echo -n "${tty_green}
@@ -432,7 +648,8 @@ echo -n "${tty_green}
 if [[ $GIT_SPEED == "" ]]; then
   echo -n "${tty_green}
 4、腾讯下载源 
-5、阿里巴巴下载源 ${tty_reset}"
+5、阿里巴巴下载源 
+6、跳过下载brew去配置下载源 ${tty_reset}"
 fi
 echo -n "
 ${tty_blue}请输入序号: "
@@ -452,6 +669,8 @@ case $MY_DOWN_NUM in
     USER_CASK_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask.git
     USER_CASK_FONTS_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask-fonts.git
     USER_CASK_DRIVERS_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask-drivers.git
+    #API
+    HOMEBREW_API_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api"
 ;;
 "3")
     echo "
@@ -503,109 +722,20 @@ case $MY_DOWN_NUM in
   USER_CORE_GIT=https://mirrors.ustc.edu.cn/homebrew-core.git
   #HomeBrew Cask
   USER_CASK_GIT=https://mirrors.ustc.edu.cn/homebrew-cask.git
-;;
-esac
-echo -n "${tty_green}！！！此脚本将要删除之前的brew(包括它下载的软件)，请自行备份。
-->是否现在开始执行脚本（N/Y） "
-read MY_Del_Old
-echo "${tty_reset}"
-case $MY_Del_Old in
-"y")
-echo "--> 脚本开始执行"
-;;
-"Y")
-echo "--> 脚本开始执行"
-;;
-*)
-echo "你输入了 $MY_Del_Old ，自行备份老版brew和它下载的软件, 如果继续运行脚本应该输入Y或者y
-"
-exit 0
+  #API
+  HOMEBREW_API_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles/api
 ;;
 esac
 
-
-if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-#MAC
-  echo "${tty_yellow} Mac os设置开机密码方法：
-  (设置开机密码：在左上角苹果图标->系统偏好设置->"用户与群组"->更改密码)
-  (如果提示This incident will be reported. 在"用户与群组"中查看是否管理员) ${tty_reset}"
-fi
-
-echo "==> 通过命令删除之前的brew、创建一个新的Homebrew文件夹
-${tty_cyan}请输入开机密码，输入过程不显示，输入完后回车${tty_reset}"
-
-sudo echo '开始执行'
-#删除以前的Homebrew
-RmCreate ${HOMEBREW_REPOSITORY}
-RmAndCopy $HOMEBREW_CACHE
-RmAndCopy $HOMEBREW_LOGS
-
-# 让环境暂时纯粹，脚本运行结束后恢复
-if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-    export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:${HOMEBREW_REPOSITORY}/bin
-fi
-git --version
-if [ $? -ne 0 ];then
-
-    if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-        sudo rm -rf "/Library/Developer/CommandLineTools/"
-        echo "${tty_cyan}安装Git${tty_reset}后再运行此脚本，${tty_red}在系统弹窗中点击“安装”按钮
-        如果没有弹窗的老系统，需要自己下载安装：https://sourceforge.net/projects/git-osx-installer/ ${tty_reset}"
-        xcode-select --install
-        exit 0
-    else
-        echo "${tty_red} 发现缺少git，开始安装，请输入Y ${tty_reset}"
-        sudo apt install git
-    fi
-fi
-
-echo "
-${tty_cyan}下载速度觉得慢可以ctrl+c或control+c重新运行脚本选择下载源${tty_reset}
-==> 从 $USER_BREW_GIT 克隆Homebrew基本文件
-"
-warning_if
-sudo git clone ${GIT_SPEED} $USER_BREW_GIT ${HOMEBREW_REPOSITORY}
-JudgeSuccess 尝试再次运行自动脚本选择其他下载源或者切换网络 out
-
-#依赖目录创建 授权等等
-CreateBrewLinkFolder
-
-echo '==> 创建brew的替身'
-if [[ "${HOMEBREW_REPOSITORY}" != "${HOMEBREW_PREFIX}" ]]; then
-  find ${HOMEBREW_PREFIX}/bin -name brew -exec sudo rm -f {} \;
-  execute "ln" "-sf" "${HOMEBREW_REPOSITORY}/bin/brew" "${HOMEBREW_PREFIX}/bin/brew"
-fi
-
-echo "==> 从 $USER_CORE_GIT 克隆Homebrew Core
-${tty_cyan}此处如果显示Password表示需要再次输入开机密码，输入完后回车${tty_reset}"
-sudo mkdir -p ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core
-sudo git clone ${GIT_SPEED} $USER_CORE_GIT ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core/
-JudgeSuccess 尝试再次运行自动脚本选择其他下载源或者切换网络 out
-
-if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-#MAC
-  echo "==> 从 $USER_CASK_GIT 克隆Homebrew Cask 图形化软件
-  ${tty_cyan}此处如果显示Password表示需要再次输入开机密码，输入完后回车${tty_reset}"
-  sudo mkdir -p ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask
-  sudo git clone ${GIT_SPEED} $USER_CASK_GIT ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask/
-  if [ $? -ne 0 ];then
-      sudo rm -rf ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask
-      echo "${tty_red}尝试切换下载源或者切换网络,不过Cask组件非必须模块。可以忽略${tty_reset}"
-  else
-      echo "${tty_green}此步骤成功${tty_reset}"
-
-  fi
-
-  echo "==> 从 $USER_SERVICES_GIT 克隆Homebrew services 管理服务的启停
-  "
-  sudo mkdir -p ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask
-  sudo git clone ${GIT_SPEED} $USER_SERVICES_GIT ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-services/
-  JudgeSuccess
+if [[ $MY_DOWN_NUM == "6" ]]; then
+  echo '==> 跳过克隆brew，准备配置国内镜像源'
 else
-#Linux
-  echo "${tty_yellow} Linux 不支持Cask图形化软件下载 此步骤跳过${tty_reset}"
+  start_clone_brew
 fi
-echo '==> 配置国内镜像源HOMEBREW BOTTLE'
+
+echo '==> 配置国内镜像源HOMEBREW BOTTLE     
+${tty_cyan}此处如果显示Password表示需要再次输入开机密码，看不到，输入完后回车${tty_reset}"
+'
 
 #判断下mac os终端是Bash还是zsh
 case "$SHELL" in
@@ -636,6 +766,8 @@ fi
 if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
   #Mac
   sed -i "" "/ckbrew/d" ${shell_profile}
+  echo '有些电脑xcode和git混乱，再运行一次，此处如果有error正常。'
+  xcode-select --install
 else
   #Linux
   sed -i "/ckbrew/d" ${shell_profile}
@@ -644,7 +776,7 @@ fi
 #选择一个homebrew-bottles下载源
 echo -n "${tty_green}
 
-            Brew本体已经安装成功，接下来配置国内源。
+            Homebrew已经安装成功，接下来配置国内源。
 
 请选择今后brew install的时候访问那个国内镜像，例如阿里巴巴，输入5回车。
 
@@ -742,7 +874,7 @@ if [ $? -ne 0 ];then
       error_game_over
     fi
 else
-    echo "${tty_green}Brew前期配置成功${tty_reset}"
+    echo "${tty_green}Homebrew前期配置成功${tty_reset}"
 fi
 
 #brew 3.1.2版本 修改了很多地址，都写死在了代码中，没有调用环境变量。。额。。
@@ -767,8 +899,6 @@ else
   fi
 fi
 
-brew services cleanup
-
 if [[ $GIT_SPEED == "" ]];then
   echo '
   ==> brew update-reset
@@ -790,24 +920,25 @@ brew update-reset
 fi
 
 echo "
-        ${tty_green}Brew自动安装程序运行完成${tty_reset}
+        ${tty_green}Homebrew自动安装程序运行完成${tty_reset}
           ${tty_green}国内地址已经配置完成${tty_reset}
 
-  桌面的Old_Homebrew文件夹，大致看看没有你需要的可以删除。
+  桌面的Old_Homebrew文件夹，没有你需要的可以删除。
 
               初步介绍几个brew命令
+查看版本：brew -v  更新brew版本：brew update
+查找：brew search python（其中python替换为要查找的关键字）
+安装：brew install python  安装完成输入 python3 -h 查看
 本地软件库列表：brew ls
-查找软件：brew search google（其中google替换为要查找的关键字）
-查看brew版本：brew -v  更新brew版本：brew update
-安装cask软件：brew install --cask firefox 把firefox换成你要安装的
+
         ${tty_green}
-        欢迎右键点击下方地址-打开URL 来给点个赞${tty_reset}
+        欢迎右键点击下方地址-打开链接 点个赞吧${tty_reset}
         ${tty_underline} https://zhuanlan.zhihu.com/p/111014448 ${tty_reset}
 "
 
 if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
   #Mac
-  echo "${tty_red} 安装成功 但还需要重启终端 或者 运行${tty_bold} source ${shell_profile}  ${tty_reset} ${tty_red}否则可能无法使用${tty_reset}
+  echo "${tty_red} 安装成功 但还需要重启终端 或者 运行${tty_bold} source ${shell_profile}  ${tty_reset} ${tty_red}否则国内地址无法生效${tty_reset}
   "
 else
   #Linux
