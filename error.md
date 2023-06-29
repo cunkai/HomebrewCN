@@ -72,3 +72,8 @@ As Homebrew does not drop privileges on installation you would be giving all
  **12.** Warning: No remote 'origin' in /usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask, skipping update!**
 
 看评论区说解决方法（我未测试）：https://gitee.com/cunkai/HomebrewCN/issues/I5A7RV
+
+ **12.** fatal: not in a git directory
+Error: Command failed with exit 128: git**
+
+git config --global http.sslVerify false
