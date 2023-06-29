@@ -66,14 +66,13 @@ As Homebrew does not drop privileges on installation you would be giving all
 
 ```
 
- **11.** The x86_64 architecture is required**
+ **11.** The x86_64 architecture is required
 这句话意思是，这个软件不支持M1芯片，只支持x86_64架构的CPU。
 
- **12.** Warning: No remote 'origin' in /usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask, skipping update!**
+ **12.** Warning: No remote 'origin' in /usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask, skipping update!
 
 看评论区说解决方法（我未测试）：https://gitee.com/cunkai/HomebrewCN/issues/I5A7RV
 
- **12.** fatal: not in a git directory
-Error: Command failed with exit 128: git**
+ **13.** fatal: not in a git directory   Error: Command failed with exit 128: git
 
 git config --global http.sslVerify false
