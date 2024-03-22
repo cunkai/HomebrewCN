@@ -216,8 +216,9 @@ start_clone_brew() {
 
   sudo sed -i '' "s|https://github.com/Homebrew|$USER_BREW_GIT|g" brew-install-ck/install.sh
   sudo sed -i '' 's|to continue or any|${tty_red}现在是brew官方安装提示，它需要你按回车键开始${tty_reset}|g' brew-install-ck/install.sh
+  sudo sed -i '' 's|"update"|"update-reset"|g' brew-install-ck/install.sh
 
-  #2024年添加，ruby版本只有阿里和中科大更新 为了防止类似问题，这里随机这两个吧
+  #2024年添加，ruby版本只有阿里和中科大更新到最新版 为了防止之前清华ruby不更新问题，这里随机吧
   # 生成一个 0 到 1 的随机数
   RANDOM_NUMBER=$(echo "$RANDOM" / 2)
 
@@ -228,9 +229,6 @@ start_clone_brew() {
   fi
 
   
-
-  
-
   /bin/bash brew-install-ck/install.sh
   JudgeSuccess 调用官方安装失败请查看上方报错信息 out
   
@@ -300,12 +298,12 @@ ${tty_blue}请输入序号: "
 read MY_DOWN_NUM
 echo "${tty_reset}"
 case $MY_DOWN_NUM in
-"1")
+"2")
   echo "
-    你选择了清华大学brew本体下载源
+    你选择了Gitee brew本体下载源
     "
   #HomeBrew基础框架
-  USER_BREW_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew
+  USER_BREW_GIT=https://gitee.com/Homebrew2  
   ;;
 "3")
   echo "
@@ -314,15 +312,15 @@ case $MY_DOWN_NUM in
   ;;
 *)
   echo "
-    你选择了Gitee brew本体下载源
+    你选择了清华大学brew本体下载源
     "
   #HomeBrew基础框架
-  USER_BREW_GIT=https://gitee.com/Homebrew2  
+  USER_BREW_GIT=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew
   ;;
 esac
 
 if [[ $MY_DOWN_NUM == "3" ]]; then
-  echo '==> 跳过brew安装，准备配置国内镜像源'
+  echo '==> 跳过brew安装，准备配置install镜像源'
 else
   start_clone_brew
 fi
@@ -375,7 +373,7 @@ echo -n "${tty_green}
 
 1、中科大国内源（推荐）
 2、清华大学国内源
-3、北京外国语大学国内源
+3、上海交通大学国内源
 4、腾讯国内源
 5、阿里巴巴国内源(推荐) ${tty_reset}"
 
@@ -388,25 +386,29 @@ case $MY_DOWN_NUM in
   echo "
     你选择了清华大学国内源
     "
-  USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/
+  USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
+  USER_HOMEBREW_PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
   ;;
 "3")
   echo "
-    北京外国语大学国内源
+    上海交通大学国内源
     "
-  USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.bfsu.edu.cn/homebrew-bottles
+  USER_HOMEBREW_BOTTLE_DOMAIN=https://mirror.sjtu.edu.cn/homebrew-bottles
+  USER_HOMEBREW_PIP_INDEX_URL=https://mirror.sjtu.edu.cn/pypi/web/simple
   ;;
 "4")
   echo "
     你选择了腾讯国内源
     "
   USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.cloud.tencent.com/homebrew-bottles
+  USER_HOMEBREW_PIP_INDEX_URL=https://mirrors.cloud.tencent.com/pypi/simple
   ;;
 "5")
   echo "
     你选择了阿里巴巴国内源
     "
   USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles
+  USER_HOMEBREW_PIP_INDEX_URL=http://mirrors.aliyun.com/pypi/simple
   ;;
 *)
   echo "
@@ -414,6 +416,7 @@ case $MY_DOWN_NUM in
   "
   #HomeBrew 下载源 install
   USER_HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles
+  USER_HOMEBREW_PIP_INDEX_URL=https://pypi.mirrors.ustc.edu.cn/simple
   ;;
 esac
 
@@ -425,8 +428,8 @@ echo "
 "
 #这里暂时把api写死吧，很多源还没有更新
 echo "
-  export HOMEBREW_PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple #ckbrew
-  export HOMEBREW_API_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api  #ckbrew
+  export HOMEBREW_PIP_INDEX_URL=${USER_HOMEBREW_PIP_INDEX_URL} #ckbrew
+  export HOMEBREW_API_DOMAIN=${USER_HOMEBREW_BOTTLE_DOMAIN}/api  #ckbrew
   export HOMEBREW_BOTTLE_DOMAIN=${USER_HOMEBREW_BOTTLE_DOMAIN} #ckbrew
   eval \$(${HOMEBREW_REPOSITORY}/bin/brew shellenv) #ckbrew
 " >>${shell_profile}
@@ -472,46 +475,11 @@ else
   echo "${tty_green}Homebrew前期配置成功${tty_reset}"
 fi
 
-# #brew 3.1.2版本 修改了很多地址，都写死在了代码中，没有调用环境变量。。额。。
-# #ruby下载需ruby要改官方文件
-# ruby_URL_file=$HOMEBREW_REPOSITORY/Library/Homebrew/cmd/vendor-install.sh
-
-# #判断Mac系统版本
-# if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-#   if version_gt "$macos_version" "10.14"; then
-#     echo "电脑系统版本：$macos_version"
-#   else
-#     echo "${tty_red}检测到你不是最新系统，会有一些报错，请稍等Ruby下载安装;${tty_reset}
-#       "
-#   fi
-
-#   if [[ -f ${ruby_URL_file} ]]; then
-#     sed -i "" "s/ruby_URL=/ruby_URL=\"https:\/\/mirrors.tuna.tsinghua.edu.cn\/homebrew-bottles\/bottles-portable-ruby\/\$ruby_FILENAME\" \#/g" $ruby_URL_file
-#   fi
-# else
-#   if [[ -f ${ruby_URL_file} ]]; then
-#     sed -i "s/ruby_URL=/ruby_URL=\"https:\/\/mirrors.tuna.tsinghua.edu.cn\/linuxbrew-bottles\/bottles-portable-ruby\/\$ruby_FILENAME\" \#/g" $ruby_URL_file
-#   fi
-# fi
-
-if [[ $GIT_SPEED == "" ]]; then
-  echo '
-  ==> brew update-reset
-  '
-  brew update-reset
-  if [[ $? -ne 0 ]]; then
-    brew config
-    error_game_over
-    exit 0
-  fi
-else
-  #极速模式提示Update修复方法
-  echo "
-${tty_red}  极速版本安装完成，${tty_reset} install功能正常，如果需要update功能请自行运行下面三句命令
-git -C ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core fetch --unshallow
-git -C ${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask fetch --unshallow
-brew update-reset
-  "
+brew update
+if [[ $? -ne 0 ]]; then
+  brew config
+  error_game_over
+  exit 0
 fi
 
 echo "
