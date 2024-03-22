@@ -24,7 +24,7 @@
 
 
 ```
-HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/bottles-portable-ruby
+HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles
 
 rm -rf /Users/$(whoami)/Library/Caches/Homebrew/
 
