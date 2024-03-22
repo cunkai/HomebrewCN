@@ -217,6 +217,9 @@ start_clone_brew() {
   sudo sed -i '' "s|https://github.com/Homebrew|$USER_BREW_GIT|g" brew-install-ck/install.sh
   sudo sed -i '' 's|to continue or any|${tty_red}现在是brew官方安装提示，它需要你按回车键开始${tty_reset}|g' brew-install-ck/install.sh
 
+  #2024年添加，ruby版本只有阿里和中科大更新
+  sudo sed -i '' 's|#!/bin/bash|#!/bin/bash \nexport HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles|' brew-install-ck/install.sh
+
   /bin/bash brew-install-ck/install.sh
   JudgeSuccess 调用官方安装失败请查看上方报错信息 out
   
@@ -359,11 +362,11 @@ echo -n "${tty_green}
 
 请选择今后brew install的时候访问那个国内镜像，例如阿里巴巴，输入5回车。
 
-1、中科大国内源
+1、中科大国内源（推荐）
 2、清华大学国内源
 3、北京外国语大学国内源
-4、腾讯国内源 
-5、阿里巴巴国内源 ${tty_reset}"
+4、腾讯国内源
+5、阿里巴巴国内源(推荐) ${tty_reset}"
 
 echo -n "
 ${tty_blue}请输入序号: "
@@ -458,27 +461,27 @@ else
   echo "${tty_green}Homebrew前期配置成功${tty_reset}"
 fi
 
-#brew 3.1.2版本 修改了很多地址，都写死在了代码中，没有调用环境变量。。额。。
-#ruby下载需要改官方文件
-ruby_URL_file=$HOMEBREW_REPOSITORY/Library/Homebrew/cmd/vendor-install.sh
+# #brew 3.1.2版本 修改了很多地址，都写死在了代码中，没有调用环境变量。。额。。
+# #ruby下载需ruby要改官方文件
+# ruby_URL_file=$HOMEBREW_REPOSITORY/Library/Homebrew/cmd/vendor-install.sh
 
-#判断Mac系统版本
-if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
-  if version_gt "$macos_version" "10.14"; then
-    echo "电脑系统版本：$macos_version"
-  else
-    echo "${tty_red}检测到你不是最新系统，会有一些报错，请稍等Ruby下载安装;${tty_reset}
-      "
-  fi
+# #判断Mac系统版本
+# if [[ -z "${HOMEBREW_ON_LINUX-}" ]]; then
+#   if version_gt "$macos_version" "10.14"; then
+#     echo "电脑系统版本：$macos_version"
+#   else
+#     echo "${tty_red}检测到你不是最新系统，会有一些报错，请稍等Ruby下载安装;${tty_reset}
+#       "
+#   fi
 
-  if [[ -f ${ruby_URL_file} ]]; then
-    sed -i "" "s/ruby_URL=/ruby_URL=\"https:\/\/mirrors.tuna.tsinghua.edu.cn\/homebrew-bottles\/bottles-portable-ruby\/\$ruby_FILENAME\" \#/g" $ruby_URL_file
-  fi
-else
-  if [[ -f ${ruby_URL_file} ]]; then
-    sed -i "s/ruby_URL=/ruby_URL=\"https:\/\/mirrors.tuna.tsinghua.edu.cn\/linuxbrew-bottles\/bottles-portable-ruby\/\$ruby_FILENAME\" \#/g" $ruby_URL_file
-  fi
-fi
+#   if [[ -f ${ruby_URL_file} ]]; then
+#     sed -i "" "s/ruby_URL=/ruby_URL=\"https:\/\/mirrors.tuna.tsinghua.edu.cn\/homebrew-bottles\/bottles-portable-ruby\/\$ruby_FILENAME\" \#/g" $ruby_URL_file
+#   fi
+# else
+#   if [[ -f ${ruby_URL_file} ]]; then
+#     sed -i "s/ruby_URL=/ruby_URL=\"https:\/\/mirrors.tuna.tsinghua.edu.cn\/linuxbrew-bottles\/bottles-portable-ruby\/\$ruby_FILENAME\" \#/g" $ruby_URL_file
+#   fi
+# fi
 
 if [[ $GIT_SPEED == "" ]]; then
   echo '
