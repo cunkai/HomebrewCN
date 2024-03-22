@@ -486,9 +486,10 @@ version_lt() {
 #发现错误 关闭脚本 提示如何解决
 error_game_over(){
     echo "
-    ${tty_red}失败$MY_DOWN_NUM 终端输入 brew -v 没有反应表示失败
+    ${tty_red}失败$MY_DOWN_NUM 终端输入 ${HOMEBREW_REPOSITORY}/bin/brew -v 没有反应表示失败
     右键下面地址查看常见错误解决办法
     https://gitee.com/cunkai/HomebrewCN/blob/master/error.md
+    或者别的安装方法：https://mirrors.tuna.tsinghua.edu.cn/help/homebrew/
     如果没有解决，把全部运行过程截图发到 cunkai.wang@foxmail.com ${tty_reset}
     "
 
@@ -590,7 +591,8 @@ start_clone_brew(){
   #询问是否删除之前的
   echo -n "${tty_green} 
   brew下载完成。
-  如果需要Homebrew Core、Cask、services输入Y继续克隆，不需要的回车跳过"
+  如果需要Core、Cask、services的话，输入Y继续克隆
+  不需要的回车跳过："
   read MY_BREW_CUSTOM
   echo "${tty_reset}"
   if [[ $MY_BREW_CUSTOM == "Y" || $MY_BREW_CUSTOM == "y" ]]; then
@@ -632,7 +634,7 @@ start_clone_brew(){
 
 #代码从这里开始执行
 echo "
-              ${tty_green} 开始执行Brew自动安装程序 ${tty_reset}
+              ${tty_green} 开始执行Homebrew自动安装程序 ${tty_reset}
             ${tty_cyan} [cunkai.wang@foxmail.com] ${tty_reset}
           ['$TIME']['$macos_version']
       ${tty_cyan} https://zhuanlan.zhihu.com/p/111014448 ${tty_reset}
@@ -732,9 +734,9 @@ else
   start_clone_brew
 fi
 
-echo '==> 配置国内镜像源HOMEBREW BOTTLE     
-${tty_cyan}此处如果显示Password表示需要再次输入开机密码，看不到，输入完后回车${tty_reset}"
-'
+echo "==> 配置国内镜像源HOMEBREW BOTTLE     
+${tty_cyan}此处如果显示Password表示需要再次输入开机密码，输入完后回车${tty_reset}"
+
 
 #判断下mac os终端是Bash还是zsh
 case "$SHELL" in
@@ -775,7 +777,7 @@ fi
 #选择一个homebrew-bottles下载源
 echo -n "${tty_green}
 
-            Brew本体已经安装成功，接下来配置国内源。
+            Homebrew已经安装成功，接下来配置国内源。
 
 请选择今后brew install的时候访问那个国内镜像，例如阿里巴巴，输入5回车。
 
@@ -829,8 +831,10 @@ echo "
         环境变量写入->${shell_profile}
 
 "
-
+#这里暂时把api写死吧，很多源还没有更新
 echo "
+  export HOMEBREW_PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple #ckbrew
+  export HOMEBREW_API_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api  #ckbrew
   export HOMEBREW_BOTTLE_DOMAIN=${USER_HOMEBREW_BOTTLE_DOMAIN} #ckbrew
   eval \$(${HOMEBREW_REPOSITORY}/bin/brew shellenv) #ckbrew
 " >> ${shell_profile} 
@@ -873,7 +877,7 @@ if [ $? -ne 0 ];then
       error_game_over
     fi
 else
-    echo "${tty_green}Brew前期配置成功${tty_reset}"
+    echo "${tty_green}Homebrew前期配置成功${tty_reset}"
 fi
 
 #brew 3.1.2版本 修改了很多地址，都写死在了代码中，没有调用环境变量。。额。。
@@ -919,7 +923,7 @@ brew update-reset
 fi
 
 echo "
-        ${tty_green}Brew自动安装程序运行完成${tty_reset}
+        ${tty_green}Homebrew自动安装程序运行完成${tty_reset}
           ${tty_green}国内地址已经配置完成${tty_reset}
 
   桌面的Old_Homebrew文件夹，没有你需要的可以删除。
