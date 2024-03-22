@@ -51,8 +51,8 @@ esac
 
 echo "${tty_red}HomeBrew卸载脚本  下面开始调用官方卸载脚本 遇到不认识的英文复制到在线翻译来理解${tty_reset}
 "
-rm -rf brew-uninstall
-git clone --depth=1 ${USER_BREW_GIT}/install.git brew-uninstall
-sudo sed -i '' "s|https://raw.githubusercontent.com/Homebrew/brew/HEAD/.gitignore|https://gitee.com/Homebrew2/brew/raw/master/.gitignore|g" brew-install-ck/install.sh
-/bin/bash brew-uninstall/uninstall.sh
-rm -rf brew-uninstall
+rm -rf brew-uninstall-ck
+git clone --depth=1 ${USER_BREW_GIT}/install.git brew-uninstall-ck
+sudo sed -i '' "s|https://raw.githubusercontent.com/Homebrew/brew/HEAD/.gitignore|https://gitee.com/Homebrew2/brew/raw/master/.gitignore|g" brew-uninstall-ck/install.sh
+/bin/bash brew-uninstall-ck/uninstall.sh
+rm -rf brew-uninstall-ck
