@@ -1,6 +1,15 @@
 #HomeBrew卸载脚本
 #cunkai.wang@foxmail.com
 
+# 字符串染色程序
+if [[ -t 1 ]]; then
+  tty_escape() { printf "\033[%sm" "$1"; }
+else
+  tty_escape() { :; }
+fi
+
+tty_universal() { tty_escape "0;$1"; } #正常显示
+tty_mkbold() { tty_escape "1;$1"; }    #设置高亮
 tty_underline="$(tty_escape "4;39")"   #下划线
 tty_blue="$(tty_universal 34)"         #蓝色
 tty_red="$(tty_universal 31)"          #红色
