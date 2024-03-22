@@ -2,7 +2,7 @@
 
 [知乎文章地址：https://zhuanlan.zhihu.com/p/111014448](https://zhuanlan.zhihu.com/p/111014448)
 
-苹果电脑标准安装脚本：（推荐 优点全面 缺点慢一点）
+苹果电脑安装脚本：
 
 
 ```
@@ -10,15 +10,8 @@
 
 ```
 
-苹果电脑极速安装脚本：（优点安装速度快 缺点update功能需要命令修复 ）
 
-
-```
-/bin/zsh -c "$(curl -fsSL https://gitee.com/cunkai/HomebrewCN/raw/master/Homebrew.sh)" speed
-
-```
-
-Linux 标准安装脚本：
+Linux 安装脚本：
 
 
 ```
