@@ -53,6 +53,6 @@ echo "${tty_red}HomeBrew卸载脚本  下面开始调用官方卸载脚本 遇�
 "
 rm -rf brew-uninstall-ck
 git clone --depth=1 ${USER_BREW_GIT}/install.git brew-uninstall-ck
-sudo sed -i '' "s|https://raw.githubusercontent.com/Homebrew/brew/HEAD/.gitignore|https://gitee.com/Homebrew2/brew/raw/master/.gitignore|g" brew-uninstall-ck/install.sh
+sudo sed -i '' "s|https://raw.githubusercontent.com/Homebrew/brew/HEAD/.gitignore|https://gitee.com/Homebrew2/brew/raw/master/.gitignore|g" brew-uninstall-ck/uninstall.sh
 /bin/bash brew-uninstall-ck/uninstall.sh
 rm -rf brew-uninstall-ck
