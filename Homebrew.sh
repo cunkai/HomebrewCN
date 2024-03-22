@@ -217,8 +217,19 @@ start_clone_brew() {
   sudo sed -i '' "s|https://github.com/Homebrew|$USER_BREW_GIT|g" brew-install-ck/install.sh
   sudo sed -i '' 's|to continue or any|${tty_red}现在是brew官方安装提示，它需要你按回车键开始${tty_reset}|g' brew-install-ck/install.sh
 
-  #2024年添加，ruby版本只有阿里和中科大更新
-  sudo sed -i '' 's|#!/bin/bash|#!/bin/bash \nexport HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles|' brew-install-ck/install.sh
+  #2024年添加，ruby版本只有阿里和中科大更新 为了防止类似问题，这里随机这两个吧
+  # 生成一个 0 到 1 的随机数
+  RANDOM_NUMBER=$(echo "$RANDOM" / 2)
+
+  if [ $RANDOM_NUMBER -eq 0 ]; then
+    sudo sed -i '' 's|#!/bin/bash|#!/bin/bash \nexport HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles|' brew-install-ck/install.sh
+  else
+    sudo sed -i '' 's|#!/bin/bash|#!/bin/bash \nexport HOMEBREW_BOTTLE_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles|' brew-install-ck/install.sh
+  fi
+
+  
+
+  
 
   /bin/bash brew-install-ck/install.sh
   JudgeSuccess 调用官方安装失败请查看上方报错信息 out
