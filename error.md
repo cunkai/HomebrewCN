@@ -76,3 +76,15 @@ As Homebrew does not drop privileges on installation you would be giving all
  **13.** fatal: not in a git directory   Error: Command failed with exit 128: git
 
 git config --global http.sslVerify false
+
+
+ **14.** /usr/local/Homebrew/Library/Homebrew/cmd/vendor-install.sh:1ine245:./3.1.4/bin/ruby:BadCPUtype inexecutable
+
+如果你是苹果的M芯片有这种报错，说明你电脑有两个brew，简单粗暴的方法是删除/usr/local/Homebrew目录，保留/opt/homebrew即可。
+（提示：如何去指定访达，屏幕左上角找到前往->前往文件夹然后输入/usr/local回车把Homebrew删除即可。反之如果你是英特尔处理器就保留/usr/local下的去opt目录删除）
+温和的方法是分别运行下面三句话，看看是否包含/usr/local/Homebrew的字符串，删掉整行保存。
+open ${HOME}/.zprofile
+open $HOME/.bash_profile
+open ${HOME}/.profile
+
+

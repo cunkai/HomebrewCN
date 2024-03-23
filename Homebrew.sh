@@ -35,6 +35,9 @@ if [[ -n "${HOMEBREW_ON_MACOS-}" ]]
 then
   UNAME_MACHINE="$(/usr/bin/uname -m)"
 
+  HOMEBREW_REPOSITORY_Arm64="/opt/homebrew"
+  HOMEBREW_REPOSITORY_X86="/usr/local/Homebrew"
+
   if [[ "${UNAME_MACHINE}" == "arm64" ]]
   then
     # On ARM macOS, this script installs to /opt/homebrew only
@@ -188,7 +191,8 @@ start_clone_brew() {
   "y" | "Y")
     echo "--> 脚本开始执行"
     #删除以前的Homebrew
-    RmAndCopy ${HOMEBREW_REPOSITORY}
+    RmAndCopy ${HOMEBREW_REPOSITORY_Arm64}
+    RmAndCopy ${HOMEBREW_REPOSITORY_X86}
     RmAndCopy $HOMEBREW_CACHE
     RmAndCopy $HOMEBREW_LOGS
     ;;
