@@ -11,27 +11,11 @@
 ```
 
 
-Linux 安装脚本：
-
-
-```
-rm Homebrew.sh ; wget https://gitee.com/cunkai/HomebrewCN/raw/master/Homebrew.sh ; bash Homebrew.sh
-
-```
-
 苹果电脑卸载脚本：
 
 
 ```
 /bin/zsh -c "$(curl -fsSL https://gitee.com/cunkai/HomebrewCN/raw/master/HomebrewUninstall.sh)"
-
-```
-
-Linux卸载脚本：
-
-
-```
-rm HomebrewUninstall.sh ; wget https://gitee.com/cunkai/HomebrewCN/raw/master/HomebrewUninstall.sh ; bash HomebrewUninstall.sh
 
 ```
 
