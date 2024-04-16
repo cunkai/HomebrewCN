@@ -214,6 +214,12 @@ start_clone_brew() {
   
   "
 
+  # 切换到当前用户的主目录
+  cd ~
+
+  # 接下来可以执行你需要在用户目录下运行的命令
+  echo "当前目录是: $(pwd)"
+
   sudo rm -rf brew-install-ck
 
   sudo git clone --depth=1 ${USER_BREW_GIT}/install.git brew-install-ck
