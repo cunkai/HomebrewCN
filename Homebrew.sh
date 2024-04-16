@@ -213,6 +213,11 @@ start_clone_brew() {
               开始  进入brew官方安装脚本  开始
   
   "
+    # 切换到当前用户的主目录
+  cd ~
+
+  # 接下来可以执行你需要在用户目录下运行的命令
+  echo "下载官方install.sh文件,当前目录是: $(pwd)"
 
   sudo rm -rf brew-install-ck
 
