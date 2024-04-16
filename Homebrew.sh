@@ -436,6 +436,8 @@ echo "
         环境变量写入->${shell_profile}
 
 "
+#创建shell_profile文件
+touch ${shell_profile}
 #这里暂时把api写死吧，很多源还没有更新
 echo "
   export HOMEBREW_PIP_INDEX_URL=${USER_HOMEBREW_PIP_INDEX_URL} #ckbrew
