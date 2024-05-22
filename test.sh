@@ -213,12 +213,11 @@ start_clone_brew() {
               开始  进入brew官方安装脚本  开始
   
   "
-
-  # 切换到当前用户的主目录
+    # 切换到当前用户的主目录
   cd ~
 
   # 接下来可以执行你需要在用户目录下运行的命令
-  echo "当前目录是: $(pwd)"
+  echo "下载官方install.sh文件,当前目录是: $(pwd)"
 
   sudo rm -rf brew-install-ck
 
@@ -301,7 +300,9 @@ echo -n "${tty_green}
 
 1、通过清华大学下载brew
 2、通过Gitee下载brew
-3、！我已经安装brew，直接带我去配置国内下载源
+3、！我已经安装brew，跳过克隆，直接带我去配置国内下载源
+4、！我已经安装brew，需要把仓库地址设置成Gitee
+5、！我已经安装brew，需要把仓库地址设置成清华大学
 ${tty_reset}"
 
 echo -n "
@@ -309,7 +310,7 @@ ${tty_blue}请输入序号: "
 read MY_DOWN_NUM
 echo "${tty_reset}"
 case $MY_DOWN_NUM in
-"2")
+"2"|"5")
   echo "
     你选择了Gitee brew本体下载源
     "
@@ -332,6 +333,36 @@ esac
 
 if [[ $MY_DOWN_NUM == "3" ]]; then
   echo '==> 跳过brew安装，准备配置install镜像源'
+elif [[ $MY_DOWN_NUM == "4" || $MY_DOWN_NUM == "5" ]]; then
+  echo '==> 跳过brew安装，但配置仓库地址'
+  # 尝试找到 brew 命令的路径
+  brew_path=$(which brew 2>/dev/null)
+
+  # 检查 brew_path 是否为空
+  if [ -z "$brew_path" ]; then
+    echo "未找到本地 brew 仓库地址。请确保 brew 在终端可以正常运行，如果问题依旧请选择3"
+    exit 0
+  else
+    # 解析出 brew 命令的真实路径
+    real_brew_path=$(realpath "$brew_path")
+
+    # 获取 brew 命令真实路径的父目录
+    brew_parent_dir=$(dirname "$real_brew_path")
+    
+    # 输出父目录路径
+    echo "brew 的目录是：$brew_parent_dir"
+    
+    # 进入目录并设置远程仓库地址
+    cd "$brew_parent_dir" && git remote set-url origin "$USER_BREW_GIT/brew.git"
+
+    # 检查是否成功设置远程仓库地址
+    if [ $? -eq 0 ]; then
+        # 验证远程仓库 URL
+        echo "远程仓库地址已成功设置为: $(git remote -v)"
+    else
+        echo "设置远程仓库地址失败。"
+    fi
+  fi
 else
   start_clone_brew
 fi
@@ -437,6 +468,8 @@ echo "
         环境变量写入->${shell_profile}
 
 "
+#创建shell_profile文件
+touch ${shell_profile}
 #这里暂时把api写死吧，很多源还没有更新
 echo "
   export HOMEBREW_PIP_INDEX_URL=${USER_HOMEBREW_PIP_INDEX_URL} #ckbrew
@@ -502,7 +535,7 @@ echo "
               初步介绍几个brew命令
 查看版本：brew -v  更新brew版本：brew update
 查找：brew search python（其中python替换为要查找的关键字）
-安装：brew install python  安装完成输入 python3 -h 查看
+安装：brew install python（其中python替换为要安装的名称）
 本地软件库列表：brew ls
 
         ${tty_green}
