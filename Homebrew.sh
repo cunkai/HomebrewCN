@@ -365,9 +365,11 @@ elif [[ $MY_DOWN_NUM == "4" || $MY_DOWN_NUM == "5" ]]; then
     else
         echo "
                   设置远程仓库地址失败。
+                  请确保本地已经安装了brew
       
         
         "
+        exit 0
     fi
   fi
 else
