@@ -340,7 +340,11 @@ elif [[ $MY_DOWN_NUM == "4" || $MY_DOWN_NUM == "5" ]]; then
 
   # 检查 brew_path 是否为空
   if [ -z "$brew_path" ]; then
-    echo "未找到本地 brew 仓库地址。请确保 brew 在终端可以正常运行，如果问题依旧请选择3"
+    echo "
+        
+        未找到本地 brew 仓库地址。请确保 brew 在终端可以正常运行。
+    
+    "
     exit 0
   else
     # 解析出 brew 命令的真实路径
