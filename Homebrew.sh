@@ -362,15 +362,16 @@ elif [[ $MY_DOWN_NUM == "4" || $MY_DOWN_NUM == "5" ]]; then
     # 检查是否成功设置远程仓库地址
     if [ $? -eq 0 ]; then
         # 验证远程仓库 URL
+        echo "${tty_green}
+                远程仓库地址已成功设置为:"
+        git remote -v
         echo "
-                远程仓库地址已成功设置为: $(git remote -v)
-        
-        "
+        ${tty_reset}"
     else
-        echo "
+        echo "${tty_red}
                   设置远程仓库地址失败。
                   请确保本地已经安装了brew
-      
+                  ${tty_reset}"
         
         "
         exit 0
