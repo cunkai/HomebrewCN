@@ -341,9 +341,9 @@ elif [[ $MY_DOWN_NUM == "4" || $MY_DOWN_NUM == "5" ]]; then
   # 检查 brew_path 是否为空
   if [ -z "$brew_path" ]; then
     echo "
-        
+        ${tty_red}
         未找到本地 brew 仓库地址。请确保 brew 在终端可以正常运行。
-    
+        ${tty_reset}
     "
     exit 0
   else
@@ -362,13 +362,13 @@ elif [[ $MY_DOWN_NUM == "4" || $MY_DOWN_NUM == "5" ]]; then
     # 检查是否成功设置远程仓库地址
     if [ $? -eq 0 ]; then
         # 验证远程仓库 URL
-        echo "${tty_green}
+        echo "  ${tty_green}
                 远程仓库地址已成功设置为:"
         git remote -v
         echo "
-        ${tty_reset}"
+                ${tty_reset}"
     else
-        echo "${tty_red}
+        echo "    ${tty_red}
                   设置远程仓库地址失败。
                   请确保本地已经安装了brew
                   ${tty_reset}
