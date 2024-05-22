@@ -310,7 +310,7 @@ ${tty_blue}请输入序号: "
 read MY_DOWN_NUM
 echo "${tty_reset}"
 case $MY_DOWN_NUM in
-"2"|"5")
+"2"|"4")
   echo "
     你选择了Gitee brew本体下载源
     "
@@ -353,14 +353,21 @@ elif [[ $MY_DOWN_NUM == "4" || $MY_DOWN_NUM == "5" ]]; then
     echo "brew 的目录是：$brew_parent_dir"
     
     # 进入目录并设置远程仓库地址
-    cd "$brew_parent_dir" && git remote set-url origin "$USER_BREW_GIT/brew.git"
+    cd "$brew_parent_dir" && git remote set-url origin "$USER_BREW_GIT/brew"
 
     # 检查是否成功设置远程仓库地址
     if [ $? -eq 0 ]; then
         # 验证远程仓库 URL
-        echo "远程仓库地址已成功设置为: $(git remote -v)"
+        echo "
+                远程仓库地址已成功设置为: $(git remote -v)
+        
+        "
     else
-        echo "设置远程仓库地址失败。"
+        echo "
+                  设置远程仓库地址失败。
+      
+        
+        "
     fi
   fi
 else
