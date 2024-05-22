@@ -336,7 +336,7 @@ if [[ $MY_DOWN_NUM == "3" ]]; then
 elif [[ $MY_DOWN_NUM == "4" || $MY_DOWN_NUM == "5" ]]; then
   echo '==> 跳过brew安装，但配置仓库地址'
   # 尝试找到 brew 命令的路径
-  brew_path=$(which brew 2>/dev/null)
+  brew_path=$(whence brew 2>/dev/null)
 
   # 检查 brew_path 是否为空
   if [ -z "$brew_path" ]; then
