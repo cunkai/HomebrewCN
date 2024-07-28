@@ -227,15 +227,8 @@ start_clone_brew() {
   sudo sed -i '' 's|to continue or any|${tty_red}现在是brew官方安装提示，它需要你按回车键开始${tty_reset}|g' brew-install-ck/install.sh
   sudo sed -i '' 's|"update"|"update-reset"|g' brew-install-ck/install.sh
 
-  #2024年添加，ruby版本只有阿里和中科大更新到最新版 为了防止之前清华ruby不更新问题，这里随机吧
-  # 生成一个 0 到 1 的随机数
-  RANDOM_NUMBER=$(echo "$RANDOM" / 2)
-
-  if [ $RANDOM_NUMBER -eq 0 ]; then
-    sudo sed -i '' 's|#!/bin/bash|#!/bin/bash \nexport HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles|' brew-install-ck/install.sh
-  else
-    sudo sed -i '' 's|#!/bin/bash|#!/bin/bash \nexport HOMEBREW_BOTTLE_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles|' brew-install-ck/install.sh
-  fi
+  #2024年添加，ruby版本只有阿里保留老版本
+  sudo sed -i '' 's|#!/bin/bash|#!/bin/bash \nexport HOMEBREW_BOTTLE_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles|' brew-install-ck/install.sh
 
   
   /bin/bash brew-install-ck/install.sh
@@ -427,7 +420,7 @@ echo -n "${tty_green}
 
 请选择今后brew install的时候访问那个国内镜像，例如阿里巴巴，输入5回车。
 
-1、中科大国内源（推荐）
+1、中科大国内源
 2、清华大学国内源
 3、上海交通大学国内源
 4、腾讯国内源
@@ -535,6 +528,7 @@ fi
 
 brew update
 if [[ $? -ne 0 ]]; then
+  echo "${tty_green}更换阿里源试试，2024.07.29很多人发的邮件显示大学的ruby版本3.3.3全部下架了${tty_reset}"
   brew config
   error_game_over
   exit 0
