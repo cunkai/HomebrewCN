@@ -284,7 +284,6 @@ echo "
               ${tty_green} 开始执行Homebrew自动安装程序 ${tty_reset}
             ${tty_cyan} [cunkai.wang@foxmail.com] ${tty_reset}
           ['$TIME']['$macos_version']
-      ${tty_cyan} https://zhuanlan.zhihu.com/p/111014448 ${tty_reset}
 "
 #选择一个brew下载源
 echo -n "${tty_green}
@@ -545,10 +544,6 @@ echo "
 查找：brew search python（其中python替换为要查找的关键字）
 安装：brew install python（其中python替换为要安装的名称）
 本地软件库列表：brew ls
-
-        ${tty_green}
-        欢迎右键点击下方地址-打开链接 点个赞吧${tty_reset}
-        ${tty_underline} https://zhuanlan.zhihu.com/p/111014448 ${tty_reset}
 
         如果遇到问题可以右键下面地址查看常见错误解决办法
         https://gitee.com/cunkai/HomebrewCN/blob/master/error.md
