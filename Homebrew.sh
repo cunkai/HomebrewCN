@@ -120,8 +120,7 @@ error_game_over() {
     ${tty_red}失败$MY_DOWN_NUM 终端输入 ${HOMEBREW_REPOSITORY}/bin/brew -v 没有反应表示失败
     右键下面地址查看常见错误解决办法
     https://gitee.com/cunkai/HomebrewCN/blob/master/error.md
-    或者别的安装方法：https://mirrors.tuna.tsinghua.edu.cn/help/homebrew/
-    如果没有解决，把全部运行过程截图发到 cunkai.wang@foxmail.com ${tty_reset}
+    如果没有解决，来这里讨论 https://gitee.com/cunkai/HomebrewCN/issues 因为我现在没有mac所以爱莫能助,不要发邮件了,抱歉~ ${tty_reset}
     "
   exit 0
 }
@@ -547,6 +546,7 @@ echo "
 
         如果遇到问题可以右键下面地址查看常见错误解决办法
         https://gitee.com/cunkai/HomebrewCN/blob/master/error.md
+        https://gitee.com/cunkai/HomebrewCN/issues
 
         brew官方地址：https://brew.sh/zh-cn/
 "
