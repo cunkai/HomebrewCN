@@ -222,6 +222,8 @@ start_clone_brew() {
 
   sudo git clone --depth=1 ${USER_BREW_GIT}/install.git brew-install-ck
 
+  sudo sed -i '' 's|remote" "set-head" "origin" "--auto"|remote" "set-head" "origin" "main"|g' brew-install-ck/install.sh
+
   sudo sed -i '' "s|https://github.com/Homebrew|$USER_BREW_GIT|g" brew-install-ck/install.sh
   sudo sed -i '' 's|to continue or any|${tty_red}现在是brew官方安装提示，它需要你按回车键开始${tty_reset}|g' brew-install-ck/install.sh
   sudo sed -i '' 's|"update"|"update-reset"|g' brew-install-ck/install.sh
